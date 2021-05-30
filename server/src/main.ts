@@ -2,8 +2,8 @@ import { RestConfig, RestWebServer } from './rest/rest'
 
 function main() {
   const HOST = process.env.HOST ?? 'locahost'
-  const PORT = process.env.HOST ?? '8080'
-  const STATIC_DIR = process.env.HOST ?? 'static'
+  const PORT = process.env.PORT ?? '8080'
+  const STATIC_DIR = process.env.STATIC_DIR ?? 'static'
 
   const restConfig: RestConfig = {
     host: HOST,

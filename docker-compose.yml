@@ -1,0 +1,42 @@
+version: "3.1"
+
+services:
+  backend:
+    container_name: imse-server
+    build: ./server/
+    environment:
+      HOST: 0.0.0.0
+      PORT: 8080
+    ports:
+      - 127.0.0.1:10100:8080
+    restart: always
+    networks:
+      - backend
+    depends_on: 
+      - mariadb
+      - mongodb
+  mariadb:
+    container_name: imse-mariadb
+    image: mariadb:10.5
+    ports:
+      - 127.0.0.1:3306:3306
+    environment:
+      MARIADB_ROOT_PASSWORD: password
+    restart: always
+    networks:
+      - backend
+  mongodb:
+    container_name: imse-mongodb
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+    networks:
+      - backend
+
+networks:
+  backend:
+    name: backend_network
+  frontend:
+    name: frontend_network
