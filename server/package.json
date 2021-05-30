@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "author": "Viktor Danov, Raphael Lachtner",
+  "scripts": {
+    "serve": "tsc -p . && node out/main.js"
+  },
   "license": "None",
   "private": true,
   "devDependencies": {
