@@ -5,7 +5,11 @@ function main() {
   const PORT = process.env.HOST ?? '8080'
   const STATIC_DIR = process.env.HOST ?? 'static'
 
-  const restConfig: RestConfig = { host: HOST, port: PORT, staticDir: STATIC_DIR }
+  const restConfig: RestConfig = {
+    host: HOST,
+    port: PORT,
+    staticDir: STATIC_DIR
+  }
 
   const webServer = new RestWebServer(restConfig)
   webServer.serve()

@@ -1,6 +1,5 @@
-
-function main () {
-  for (let i = 0; i < 100; i++) {
-    const test = 3
+function main() {
+  for (let i =0;i < 100; i++) {
+    let test = 3
   }
 }
