@@ -4,13 +4,16 @@
   "main": "index.js",
   "author": "Viktor Danov, Raphael Lachtner",
   "scripts": {
-    "serve": "tsc -p . && node out/main.js"
+    "serve": "tsc -p . && node out/main.js",
+    "test": "jest"
   },
   "license": "None",
   "private": true,
   "devDependencies": {
     "@types/compression": "^1.7.0",
     "@types/express": "^4.17.12",
+    "@types/jest": "^26.0.23",
+    "@types/supertest": "^2.0.11",
     "@typescript-eslint/eslint-plugin": "^4.25.0",
     "@typescript-eslint/parser": "^4.25.0",
     "eslint": "^7.12.1",
@@ -21,7 +24,10 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-promise": "^4.2.1",
+    "jest": "^27.0.3",
     "prettier": "^2.3.0",
+    "supertest": "^6.1.3",
+    "ts-jest": "^27.0.1",
     "typescript": "^4.3.2"
   },
   "dependencies": {
