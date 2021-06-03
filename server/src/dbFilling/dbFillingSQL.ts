@@ -1,4 +1,4 @@
-import { Student, getStudents, getPage, getPost, Page, Post } from './exampleData'
+import { Student, getStudents, getPage, getPost, Page, Post } from './mockData'
 import { db, addAccount, addStudent, addRandomPage, addRandomPost, addRandomIsFriendsWith } from '../sqlConnection'
 
 export function insertData() {
