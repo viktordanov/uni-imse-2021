@@ -1,5 +1,7 @@
 import express from 'express'
 import compression from 'compression'
+import { EventsService } from '../service/eventsService'
+import { StudentContentService } from '../service/studentContentService'
 
 export type RestConfig = {
   host: string
@@ -21,7 +23,7 @@ export class RestWebServer implements Rest {
     return this.webServer
   }
 
-  constructor(config: RestConfig) {
+  constructor(config: RestConfig, eventsService: EventsService, studentService: StudentContentService) {
     this.config = config
     this.webServer = express()
 
