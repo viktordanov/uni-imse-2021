@@ -7,6 +7,8 @@ services:
     environment:
       HOST: 0.0.0.0
       PORT: 8080
+      MARIADB_USER: imse
+      MARIADB_PASSWORD: imse
     ports:
       - 127.0.0.1:10100:8080
     restart: always
@@ -20,8 +22,12 @@ services:
     image: mariadb:10.5
     ports:
       - 127.0.0.1:3306:3306
+    volumes:
+      - ./initdb:/docker-entrypoint-initdb.d
     environment:
       MARIADB_ROOT_PASSWORD: password
+      MARIADB_USER: imse
+      MARIADB_PASSWORD: imse
     restart: always
     networks:
       - backend
