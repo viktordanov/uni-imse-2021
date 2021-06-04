@@ -58,7 +58,7 @@ create table if not exists Post (
     foreign key (StudentID, Page_Title) references Page(StudentID, Title) on delete cascade
 );
 
-create table if not exists is_friends_with (
+create table if not exists follows (
     StudentID int not null,
     Friend_StudentID int not null,
     primary key (StudentID, Friend_StudentID),

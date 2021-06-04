@@ -22,4 +22,4 @@ export const addRandomPost =
 
 export const addRandomIsFriendsWith =
   'set @studentID = (select StudentID from Page order by rand() limit 1); ' +
-  'insert into is_friends_with (StudentID, Friend_StudentID) values (@studentID, (select StudentID from Student where StudentID != @studentID order by rand() limit 1));'
+  'insert into follows (StudentID, Friend_StudentID) values (@studentID, (select StudentID from Student where StudentID != @studentID order by rand() limit 1));'
