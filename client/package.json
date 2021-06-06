@@ -6,15 +6,18 @@
   "license": "None",
   "private": true,
   "scripts": {
-    "serve": "tsc -p . && node out/main.js"
+    "build": "NODE_ENV=production MODE=production webpack --progress",
+    "serve": "webpack serve --color --progress",
+    "reformat": "prettier --write .",
+    "lint": "eslint 'src**/*.{js,ts,tsx}' --quiet",
+    "dist": "http-server ./dist -g"
   },
   "devDependencies": {
-    "react-refresh": "^0.8.3",
-    "@pmmmwh/react-refresh-webpack-plugin": "^0.4.0",
     "@babel/core": "^7.14.3",
     "@babel/preset-env": "^7.14.4",
     "@babel/preset-react": "^7.13.13",
     "@babel/preset-typescript": "^7.13.0",
+    "@pmmmwh/react-refresh-webpack-plugin": "^0.4.0",
     "@types/react": "^17.0.9",
     "@types/react-dom": "^17.0.6",
     "@typescript-eslint/eslint-plugin": "^4.25.0",
@@ -37,6 +40,7 @@
     "prettier": "^2.3.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-refresh": "^0.8.3",
     "sass-loader": "^12.0.0",
     "style-loader": "^2.0.0",
     "ts-loader": "^9.2.3",

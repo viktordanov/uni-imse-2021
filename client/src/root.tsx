@@ -9,7 +9,9 @@ export interface RootProps {
 export const Root: React.FunctionComponent<RootProps> = ({ className, onClick }: RootProps) => {
   return (
     <div className={c(className)} onClick={onClick}>
-      <p>Testo</p>
+      <div className="test">
+        <p>Testo</p>
+      </div>
     </div>
   )
 }
