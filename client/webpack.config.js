@@ -1,21 +1,142 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 
 const path = require('path')
+const webpack = require('webpack')
+
+const CopyPlugin = require('copy-webpack-plugin')
+const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+const CompressionPlugin = require('compression-webpack-plugin')
+// const SpriteLoaderPlugin = require('svg-sprite-splitr/plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin')
 
 const isProduction = process.env.MODE === 'production'
 const isDevelopment = !isProduction
 
+const SCSSModulesLoader = {
+  test: /\.scss$/,
+  include: /\.module.scss$/,
+  use: [
+    'cache-loader',
+    'style-loader',
+    {
+      loader: 'css-loader',
+      options: {
+        modules: {
+          auto: true,
+          exportLocalsConvention: 'camelCase'
+        },
+        importLoaders: true
+      }
+    },
+    {
+      loader: 'sass-loader',
+      options: {
+        sourceMap: isDevelopment
+      }
+    },
+    {
+      loader: 'sass-resources-loader',
+      options: {
+        resources: [
+          path.resolve(__dirname, './assets/scss/_fonts.scss'),
+          path.resolve(__dirname, './assets/scss/_spec.scss')
+        ]
+      }
+    }
+  ]
+}
+
+const SCSSLoader = {
+  test: /\.scss$/,
+  exclude: /\.module.scss$/,
+  use: [
+    'cache-loader',
+    'style-loader',
+    {
+      loader: 'css-loader',
+      options: {
+        modules: {
+          auto: true,
+          exportLocalsConvention: 'camelCase'
+        },
+        importLoaders: true
+      }
+    },
+    {
+      loader: 'sass-loader',
+      options: {
+        sourceMap: isDevelopment
+      }
+    },
+    {
+      loader: 'sass-resources-loader',
+      options: {
+        resources: [
+          path.resolve(__dirname, './assets/scss/_fonts.scss'),
+          path.resolve(__dirname, './assets/scss/_spec.scss')
+        ]
+      }
+    }
+  ]
+}
+
+const CSSLoader = {
+  test: /\.css$/,
+  use: [
+    'cache-loader',
+    'style-loader',
+    {
+      loader: 'css-loader',
+      options: {
+        modules: {
+          auto: true,
+          exportLocalsConvention: 'camelCase'
+        },
+        importLoaders: true
+      }
+    }
+  ]
+}
+
 const plugins = [
+  isProduction && new MiniCssExtractPlugin(),
   new HtmlWebpackPlugin({
-    template: path.join(__dirname, 'index.html')
-  })
-]
+    filename: 'index.html',
+    template: path.resolve(__dirname, './public/index.html')
+  }),
+  isDevelopment && new webpack.HotModuleReplacementPlugin(),
+  isDevelopment && new ReactRefreshWebpackPlugin(),
+  isProduction && new CleanWebpackPlugin(),
+  isProduction &&
+    new CopyPlugin({
+      patterns: [{ from: 'public' }]
+    }),
+  isProduction &&
+    new CompressionPlugin({
+      algorithm: 'gzip',
+      deleteOriginalAssets: true
+    })
+].filter(Boolean)
 
 module.exports = {
   entry: './src/index.tsx',
-  output: { path: path.join(__dirname, 'build'), filename: 'index.bundle.js' },
-  mode: process.env.NODE_ENV || 'development',
+  output: {
+    path: path.resolve(__dirname, 'dist/'),
+    filename: '[name].js',
+    chunkFilename: isDevelopment ? '[name].chunk.js' : '[name].[chunkhash:8].chunk.js',
+    publicPath: '/',
+    pathinfo: isDevelopment
+  },
+  mode: process.env.MODE ?? 'development',
+  optimization: {
+    minimize: isProduction,
+    usedExports: true,
+    splitChunks: {
+      chunks: 'all'
+    }
+  },
   resolve: {
     alias: {
       '@': path.join(__dirname, './src'),
@@ -27,22 +148,16 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.(js|jsx)$/,
-        exclude: /node_modules/,
-        use: ['babel-loader']
+        test: /\.(tsx?)$/,
+        include: path.resolve(__dirname, 'src'),
+        use: ['cache-loader', 'ts-loader']
       },
-      {
-        test: /\.(ts|tsx)$/,
-        exclude: /node_modules/,
-        use: ['ts-loader']
-      },
-      {
-        test: /\.(css|scss)$/,
-        use: ['style-loader', 'css-loader']
-      },
+      SCSSModulesLoader,
+      SCSSLoader,
+      CSSLoader,
       {
         test: /\.(jpg|jpeg|png|gif|mp3|svg)$/,
-        use: ['file-loader']
+        use: 'file-loader'
       }
     ]
   },
