@@ -1,6 +1,9 @@
 import React from 'react'
 import styles from './styles/root.module.scss'
 import c from 'classnames'
+import { useAuth } from './hooks/useAuth'
+import { BrowserRouter as Router, Link, Redirect, Route, RouteProps, Switch } from 'react-router-dom'
+import { Login } from './pages/Login'
 
 export interface RootProps {
   className?: string
@@ -9,10 +12,36 @@ export interface RootProps {
 
 export const Root: React.FunctionComponent<RootProps> = ({ className, onClick }: RootProps) => {
   return (
-    <div className={c(styles.root, className)} onClick={onClick}>
-      <div className={styles.test}>
-        <p>Testo</p>
-      </div>
-    </div>
+    <>
+      <Router>
+        <Switch>
+          <Route path="/login">
+            <Login />
+          </Route>
+          <PrivateRoute path="/users"></PrivateRoute>
+          <PrivateRoute path="/"></PrivateRoute>
+        </Switch>
+      </Router>
+    </>
+  )
+}
+export const PrivateRoute: React.FunctionComponent<RouteProps> = ({ children, ...rest }: RouteProps) => {
+  const { isAuthenticated } = useAuth()
+  return (
+    <Route
+      {...rest}
+      render={({ location }) =>
+        isAuthenticated ? (
+          children
+        ) : (
+          <Redirect
+            to={{
+              pathname: '/login',
+              state: { from: location }
+            }}
+          />
+        )
+      }
+    />
   )
 }
