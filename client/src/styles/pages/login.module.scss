@@ -1,0 +1,63 @@
+.login {
+  width: 100vw;
+  height: 100vh;
+  background-color: $color-white;
+  background: url('~assets/logo-background.svg'), url('~assets/logo-background-2.svg');
+  background-repeat: no-repeat;
+  background-position: bottom left 10vw, top 3rem right 8vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  .form {
+    height: 100%;
+    width: 25rem;
+    height: auto;
+    position: relative;
+
+    .header {
+      .logoImg,
+      .logoText {
+        float: left;
+        height: 6rem;
+      }
+
+      .logoText {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        margin-left: $margin-medium;
+      }
+      .name {
+        @include font-title-big;
+        margin-bottom: $margin-small;
+        color: $color-accent-dark;
+      }
+      .moto {
+        @include font-label;
+        color: $color-accent-faded;
+        opacity: 0.75;
+      }
+    }
+    .footerText {
+      @include font-body;
+      margin-top: $margin-large;
+      text-align: center;
+    }
+
+    .input:not(:last-of-type) {
+      margin-bottom: $margin-normal;
+    }
+  }
+}
+
+.loginForm, .signUpForm {
+  width: 95%;
+  margin: 0 2.5%;
+  margin-top: $margin-large;
+}
+
+.right {
+  float: right;
+}
