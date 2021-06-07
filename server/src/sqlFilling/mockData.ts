@@ -1,26 +1,5 @@
 import fetch from 'node-fetch'
-
-export interface Student {
-  firstname: string
-  lastname: string
-  email: string
-  passwordhash: string
-  dateregistered: Date
-  university: string
-  matericulationnumber: number
-}
-
-export interface Page {
-  title: string
-  description: string
-  datecreated: Date
-}
-
-export interface Post {
-  title: string
-  content: string
-  datecreated: Date
-}
+import { Page, Post, Student } from '../entities/entities'
 
 export function getStudents(): Promise<Student[]> {
   return fetch('http://my.api.mockaroo.com/student.json?key=0ef109b0')
