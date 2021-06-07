@@ -1,9 +1,10 @@
-p {
-  color: red;
-}
+@import url(_reset.scss);
 
-.test {
-  p {
-    color: blue !important;
-  }
+:root {
+  font-size: 16px;
+}
+.clearfix:after {
+  content: "";
+  display: table;
+  clear: both;
 }
