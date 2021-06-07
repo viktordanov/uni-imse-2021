@@ -4,50 +4,50 @@ export interface Repository {
   // Page CRUD
   addPage(studentId: number, page: Page): void
   removePage(studentId: number, title: string): void
-  getPageByTitle(studentId: number, title: string): Page
+  getPageByTitle(studentId: number, title: string): Promise<Page>
   updatePage(studentId: number, page: Page): void
 
   // Post CRUD
   addPost(studentId: number, pageTitle: string, post: Post): void
   removePost(studentId: number, pageTitle: string, title: string): void
-  getPostByTitle(studentId: number, pageTitle: string, title: string): Post
+  getPostByTitle(studentId: number, pageTitle: string, title: string): Promise<Post>
   updatePost(studentId: number, pageTitle: string, post: Post): void
-  getStudentLikesOfPost(studentId: number, pageTitle: string, postTitle: string): Student[]
+  getStudentLikesOfPost(studentId: number, pageTitle: string, postTitle: string): Promise<Student[]>
 
   // Student CRUD
   addStudent(s: Student): void
   removeStudent(id: number): void
-  getStudentById(id: number): Student
+  getStudentById(id: number): Promise<Student>
   updateStudent(s: Student): void
-  getAllStudents(): Student[]
+  getAllStudents(): Promise<Student[]>
 
   // Student followers
-  getFollowersOf(id: number): Student[]
+  getFollowersOf(id: number): Promise<Student[]>
   addFollow(who: number, followsWhom: number): void
   removeFollow(who: number, followsWhom: number): void
 
   // Student likes
-  getLikedPostsOf(id: number): Post[]
+  getLikedPostsOf(id: number): Promise<Post[]>
   addLike(who: number, whosePost: number, pageTitle: string, postTitle: string): void
   removeLike(who: number, whosePost: number, pageTitle: string, postTitle: string): void
 
   // Admin CRUD
   addAdmin(s: Admin): void
   removeAdmin(id: number): void
-  getAdminById(id: number): Admin
+  getAdminById(id: number): Promise<Admin>
   updateAdmin(s: Admin): void
-  getAllAdmins(): Admin[]
+  getAllAdmins(): Promise<Admin[]>
 
   // Event CRUD
   addEvent(e: Event): void
   removeEvent(id: number): void
-  getEventById(id: number): Event
-  getEventByName(name: string): Event
+  getEventById(id: number): Promise<Event>
+  getEventByName(name: string): Promise<Event>
   updateEvent(e: Event): void
-  getAllEvents(): Event[]
+  getAllEvents(): Promise<Event[]>
 
   // All pages/posts/events
-  getAllPagesOf(studentId: number): Page[]
-  getAllPostsOf(studentId: number, pageTitle: string): Post[]
-  getAllEventsCreatedBy(adminId: number): Event[]
+  getAllPagesOf(studentId: number): Promise<Page[]>
+  getAllPostsOf(studentId: number, pageTitle: string): Promise<Post[]>
+  getAllEventsCreatedBy(adminId: number): Promise<Event[]>
 }
