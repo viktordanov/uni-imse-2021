@@ -1,0 +1,14 @@
+.formInput {
+  width: 100%;
+  position: relative;
+
+  label {
+    height: 1rem;
+    line-height: 1rem;
+    margin-bottom: $margin-small;
+    display: block;
+    width: 100%;
+    @include font-label;
+  }
+
+}
