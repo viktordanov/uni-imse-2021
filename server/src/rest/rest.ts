@@ -2,14 +2,21 @@ import express from 'express'
 import compression from 'compression'
 import { EventsService } from '../service/eventsService'
 import { StudentContentService } from '../service/studentContentService'
+import jwt from 'express-jwt'
 
 export type RestConfig = {
   host: string
   port: string
   staticDir: string
+  jwtSecret: string
 }
 
-export const DefaultRestConfig = (): RestConfig => ({ host: '127.0.0.1', port: '8080', staticDir: 'dist' })
+export const DefaultRestConfig = (): RestConfig => ({
+  host: '127.0.0.1',
+  port: '8080',
+  staticDir: 'dist',
+  jwtSecret: 'DEBUG'
+})
 
 export interface Rest {
   config: RestConfig
@@ -47,7 +54,7 @@ export class RestWebServer implements Rest {
     apiRouter.get('/friends', (req, res) => {
       res.sendStatus(405)
     })
-    this.webServer.use('/api', apiRouter)
+    this.webServer.use('/api', jwt({ secret: this.config.jwtSecret, algorithms: ['HS256'] }), apiRouter)
   }
 
   serve(): void {

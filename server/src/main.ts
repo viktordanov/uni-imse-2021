@@ -4,11 +4,13 @@ function main() {
   const HOST = process.env.HOST ?? 'locahost'
   const PORT = process.env.PORT ?? '8080'
   const STATIC_DIR = process.env.STATIC_DIR ?? 'static'
+  const JWT_SECRET = process.env.JWT_SECRET ?? 'DEBUG'
 
   const restConfig: RestConfig = {
     host: HOST,
     port: PORT,
-    staticDir: STATIC_DIR
+    staticDir: STATIC_DIR,
+    jwtSecret: JWT_SECRET
   }
 
   // const webServer = new RestWebServer(restConfig)
