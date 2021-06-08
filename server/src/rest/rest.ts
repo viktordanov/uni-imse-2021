@@ -4,6 +4,7 @@ import { EventsService } from '../service/eventsService'
 import { StudentContentService } from '../service/studentContentService'
 import jwt from 'express-jwt'
 import { AuthService } from '../service/authService'
+import { check, validationResult } from 'express-validator'
 
 export type RestConfig = {
   host: string
@@ -34,6 +35,18 @@ export class RestWebServer implements Rest {
     return this.webServer
   }
 
+  getAuthService(): AuthService {
+    return this.authService
+  }
+
+  getEventsService(): EventsService {
+    return this.eventsService
+  }
+
+  getStudentService(): StudentContentService {
+    return this.studentService
+  }
+
   constructor(
     config: RestConfig,
     authService: AuthService,
@@ -53,13 +66,13 @@ export class RestWebServer implements Rest {
   }
 
   registerRoutes(): void {
+    this.webServer.use(express.json())
     this.webServer.get('/', (req, res) => {
       res.send('Root endpoint, to be later replaced by static serving')
     })
 
-    this.webServer.post('/auth/login', (req, res) => {
-      // req.body.
-    })
+    authLogin(this)
+    authSignupStudent(this)
 
     const apiRouter = express.Router()
 
@@ -80,4 +93,47 @@ export class RestWebServer implements Rest {
   serverHTTPS(): void {
     throw new Error('To be implemented')
   }
+}
+
+function authLogin(restServer: RestWebServer): void {
+  restServer
+    .getServer()
+    .post(
+      '/auth/login',
+      [check('email').isEmail(), check('password').isLength({ min: 8 })],
+      async (req: Request, res: Response) => {
+        const errors = validationResult(req)
+        if (!errors.isEmpty()) return res.status(400).json({ error: 'Invalid data' })
+        const { email, password } = req.body
+
+        const [token, error] = await restServer.getAuthService().login(email, password)
+        if (error !== null) return res.status(401).json({ error: 'Unauthorized' })
+        return res.status(200).json({ token })
+      }
+    )
+}
+function authSignupStudent(restServer: RestWebServer): void {
+  restServer
+    .getServer()
+    .post(
+      '/auth/signup',
+      [
+        check('fullName').isLength({ min: 3 }),
+        check('university').isLength({ min: 3 }),
+        check('matNumber').isAlphanumeric().isLength({ min: 3 }),
+        check('email').isEmail(),
+        check('password').isLength({ min: 8 })
+      ],
+      async (req: Request, res: Response) => {
+        const errors = validationResult(req)
+        if (!errors.isEmpty()) return res.status(400).json({ error: 'Invalid data' })
+        const { fullName, university, matNumber, email, password } = req.body
+
+        const [token, error] = await restServer
+          .getAuthService()
+          .studentSignup(fullName, email, password, university, matNumber)
+        if (error !== null) return res.status(401).json({ error: 'Unauthorized' })
+        return res.status(200).json({ token })
+      }
+    )
 }

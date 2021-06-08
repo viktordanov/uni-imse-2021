@@ -1,4 +1,8 @@
-import { RestConfig } from './rest/rest'
+import { RestConfig, RestWebServer } from './rest/rest'
+import { AuthService } from './service/authService'
+import { EventsService } from './service/eventsService'
+import { StudentContentService } from './service/studentContentService'
+import { RepositorySQL } from './sql/repositorySQL'
 
 function main() {
   const HOST = process.env.HOST ?? 'locahost'
@@ -12,9 +16,12 @@ function main() {
     staticDir: STATIC_DIR,
     jwtSecret: JWT_SECRET
   }
+  const sqlRepository = new RepositorySQL()
 
-  // const webServer = new RestWebServer(restConfig)
-  // webServer.serve()
+  const authService = new AuthService(sqlRepository, JWT_SECRET)
+
+  const webServer = new RestWebServer(restConfig, authService, {} as EventsService, {} as StudentContentService)
+  webServer.serve()
 }
 
 main()
