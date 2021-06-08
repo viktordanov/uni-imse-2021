@@ -1,4 +1,4 @@
-import express from 'express'
+import express, { Request, Response } from 'express'
 import compression from 'compression'
 import { EventsService } from '../service/eventsService'
 import { StudentContentService } from '../service/studentContentService'
@@ -55,6 +55,11 @@ export class RestWebServer implements Rest {
       res.sendStatus(405)
     })
     this.webServer.use('/api', jwt({ secret: this.config.jwtSecret, algorithms: ['HS256'] }), apiRouter)
+    this.webServer.use((err: Error, req: Request, res: Response) => {
+      if (err.name === 'UnauthorizedError') {
+        res.status(401).send('')
+      }
+    })
   }
 
   serve(): void {
