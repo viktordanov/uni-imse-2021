@@ -23,11 +23,10 @@ export const Root: React.FunctionComponent<RootProps> = ({ className, onClick }:
           <Route path="/debug">
             <Debug />
           </Route>
-          <Route path="/test">
+
+          <PrivateRoute path="/">
             <StudentPanel />
-          </Route>
-          <PrivateRoute path="/users"></PrivateRoute>
-          <PrivateRoute path="/"></PrivateRoute>
+          </PrivateRoute>
         </Switch>
       </Router>
     </>
