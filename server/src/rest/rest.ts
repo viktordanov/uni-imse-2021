@@ -3,6 +3,7 @@ import compression from 'compression'
 import { EventsService } from '../service/eventsService'
 import { StudentContentService } from '../service/studentContentService'
 import jwt from 'express-jwt'
+import { AuthService } from '../service/authService'
 
 export type RestConfig = {
   host: string
@@ -25,13 +26,25 @@ export interface Rest {
 export class RestWebServer implements Rest {
   config: RestConfig
   private webServer: express.Express
+  private authService: AuthService
+  private eventsService: EventsService
+  private studentService: StudentContentService
 
   getServer(): express.Express {
     return this.webServer
   }
 
-  constructor(config: RestConfig, eventsService: EventsService, studentService: StudentContentService) {
+  constructor(
+    config: RestConfig,
+    authService: AuthService,
+    eventsService: EventsService,
+    studentService: StudentContentService
+  ) {
     this.config = config
+    this.authService = authService
+    this.eventsService = eventsService
+    this.studentService = studentService
+
     this.webServer = express()
 
     this.webServer.use(compression())
@@ -44,16 +57,12 @@ export class RestWebServer implements Rest {
       res.send('Root endpoint, to be later replaced by static serving')
     })
 
+    this.webServer.post('/auth/login', (req, res) => {
+      // req.body.
+    })
+
     const apiRouter = express.Router()
-    apiRouter.get('/pages', (req, res) => {
-      res.sendStatus(405)
-    })
-    apiRouter.get('/posts', (req, res) => {
-      res.sendStatus(405)
-    })
-    apiRouter.get('/friends', (req, res) => {
-      res.sendStatus(405)
-    })
+
     this.webServer.use('/api', jwt({ secret: this.config.jwtSecret, algorithms: ['HS256'] }), apiRouter)
     this.webServer.use((err: Error, req: Request, res: Response) => {
       if (err.name === 'UnauthorizedError') {

@@ -18,7 +18,7 @@ export class AuthService {
 
     const isValid = bcrypt.compareSync(password, account.passwordHash)
     if (isValid) {
-      return [JWTUtil.signJWT(this.jwtSecret), null]
+      return [JWTUtil.signJWT(account, this.jwtSecret), null]
     }
     return ['', new Error('Unauthorized')]
   }
