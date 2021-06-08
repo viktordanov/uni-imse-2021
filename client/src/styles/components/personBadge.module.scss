@@ -1,6 +1,6 @@
 .personBadge {
   user-select: none;
-  
+
   .letterCircle {
     &.smallCircle {
       width: 48px;
@@ -16,6 +16,24 @@
     justify-content: center;
     align-items: center;
     float: left;
+  }
+  .profileInfo {
+    float: left;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 48px;
+    p {
+      float: none;
+      line-height: 24px;
+      text-align: right;
+    }
+
+    p:nth-child(2) {
+      @include font-label;
+      color: $color-accent-faded;
+      opacity: 0.5;
+    }
   }
   p {
     float: left;
