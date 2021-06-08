@@ -1,3 +1,16 @@
+const selectLastInsertID = 'select last_insert_id();'
+
+const addRandomPage =
+  'insert into Page (StudentID, Title, Description, Date_created) values ((select StudentID from Student order by rand() limit 1), ?, ?, ?);'
+
+const addRandomPost =
+  'set @studentID = (select StudentID from Page order by rand() limit 1); ' +
+  'insert into Post (StudentID, Page_Title, Title, Content, Date_created) values (@studentID, (select Title from Page where StudentID = @studentID order by rand() limit 1), ?, ?, ?);'
+
+const addRandomIsFriendsWith =
+  'set @studentID = (select StudentID from Page order by rand() limit 1); ' +
+  'insert into follows (StudentID, Friend_StudentID) values (@studentID, (select StudentID from Student where StudentID != @studentID order by rand() limit 1));'
+
 const addPage = 'insert into Page (StudentID, Title, Description, Date_created) values (?, ?, ?, ?);'
 
 const removePage = 'delete from Page where StudentID = ? and Title = ?;'
@@ -62,7 +75,47 @@ const addLike = 'insert into likes (StudentID, Post_StudentID, Post_Page_Title, 
 const removeLike =
   'delete from likes where StudentID = ? and Post_StudentID = ? and Post_Page_Title = ? and Post_Title = ?;'
 
+const addAdmin = 'insert into Admin (AdminID, Address, SSN) values (?, ?, ?);'
+
+const removeAdmin = 'delete from Admin where AdminID = ?;'
+
+const getAdminById =
+  'select a.AccountID as id, a.Name as name, a.EMail as email, a.Password_Hash as passwordHash, a.Date_registered as dateRegistered, ad.Address as address, ad.SSN as ssn ' +
+  'from Admin ad inner join Account a on ad.AdminID = a.AccountID ' +
+  'where ad.AdminID = ?;'
+
+const updateAdmin = 'update Admin set Address = ?, SSN = ? where AdminID = ?;'
+
+const getAllAdmins =
+  'select a.AccountID as id, a.Name as name, a.EMail as email, a.Password_Hash as passwordHash, a.Date_registered as dateRegistered, ad.Address as address, ad.SSN as ssn ' +
+  'from Admin ad inner join Account a on ad.AdminID = a.AccountID;'
+
+const addEvent = 'insert into Event (Name, Description, Duration, Date) values (?, ?, ?, ?);'
+
+const removeEvent = 'delete from Event where EventID = ?;'
+
+const getEventById =
+  'select EventID as id, Name as name, Description as description, Duration as duration, Date as date from Event where EventID = ?;'
+
+const getEventByName =
+  'select EventID as id, Name as name, Description as description, Duration as duration, Date as date from Event where Name = ?;'
+
+const updateEvent = 'update Event set Name = ?, Description = ?, Duration = ?, Date = ? where EventID = ?;'
+
+const getAllEvents =
+  'select EventID as id, Name as name, Description as description, Duration as duration, Date as date from Event;'
+
+const getAllPagesOf =
+  'select Title as title, Description as description, Date_created as dateCreated from Page where StudentID = ?;'
+
+const getAllPostsOf =
+  'select Title as title, Content as content, Date_created as dateCreated from Post where StudentID = ? and Page_Title = ?;'
+
+const getAllEventsCreatedBy =
+  'select EventID as id, Name as name, Description as description, Duration as duration, Date as date from Event where Create_Admin_ID = ?;'
+
 export const SQLQueries = {
+  selectLastInsertID,
   addPage,
   removePage,
   getPageByTitle,
@@ -84,5 +137,22 @@ export const SQLQueries = {
   removeFollow,
   getLikedPostsOf,
   addLike,
-  removeLike
+  removeLike,
+  addAdmin,
+  addRandomIsFriendsWith,
+  addRandomPage,
+  addRandomPost,
+  removeAdmin,
+  getAdminById,
+  updateAdmin,
+  getAllAdmins,
+  addEvent,
+  removeEvent,
+  getEventById,
+  getEventByName,
+  updateEvent,
+  getAllEvents,
+  getAllPagesOf,
+  getAllPostsOf,
+  getAllEventsCreatedBy
 }

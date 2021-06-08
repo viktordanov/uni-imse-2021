@@ -43,6 +43,9 @@ export class RepositorySQL implements Repository {
   addStudent(s: Student): void {
     connection.executeQuery(queries.addAccount, [s.name, s.email, s.passwordHash, s.dateRegistered])
     connection.executeQuery(queries.addStudent, [s.university, s.matNumber])
+    connection.executeScalarType<number>(queries.selectLastInsertID, []).then(element => {
+      s.id = element
+    })
   }
 
   removeStudent(id: number): void {
@@ -87,58 +90,65 @@ export class RepositorySQL implements Repository {
   }
 
   addAdmin(s: Admin): void {
-    throw new Error('Method not implemented.')
+    connection.executeQuery(queries.addAccount, [s.name, s.email, s.passwordHash, s.dateRegistered])
+    connection.executeQuery(queries.addAdmin, [s.id, s.address, s.ssn])
+    connection.executeScalarType<number>(queries.selectLastInsertID, []).then(element => {
+      s.id = element
+    })
   }
 
   removeAdmin(id: number): void {
-    throw new Error('Method not implemented.')
+    connection.executeQuery(queries.removeAdmin, [id])
   }
 
   getAdminById(id: number): Promise<Admin> {
-    throw new Error('Method not implemented.')
+    return connection.executeScalarType<Admin>(queries.getAdminById, [id])
   }
 
   updateAdmin(s: Admin): void {
-    throw new Error('Method not implemented.')
+    connection.executeQuery(queries.updateAdmin, [s.address, s.ssn, s.id])
   }
 
   getAllAdmins(): Promise<Admin[]> {
-    throw new Error('Method not implemented.')
+    return connection.executeQueryType<Admin>(queries.getAllAdmins, [])
   }
 
   addEvent(e: Event): void {
-    throw new Error('Method not implemented.')
+    connection.executeQuery(queries.addEvent, [e.name, e.description, e.duration, e.date])
+    connection.executeScalarType<number>(queries.selectLastInsertID, []).then(element => {
+      e.id = element
+    })
   }
 
   removeEvent(id: number): void {
-    throw new Error('Method not implemented.')
+    connection.executeQuery(queries.removeEvent, [id])
   }
 
   getEventById(id: number): Promise<Event> {
-    throw new Error('Method not implemented.')
+    return connection.executeScalarType<Event>(queries.getEventById, [id])
   }
 
   getEventByName(name: string): Promise<Event> {
-    throw new Error('Method not implemented.')
+    return connection.executeScalarType<Event>(queries.getEventByName, [name])
   }
 
   updateEvent(e: Event): void {
-    throw new Error('Method not implemented.')
+    connection.executeQuery(queries.updateEvent, [e.id])
   }
 
   getAllEvents(): Promise<Event[]> {
-    throw new Error('Method not implemented.')
+    return connection.executeQueryType<Event>(queries.getAllEvents, [])
   }
 
   getAllPagesOf(studentId: number): Promise<Page[]> {
-    throw new Error('Method not implemented.')
+    return connection.executeQueryType<Page>(queries.getAllPagesOf, [studentId])
   }
 
   getAllPostsOf(studentId: number, pageTitle: string): Promise<Post[]> {
-    throw new Error('Method not implemented.')
+    return connection.executeQueryType<Post>(queries.getAllPostsOf, [studentId, pageTitle])
   }
 
   getAllEventsCreatedBy(adminId: number): Promise<Event[]> {
-    throw new Error('Method not implemented.')
+    return connection.executeQueryType<Event>(queries.getAllEventsCreatedBy, [adminId])
   }
 }
