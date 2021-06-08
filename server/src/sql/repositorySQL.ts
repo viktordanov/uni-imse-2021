@@ -1,9 +1,13 @@
-import { Page, Post, Student, Admin, Event } from '../entities/entities'
+import { Page, Post, Student, Admin, Event, AccountType } from '../entities/entities'
 import { Repository } from '../entities/repository'
 import { SQLConnection as connection } from '../sql/sqlConnection'
 import { SQLQueries as queries } from './sqlQueries'
 
 export class RepositorySQL implements Repository {
+  getAccountByEmail(email: string): Promise<Account> {
+    return connection.executeScalarType<Account>(queries.getAccountByEmail, [email])
+  }
+
   addPage(studentId: number, page: Page): void {
     connection.executeQuery(queries.addPage, [studentId, page.title, page.description, page.dateCreated])
   }

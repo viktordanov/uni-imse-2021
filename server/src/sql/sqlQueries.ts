@@ -115,6 +115,9 @@ const getAllPostsOf =
 const getAllEventsCreatedBy =
   'select EventID as id, Name as name, Description as description, Duration as duration, Date as date from Event where Create_Admin_ID = ?;'
 
+const getAccountByEmail =
+  'select AccountID as id, Name as name, EMail as email, Password_Hash as passwordHash, Date_registered as dateRegistered from Account where EMail = ?;'
+
 export const SQLQueries = {
   selectLastInsertID,
   addPage,
@@ -155,5 +158,6 @@ export const SQLQueries = {
   getAllEvents,
   getAllPagesOf,
   getAllPostsOf,
-  getAllEventsCreatedBy
+  getAllEventsCreatedBy,
+  getAccountByEmail
 }

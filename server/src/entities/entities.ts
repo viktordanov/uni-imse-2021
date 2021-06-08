@@ -1,6 +1,6 @@
 import { Duration } from './duration'
 
-type Account = {
+export type Account = {
   id: number
   name: string
   email: string

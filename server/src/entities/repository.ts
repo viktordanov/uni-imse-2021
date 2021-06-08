@@ -15,7 +15,7 @@ export interface Repository {
   getStudentLikesOfPost(studentId: number, pageTitle: string, postTitle: string): Promise<Student[]>
 
   // Account auth
-  getAccountByEmail(email: string): Promise<AccountType>
+  getAccountByEmail(email: string): Promise<Account>
 
   // Student CRUD
   addStudent(s: Student): void
