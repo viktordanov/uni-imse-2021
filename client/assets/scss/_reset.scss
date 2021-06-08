@@ -23,7 +23,9 @@ time, mark, audio, video {
 	font: inherit;
 	vertical-align: baseline;
 }
-
+div {
+    box-sizing: border-box;
+}
 /* make sure to set some focus styles for accessibility */
 :focus {
     outline: 0;
