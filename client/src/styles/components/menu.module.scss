@@ -1,0 +1,29 @@
+.menu {
+  .link,
+  span {
+    @include font-label;
+    text-decoration: none;
+    font-size: 16px;
+    color: $color-black;
+  }
+  .link {
+    padding: $margin-small $margin-normal;
+    border-radius: 1.5rem;
+
+    &.selected,
+    &:hover {
+      color: darken($color-secondary-dark, 15);
+      background: transparentize($color-secondary, 0.75);
+    }
+    &.selected {
+      font-weight: 600;
+    }
+
+    backdrop-filter: blur(1rem);
+    transition: color $time-short, background $time-short;
+  }
+  span {
+    opacity: 0.25;
+    margin: 0 $margin-normal;
+  }
+}
