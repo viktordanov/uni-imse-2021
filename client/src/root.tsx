@@ -1,18 +1,11 @@
 import React from 'react'
-import styles from './styles/root.module.scss'
-import c from 'classnames'
+import { BrowserRouter as Router, Redirect, Route, RouteProps, Switch } from 'react-router-dom'
 import { useAuth } from './hooks/useAuth'
-import { BrowserRouter as Router, Link, Redirect, Route, RouteProps, Switch } from 'react-router-dom'
-import { Login } from './pages/Login'
 import { Debug } from './pages/Debug'
+import { Login } from './pages/Login'
 import { StudentPanel } from './pages/StudentPanel'
 
-export interface RootProps {
-  className?: string
-  onClick?: (e: React.MouseEvent<HTMLDivElement>) => void
-}
-
-export const Root: React.FunctionComponent<RootProps> = ({ className, onClick }: RootProps) => {
+export const Root: React.FunctionComponent = () => {
   return (
     <>
       <Router>
