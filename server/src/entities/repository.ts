@@ -1,4 +1,4 @@
-import { Page, Admin, Student, Post, Event } from './entities'
+import { Page, Admin, Student, Post, Event, AccountType } from './entities'
 
 export interface Repository {
   // Page CRUD
@@ -15,7 +15,7 @@ export interface Repository {
   getStudentLikesOfPost(studentId: number, pageTitle: string, postTitle: string): Promise<Student[]>
 
   // Account auth
-  authenticate(email: string, passwordHash: string): Promise<boolean>
+  getAccountByEmail(email: string): Promise<AccountType>
 
   // Student CRUD
   addStudent(s: Student): void
