@@ -1,8 +1,9 @@
 import { getStudents, getPage, getPost } from './mockData'
 import { SQLConnection } from '../sql/sqlConnection'
 import { Page, Post, Student } from '../entities/entities'
+import { SQLQueries } from '../sql/sqlQueries'
 
-function insertData() {
+function insertData(): void {
   getStudents().then(students => {
     console.log(students)
     insertStudents(students)
@@ -20,52 +21,30 @@ function insertData() {
 function insertStudents(students: Student[]) {
   students.forEach(student => {
     console.log('student: ', student)
-    SQLConnection.db.query(
-      SQLConnection.addAccount,
-      [student.name, student.email, student.passwordHash, student.dateRegistered],
-      (err, result) => {
-        if (err) {
-          console.log('sql error', err.message)
-        }
-      }
-    )
-    SQLConnection.db.query(SQLConnection.addStudent, [student.university, student.dateRegistered], (err, result) => {
-      if (err) {
-        console.log('sql error', err.message)
-      }
+    SQLConnection.executeQuery(SQLQueries.addAccount, [
+      student.name,
+      student.email,
+      student.passwordHash,
+      student.dateRegistered
+    ]).then(() => {
+      SQLConnection.executeQuery(SQLQueries.addStudentIDLastInserted, [student.university, student.dateRegistered])
     })
   })
 
   students.forEach(() => {
-    SQLConnection.db.query(SQLConnection.addRandomIsFriendsWith, [], (err, result) => {
-      if (err) {
-        console.log('sql error', err.message)
-      }
-    })
+    SQLConnection.executeQuery(SQLQueries.addRandomIsFriendsWith, [])
   })
 }
 
 function insertPages(pages: Page[]) {
   pages.forEach(page => {
-    SQLConnection.db.query(
-      SQLConnection.addRandomPage,
-      [page.title, page.description, page.dateCreated],
-      (err, result) => {
-        if (err) {
-          console.log('sql error', err.message)
-        }
-      }
-    )
+    SQLConnection.executeQuery(SQLQueries.addRandomPage, [page.title, page.description, page.dateCreated])
   })
 }
 
 function insertPost(posts: Post[]) {
   posts.forEach(post => {
-    SQLConnection.db.query(SQLConnection.addRandomPost, [post.title, post.content, post.dateCreated], (err, result) => {
-      if (err) {
-        console.log('sql error', err.message)
-      }
-    })
+    SQLConnection.executeQuery(SQLQueries.addRandomPost, [post.title, post.content, post.dateCreated])
   })
 }
 
