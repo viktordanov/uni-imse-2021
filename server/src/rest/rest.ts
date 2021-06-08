@@ -69,7 +69,6 @@ export class RestWebServer implements Rest {
   }
 
   registerRoutes(): void {
-    this.webServer.use(express.json())
     this.webServer.get('/', (req, res) => {
       res.send('Root endpoint, to be later replaced by static serving')
     })
