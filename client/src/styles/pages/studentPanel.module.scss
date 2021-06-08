@@ -1,0 +1,22 @@
+.studentPanel {
+  width: 100%;
+  height: 100vh;
+  background: $color-white;
+ background: url('~assets/logo-background-colored.svg');
+  background-repeat: no-repeat;
+  background-position: bottom left 10vw;
+  padding: $margin-medium $margin-large;
+
+  $headerHeight: 5rem;
+  header {
+    display: flex;
+    justify-content: space-between;
+    .menu {
+      margin-right: 2rem;
+    }
+    .right {
+      display: flex;
+      align-items: center;
+    }
+  }
+}
