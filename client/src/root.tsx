@@ -5,6 +5,7 @@ import { useAuth } from './hooks/useAuth'
 import { BrowserRouter as Router, Link, Redirect, Route, RouteProps, Switch } from 'react-router-dom'
 import { Login } from './pages/Login'
 import { Debug } from './pages/Debug'
+import { StudentPanel } from './pages/StudentPanel'
 
 export interface RootProps {
   className?: string
@@ -21,6 +22,9 @@ export const Root: React.FunctionComponent<RootProps> = ({ className, onClick }:
           </Route>
           <Route path="/debug">
             <Debug />
+          </Route>
+          <Route path="/test">
+            <StudentPanel />
           </Route>
           <PrivateRoute path="/users"></PrivateRoute>
           <PrivateRoute path="/"></PrivateRoute>
