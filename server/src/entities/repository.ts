@@ -14,6 +14,9 @@ export interface Repository {
   updatePost(studentId: number, pageTitle: string, post: Post): void
   getStudentLikesOfPost(studentId: number, pageTitle: string, postTitle: string): Promise<Student[]>
 
+  // Account auth
+  authenticate(email: string, password: string): Promise<boolean>
+
   // Student CRUD
   addStudent(s: Student): void
   removeStudent(id: number): void
