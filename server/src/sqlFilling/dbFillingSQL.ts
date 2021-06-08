@@ -26,13 +26,13 @@ function insertStudents(students: Student[]) {
       student.email,
       student.passwordHash,
       student.dateRegistered
-    ]).then(() => {
-      SQLConnection.executeQuery(SQLQueries.addStudentIDLastInserted, [student.university, student.dateRegistered])
-    })
-  })
-
-  students.forEach(() => {
-    SQLConnection.executeQuery(SQLQueries.addRandomIsFriendsWith, [])
+    ])
+      .then(() => {
+        SQLConnection.executeQuery(SQLQueries.addStudentIDLastInserted, [student.university, student.dateRegistered])
+      })
+      .then(() => {
+        SQLConnection.executeQuery(SQLQueries.addRandomIsFriendsWith, [])
+      })
   })
 }
 
