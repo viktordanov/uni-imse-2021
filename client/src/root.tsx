@@ -4,6 +4,7 @@ import c from 'classnames'
 import { useAuth } from './hooks/useAuth'
 import { BrowserRouter as Router, Link, Redirect, Route, RouteProps, Switch } from 'react-router-dom'
 import { Login } from './pages/Login'
+import { Debug } from './pages/Debug'
 
 export interface RootProps {
   className?: string
@@ -17,6 +18,9 @@ export const Root: React.FunctionComponent<RootProps> = ({ className, onClick }:
         <Switch>
           <Route path="/login">
             <Login />
+          </Route>
+          <Route path="/debug">
+            <Debug />
           </Route>
           <PrivateRoute path="/users"></PrivateRoute>
           <PrivateRoute path="/"></PrivateRoute>
