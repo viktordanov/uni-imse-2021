@@ -1,13 +1,11 @@
-import styles from '@/styles/pages/login.module.scss'
-import React, { useState } from 'react'
-import c from 'classnames'
-
-import LOGO_SVG from 'assets/logo.svg'
-import { Input } from '@/components/input'
-import { FormInput } from '@/components/formInput'
-import { Button } from '@/components/button'
 import { A } from '@/components/a'
+import { Button } from '@/components/button'
+import { FormInput } from '@/components/formInput'
+import { Logo } from '@/components/logo'
 import { RegexPatterns } from '@/regex'
+import styles from '@/styles/pages/login.module.scss'
+import c from 'classnames'
+import React, { useState } from 'react'
 
 export interface LoginProps {
   className?: string
@@ -19,14 +17,7 @@ export const Login: React.FunctionComponent<LoginProps> = ({ className, onClick 
   return (
     <div className={c(styles.login, className)} onClick={onClick}>
       <div className={styles.form}>
-        <div className={styles.header}>
-          <img className={styles.logoImg} src={LOGO_SVG} />
-          <div className={styles.logoText}>
-            <p className={styles.name}>Conligo</p>
-            <p className={styles.moto}>Connect with your fellow students</p>
-          </div>
-          <div className="clearfix"></div>
-        </div>
+        <Logo />
         {mode === 'login' ? (
           <LoginForm onModeSwitch={() => setMode('singup')} />
         ) : (
