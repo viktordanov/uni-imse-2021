@@ -1,0 +1,24 @@
+.logo {
+      .logoImg,
+      .logoText {
+        float: left;
+        height: 6rem;
+      }
+
+      .logoText {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        margin-left: $margin-medium;
+      }
+      .name {
+        @include font-title-big;
+        margin-bottom: $margin-small;
+        color: $color-accent-dark;
+      }
+      .moto {
+        @include font-label;
+        color: $color-accent-faded;
+        opacity: 0.75;
+      }
+    }
