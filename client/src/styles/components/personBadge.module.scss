@@ -1,4 +1,6 @@
 .personBadge {
+  user-select: none;
+  
   .letterCircle {
     &.smallCircle {
       width: 48px;
