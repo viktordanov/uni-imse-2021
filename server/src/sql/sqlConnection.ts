@@ -8,8 +8,6 @@ const sqlConfig = {
   multipleStatements: true
 }
 
-const db = mysql.createConnection(sqlConfig)
-
 const pool = mysql.createPool(sqlConfig)
 
 function executeQuery(

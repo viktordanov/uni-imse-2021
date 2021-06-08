@@ -1,4 +1,4 @@
-import { Page, Admin, Student, Post, Event, AccountType } from './entities'
+import { Page, Admin, Student, Post, Event, Account } from './entities'
 
 export interface Repository {
   // Page CRUD

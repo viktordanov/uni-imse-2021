@@ -1,4 +1,4 @@
-import { Page, Post, Student, Admin, Event, AccountType } from '../entities/entities'
+import { Page, Post, Student, Admin, Event, Account } from '../entities/entities'
 import { Repository } from '../entities/repository'
 import { SQLConnection as connection } from '../sql/sqlConnection'
 import { SQLQueries as queries } from './sqlQueries'
