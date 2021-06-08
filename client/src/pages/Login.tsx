@@ -1,11 +1,14 @@
+import { APIEndpoints } from '@/api'
 import { A } from '@/components/a'
 import { Button } from '@/components/button'
 import { FormInput } from '@/components/formInput'
 import { Logo } from '@/components/logo'
+import { useAuth } from '@/hooks/useAuth'
 import { RegexPatterns } from '@/regex'
 import styles from '@/styles/pages/login.module.scss'
 import c from 'classnames'
-import React, { useState } from 'react'
+import React, { useCallback, useRef, useState } from 'react'
+import { useHistory } from 'react-router'
 
 export interface LoginProps {
   className?: string
@@ -34,29 +37,63 @@ interface LoginFormProps {
 }
 
 const LoginForm: React.FunctionComponent<LoginFormProps> = ({ className, onModeSwitch }: LoginFormProps) => {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const { setToken } = useAuth()
+  const { push } = useHistory()
+  const [email, setEmail] = useState('test@gmail.com')
+  const [password, setPassword] = useState('jkdflksjdfklsdjf')
+
+  const refEmail = useRef<HTMLInputElement>(null)
+  const refPassword = useRef<HTMLInputElement>(null)
+
+  const handleLogIn = useCallback(async () => {
+    if (!refEmail.current?.validity.valid) {
+      refEmail.current?.reportValidity()
+      return
+    }
+    if (!refPassword.current?.validity.valid) {
+      refPassword.current?.reportValidity()
+      return
+    }
+
+    const { token } = await fetch(APIEndpoints.login, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email, password })
+    }).then(res => {
+      return res.json()
+    })
+    setToken(token)
+    push('/')
+  }, [email, password])
 
   return (
     <div className={c(styles.loginForm, className)}>
       <FormInput
+        ref={refEmail}
         label="email"
         value={email}
+        required
         pattern={RegexPatterns.email}
         onChange={e => setEmail(e.target.value)}
         type="email"
         className={styles.input}
       />
       <FormInput
+        ref={refPassword}
         label="password"
         value={password}
         minLength={8}
+        required
         onChange={e => setPassword(e.target.value)}
         type="password"
         className={styles.input}
       />
 
-      <Button className={styles.right}>Log in</Button>
+      <Button className={styles.right} onClick={handleLogIn}>
+        Log in
+      </Button>
       <div className="clearfix"></div>
 
       <p className={styles.footerText}>
@@ -88,6 +125,7 @@ const SignUpForm: React.FunctionComponent<SignUpFormProps> = ({ className, onMod
         value={name}
         pattern={RegexPatterns.fullName}
         onChange={e => setName(e.target.value)}
+        required
         type="text"
         className={styles.input}
       />
@@ -96,6 +134,7 @@ const SignUpForm: React.FunctionComponent<SignUpFormProps> = ({ className, onMod
         value={email}
         pattern={RegexPatterns.email}
         onChange={e => setEmail(e.target.value)}
+        required
         type="text"
         className={styles.input}
       />
@@ -104,6 +143,7 @@ const SignUpForm: React.FunctionComponent<SignUpFormProps> = ({ className, onMod
         value={university}
         pattern={RegexPatterns.atleast3}
         onChange={e => setUniversity(e.target.value)}
+        required
         type="text"
         className={styles.input}
       />
@@ -112,6 +152,7 @@ const SignUpForm: React.FunctionComponent<SignUpFormProps> = ({ className, onMod
         value={matNumber}
         pattern={RegexPatterns.atleast3}
         onChange={e => setMatNumber(e.target.value)}
+        required
         type="text"
         className={styles.input}
       />
@@ -120,6 +161,7 @@ const SignUpForm: React.FunctionComponent<SignUpFormProps> = ({ className, onMod
         value={password}
         minLength={8}
         onChange={e => setPassword(e.target.value)}
+        required
         type="password"
         className={styles.input}
       />
