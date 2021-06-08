@@ -18,6 +18,14 @@ export const Debug: React.FunctionComponent<DebugProps> = ({ className, onClick 
         postCount={0}
         description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
       />
+      <PageCard
+        pageTitle="Test title"
+        postCount={0}
+        onDeleteClick={() => {
+          alert()
+        }}
+        description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+      />
       <PostCard
         owner="Viktor Danov"
         pageTitle="Thoughts"
