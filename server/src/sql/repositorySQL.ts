@@ -41,10 +41,16 @@ export class RepositorySQL implements Repository {
   }
 
   addStudent(s: Student): void {
-    connection.executeQuery(queries.addAccount, [s.name, s.email, s.passwordHash, s.dateRegistered])
-    connection.executeQuery(queries.addStudent, [s.university, s.matNumber])
-    connection.executeScalarType<number>(queries.selectLastInsertID, []).then(element => {
-      s.id = element
+    connection.pool.getConnection(function (err, con) {
+      if (err) console.log('sql error: ', err.message)
+      connection.executeQuery(queries.addAccount, [s.name, s.email, s.passwordHash, s.dateRegistered], con).then(() => {
+        connection.executeQuery(queries.addStudentIDLastInserted, [s.university, s.matNumber], con).then(() => {
+          connection.executeScalarType<number>(queries.selectLastInsertID, [], con).then(element => {
+            s.id = element
+            con.release()
+          })
+        })
+      })
     })
   }
 
@@ -90,10 +96,16 @@ export class RepositorySQL implements Repository {
   }
 
   addAdmin(s: Admin): void {
-    connection.executeQuery(queries.addAccount, [s.name, s.email, s.passwordHash, s.dateRegistered])
-    connection.executeQuery(queries.addAdmin, [s.id, s.address, s.ssn])
-    connection.executeScalarType<number>(queries.selectLastInsertID, []).then(element => {
-      s.id = element
+    connection.pool.getConnection(function (err, con) {
+      if (err) console.log('sql error: ', err.message)
+      connection.executeQuery(queries.addAccount, [s.name, s.email, s.passwordHash, s.dateRegistered], con).then(() => {
+        connection.executeQuery(queries.addAdmin, [s.id, s.address, s.ssn], con).then(() => {
+          connection.executeScalarType<number>(queries.selectLastInsertID, [], con).then(element => {
+            s.id = element
+            con.release()
+          })
+        })
+      })
     })
   }
 
@@ -114,9 +126,14 @@ export class RepositorySQL implements Repository {
   }
 
   addEvent(e: Event): void {
-    connection.executeQuery(queries.addEvent, [e.name, e.description, e.duration, e.date])
-    connection.executeScalarType<number>(queries.selectLastInsertID, []).then(element => {
-      e.id = element
+    connection.pool.getConnection(function (err, con) {
+      if (err) console.log('sql error: ', err.message)
+      connection.executeQuery(queries.addEvent, [e.name, e.description, e.duration, e.date], con).then(() => {
+        connection.executeScalarType<number>(queries.selectLastInsertID, [], con).then(element => {
+          e.id = element
+          con.release()
+        })
+      })
     })
   }
 

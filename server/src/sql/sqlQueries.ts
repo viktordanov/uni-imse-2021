@@ -37,7 +37,8 @@ const getStudentLikesOfPost =
 
 const addAccount = 'insert into Account (Name, Email, Password_hash, Date_registered) values (?, ?, ?, ?);'
 
-const addStudent = 'insert into Student (StudentID, University, Matriculation_number) values (last_insert_id(), ?, ?);'
+const addStudentIDLastInserted =
+  'insert into Student (StudentID, University, Matriculation_number) values (last_insert_id(), ?, ?);'
 
 const removeStudent = 'delete from Student where StudentID = ?;'
 
@@ -125,7 +126,7 @@ export const SQLQueries = {
   getPostByTitle,
   updatePost,
   getStudentLikesOfPost,
-  addStudent,
+  addStudentIDLastInserted,
   addAccount,
   removeStudent,
   getStudentById,
