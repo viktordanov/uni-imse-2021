@@ -10,6 +10,7 @@
   "license": "None",
   "private": true,
   "devDependencies": {
+    "@types/bcrypt": "^5.0.0",
     "@types/compression": "^1.7.0",
     "@types/express": "^4.17.12",
     "@types/express-jwt": "^6.0.1",
@@ -35,6 +36,7 @@
     "typescript": "^4.3.2"
   },
   "dependencies": {
+    "bcrypt": "^5.0.1",
     "compression": "^1.7.4",
     "express": "^4.17.1",
     "express-jwt": "^6.0.0",
