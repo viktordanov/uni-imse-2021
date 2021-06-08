@@ -1,8 +1,9 @@
-import express, { Request, Response } from 'express'
+import express, { json, Request, Response } from 'express'
 import compression from 'compression'
 import { EventsService } from '../service/eventsService'
 import { StudentContentService } from '../service/studentContentService'
 import jwt from 'express-jwt'
+import cors from 'cors'
 import { AuthService } from '../service/authService'
 import { check, validationResult } from 'express-validator'
 
@@ -61,6 +62,8 @@ export class RestWebServer implements Rest {
     this.webServer = express()
 
     this.webServer.use(compression())
+    this.webServer.use(json())
+    this.webServer.use(cors())
 
     this.registerRoutes()
   }

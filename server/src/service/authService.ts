@@ -19,7 +19,6 @@ export class AuthService {
     if (account.id === undefined) {
       return ['', new Error('Unauthorized')]
     }
-    console.log(account)
 
     const isValid = bcrypt.compareSync(password, account.passwordHash)
     if (isValid) {
