@@ -7,11 +7,14 @@ type FormInputProps = React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInpu
   label: string
 }
 
-export const FormInput: React.FunctionComponent<FormInputProps> = ({ ...props }: FormInputProps) => {
+export const FormInput = React.forwardRef<HTMLInputElement, FormInputProps>(function FormInput(
+  { ...props }: FormInputProps,
+  ref
+) {
   return (
     <div className={c(props.className, styles.formInput)}>
       <label>{props.label}</label>
-      <Input {...props} />
+      <Input {...props} ref={ref} />
     </div>
   )
-}
+})

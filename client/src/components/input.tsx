@@ -4,6 +4,6 @@ import c from 'classnames'
 
 type InputProps = React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>
 
-export const Input: React.FunctionComponent<InputProps> = ({ ...props }: InputProps) => {
-  return <input {...props} className={c(styles.input, props.className)}></input>
-}
+export const Input = React.forwardRef<HTMLInputElement, InputProps>(function Input({ ...props }: InputProps, ref) {
+  return <input {...props} ref={ref} className={c(styles.input, props.className)}></input>
+})
