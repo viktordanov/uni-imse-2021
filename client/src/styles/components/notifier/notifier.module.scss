@@ -1,0 +1,100 @@
+/* SPDX-License-Identifier: UNLICENSED 
+/* Copyright © 2019 Annorum Viktor Danov. All rights reserved.  */
+
+.notification-wrapper {
+  position: fixed;
+  bottom: $page-padding-vert / 2;
+  right: $page-padding-hor;
+  width: 20rem;
+  height: 100vh;
+  display: flex;
+  flex-direction: column-reverse;
+  overflow: hidden;
+  pointer-events: none;
+}
+.notification {
+  @supports (backdrop-filter: blur(0)) {
+    backdrop-filter: blur(1rem);
+  }
+
+  &.type-0 {
+    .label {
+      font-weight: bolder;
+      color: darken($color: $color-success, $amount: 0.35);
+    }
+    background: transparentize($color: $color-success, $amount: 0.65);
+  }
+  &.type-1 {
+    .label {
+      font-weight: bolder;
+      color: darken($color: $color-info, $amount: 0.35);
+    }
+    background: transparentize($color: $color-info, $amount: 0.65);
+  }
+  &.type-2 {
+    .label {
+      font-weight: bolder;
+      color: darken($color: $color-warning, $amount: 0.35);
+    }
+    background: transparentize($color: $color-warning, $amount: 0.65);
+  }
+  &.type-3 {
+    .label {
+      font-weight: bolder;
+      color: darken($color: $color-error, $amount: 0.35);
+    }
+    background: transparentize($color: $color-error, $amount: 0.65);
+  }
+  &.type-4 {
+    .label {
+      font-weight: bolder;
+      color: darken($color: $color-debug, $amount: 0.35);
+    }
+    background: transparentize($color: $color-debug, $amount: 0.65);
+  }
+  @supports not (backdrop-filter: blur(0)) {
+    &.type-0 {
+      background: transparentize($color: darken($color-success, 25%), $amount: 0.1);
+    }
+    &.type-1 {
+      background: transparentize($color: darken($color-info, 25%), $amount: 0.1);
+    }
+    &.type-2 {
+      background: transparentize($color: darken($color-warning, 25%), $amount: 0.1);
+    }
+    &.type-3 {
+      background: transparentize($color: darken($color-error, 25%), $amount: 0.1);
+    }
+    &.type-4 {
+      background: transparentize($color: darken($color-debug, 25%), $amount: 0.1);
+    }
+  }
+
+  .label,
+  .message {
+    @include font-search-input;
+  }
+  .label {
+    font-size: 16px;
+    margin-bottom: 0.5rem;
+  }
+  .message {
+    font-size: 14px;
+    color: $color-gray;
+  }
+  transition: $time-quick all;
+  margin: $margin-normal 0;
+  padding: $margin-normal;
+  border-radius: $border-radius-item;
+}
+.n-enter,
+.n-exit-active {
+  opacity: 0;
+  transform: translateY(1rem);
+  transition-timing-function: $easing-accelerate;
+}
+.n-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition-timing-function: $easing-decelerate;
+}
