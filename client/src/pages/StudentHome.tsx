@@ -1,6 +1,7 @@
 import { APIEndpoints } from '@/api'
 import { PageCard } from '@/components/pageCard'
 import { PersonBadge } from '@/components/personBadge'
+import { PostCard } from '@/components/postCard'
 import { useRequest } from '@/hooks/useRequest'
 import styles from '@/styles/pages/studentHome.module.scss'
 import c from 'classnames'
@@ -22,19 +23,30 @@ type Page = {
   title: string
   description: string
   dateCreated: Date
+  postCount: number
 }
 
 type Post = {
   ownerName: string
   pageTitle: string
-  postTitle: string
+  title: string
   content: string
   dateCreated: Date
 }
 
 export const StudentHome: React.FunctionComponent<StudentHomeProps> = ({ className, onClick }: StudentHomeProps) => {
   const followedStudents = useRequest<Student[]>([], APIEndpoints.getFollowed)
-  const feedPosts = useRequest<Post[]>([], APIEndpoints.getPages)
+  const feedPosts = useRequest<Post[]>([], APIEndpoints.getFeed, {}, (data: any): Post => {
+    return data.map((d: any) => {
+      return {
+        ownerName: d.ownerName,
+        pageTitle: d.pageTitle,
+        title: d.title,
+        content: d.content,
+        dateCreated: new Date(d.dateCreated)
+      }
+    })
+  })
   const pages = useRequest<Page[]>([], APIEndpoints.getPages)
   return (
     <div className={c(styles.studentHome, className)} onClick={onClick}>
@@ -56,7 +68,34 @@ export const StudentHome: React.FunctionComponent<StudentHomeProps> = ({ classNa
           )}
         </div>
       </div>
-      <div className={styles.feed}></div>
+      <div className={styles.feed}>
+        <label>New from your followers</label>
+        <div className={styles.feedWrapper}>
+          {feedPosts.length > 0 &&
+            feedPosts.map((post, index) => {
+              return (
+                <PostCard
+                  className={styles.postCard}
+                  content={post.content}
+                  dateCreated={post.dateCreated}
+                  ownerName={post.ownerName}
+                  pageTitle={post.pageTitle}
+                  title={post.title}
+                  key={index}
+                />
+              )
+            })}
+          {feedPosts.length === 0 && (
+            <p>
+              Your feed is empty. Follow more students to enrich your feed!
+              <br />
+              <Link className={styles.link} to="/following">
+                Discover other students
+              </Link>
+            </p>
+          )}
+        </div>
+      </div>
       <div className={styles.pages}>
         <label>Your pages</label>
         <div className={styles.pagesWrapper}>
@@ -67,7 +106,7 @@ export const StudentHome: React.FunctionComponent<StudentHomeProps> = ({ classNa
                   className={styles.pageCard}
                   pageTitle={page.title}
                   description={page.description}
-                  postCount={0}
+                  postCount={page.postCount}
                   key={index}
                 />
               )

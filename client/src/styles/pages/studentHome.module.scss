@@ -1,6 +1,8 @@
+$gap: 2rem;
+
 $followingWidth: 20rem;
 $pagesWidth: 20rem;
-$feedWidth: calc(100% - #{$followingWidth + $pagesWidth});
+$feedWidth: calc(100% - #{$followingWidth + $pagesWidth + 2 * $gap});
 
 .studentHome {
   width: 100%;
@@ -8,6 +10,7 @@ $feedWidth: calc(100% - #{$followingWidth + $pagesWidth});
   display: grid;
   grid-template: 'following feed pages';
   grid-template-columns: $followingWidth $feedWidth $pagesWidth;
+  gap: $gap;
 }
 
 .link {
@@ -48,6 +51,35 @@ $feedWidth: calc(100% - #{$followingWidth + $pagesWidth});
 }
 .feed {
   grid-template: feed;
+
+  label {
+    @include font-title;
+    color: $color-accent;
+    width: 100%;
+    display: block;
+    margin-bottom: $margin-large;
+  }
+
+  .feedWrapper {
+    width: 100%;
+    @include font-body;
+    font-size: 18px;
+    font-weight: 400;
+    & > p {
+      &:hover {
+        opacity: 1;
+      }
+      text-align: center;
+      opacity: 0.8;
+      line-height: 1.5rem;
+      transition: opacity $time-short;
+    }
+  }
+  .postCard {
+    &:not(:last-of-type) {
+      margin-bottom: $margin-small;
+    }
+  }
 }
 .pages {
   grid-template: pages;
