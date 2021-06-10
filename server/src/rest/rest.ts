@@ -81,7 +81,7 @@ export class RestWebServer implements Rest {
 
     const apiRouter = express.Router()
     studentGetPages(this, apiRouter)
-    studentPostPage(this, apiRouter)
+    addPage(this, apiRouter)
     getAllStudents(this, apiRouter)
     getAllFollowedStudents(this, apiRouter)
     followStudentByEmail(this, apiRouter)
@@ -168,13 +168,10 @@ function studentGetPages(restServer: RestWebServer, apiRouter: express.Router): 
   })
 }
 
-function studentPostPage(restServer: RestWebServer, apiRouter: express.Router): void {
+function addPage(restServer: RestWebServer, apiRouter: express.Router): void {
   apiRouter.post(
     '/pages',
-    [
-      check('title').isAlphanumeric().isLength({ min: 3, max: 150 }),
-      check('description').isAlphanumeric().isLength({ min: 3, max: 300 })
-    ],
+    [check('title').isLength({ min: 3, max: 150 }), check('description').isLength({ min: 3, max: 300 })],
     async (req: Request, res: Response) => {
       const errors = validationResult(req)
       if (!errors.isEmpty()) return res.status(400).json({ error: 'Invalid data' })
