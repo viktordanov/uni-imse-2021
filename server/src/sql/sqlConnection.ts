@@ -28,11 +28,9 @@ export class SQLConnection {
         if (err) {
           console.log('sql error for query ', query, ' with params ', params, ': ', err.message)
           return reject(err.message)
-        } else if (result) {
-          return resolve(true)
         }
+        return resolve(true)
       })
-      return resolve(false)
     })
   }
 
@@ -48,6 +46,8 @@ export class SQLConnection {
           return reject(err.message)
         } else if (result) {
           return resolve([Object.assign({}, result[0]) as T, true])
+        } else {
+          return resolve([undefined, false])
         }
       })
     })
@@ -69,6 +69,8 @@ export class SQLConnection {
             list.push(Object.assign({}, element) as T)
           })
           return resolve([list, true])
+        } else {
+          return resolve([undefined, false])
         }
       })
     })
