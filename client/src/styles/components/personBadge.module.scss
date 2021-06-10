@@ -1,4 +1,25 @@
 .personBadge {
+  &:hover {
+    .letterCircle {
+      background-color: $color-black !important;
+      color: $color-white;
+    }
+    .badge {
+      background-color: transparentize($color: $color-black, $amount: 0.65) !important;
+      color: $color-white;
+    }
+  }
+
+  .letterCircle,
+  .badge {
+    transition: background-color $time-normal $easing-swift-out, color $time-normal ease;
+  }
+
+  position: relative;
+  display: inline-block;
+  height: 64px;
+  width: auto;
+
   user-select: none;
 
   .letterCircle {
@@ -10,19 +31,22 @@
     width: 64px;
     height: 64px;
     border-radius: 32px;
+
     @include font-title-big;
     background: pink;
     display: flex;
     justify-content: center;
     align-items: center;
     float: left;
+    position: relative;
+    z-index: 1;
   }
   .profileInfo {
-    float: left;
+    height: 48px;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    height: 48px;
+    float: left;
     p {
       float: none;
       line-height: 24px;
@@ -41,13 +65,14 @@
     padding: 0 $margin-normal;
   }
   .badge {
-    float: left;
-    border-radius: 0 32px 32px 0;
     position: relative;
-    left: -32px;
+    left: -31px;
+    float: left;
+    height: 64px;
     padding-left: 32px + 16px;
     padding-right: 24px;
-    height: 64px;
+    border-radius: 0 32px 32px 0;
+    backdrop-filter: blur(1rem);
     @include font-body;
     font-weight: 400;
     line-height: 64px;
