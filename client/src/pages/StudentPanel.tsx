@@ -5,7 +5,8 @@ import { Logo } from '@/components/logo'
 import { PersonBadge } from '@/components/personBadge'
 import { Menu } from '@/components/menu'
 import { useAuth } from '@/hooks/useAuth'
-import { Switch } from 'react-router'
+import { Route, Switch } from 'react-router'
+import { StudentHome } from './StudentHome'
 
 type UserInfo = {
   name: string
@@ -30,7 +31,17 @@ export const StudentPanel: React.FunctionComponent = () => {
           <PersonBadge name={userInfo.name} email={userInfo.email} mode="profile" />
         </div>
       </header>
-      <Switch></Switch>
+      <Switch>
+        <Route exact path="/">
+          <StudentHome className={styles.subpage} />
+        </Route>
+        <Route path="/pages">
+          <p>page</p>
+        </Route>
+        <Route path="/following">
+          <p>foll</p>
+        </Route>
+      </Switch>
     </div>
   )
 }

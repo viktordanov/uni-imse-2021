@@ -1,16 +1,23 @@
+$pagePaddingVert: $margin-medium;
+$pagePaddingHor: $margin-large;
+
 .studentPanel {
   width: 100%;
   height: 100vh;
   background: $color-white;
- background: url('~assets/logo-background-colored.svg');
+  background: url('~assets/logo-background-colored.svg');
   background-repeat: no-repeat;
   background-position: bottom left 10vw;
-  padding: $margin-medium $margin-large;
+  padding: $pagePaddingVert $pagePaddingHor;
+  padding-bottom: 0;
 
-  $headerHeight: 5rem;
+  $headerHeight: 5.5rem;
+  $headerMarginBottom: $margin-medium;
   header {
     display: flex;
+    height: $headerHeight;
     justify-content: space-between;
+    margin-bottom: $headerMarginBottom;
     .menu {
       margin-right: 2rem;
     }
@@ -18,5 +25,9 @@
       display: flex;
       align-items: center;
     }
+  }
+
+  .subpage {
+    height: calc(100vh - #{$headerHeight + $headerMarginBottom + $pagePaddingVert});
   }
 }

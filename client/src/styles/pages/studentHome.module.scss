@@ -1,0 +1,24 @@
+$followingWidth: 20rem;
+$pagesWidth: 20rem;
+$feedWidth: calc(100% - #{$followingWidth + $pagesWidth});
+
+.studentHome {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template: 'following feed pages';
+  grid-template-columns: $followingWidth $feedWidth $pagesWidth;
+}
+
+.following {
+  background: $color-accent-faded;
+  grid-template: following;
+}
+.feed {
+  background: $color-accent;
+  grid-template: feed;
+}
+.pages {
+  background: $color-accent-dark;
+  grid-template: pages;
+}
