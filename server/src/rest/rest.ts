@@ -77,6 +77,7 @@ export class RestWebServer implements Rest {
     authSignupStudent(this)
 
     const apiRouter = express.Router()
+    studentGetPages(this, apiRouter)
 
     this.webServer.use('/api', jwt({ secret: this.config.jwtSecret, algorithms: ['HS256'] }), apiRouter)
     this.webServer.use((err: Error, req: Request, res: Response) => {
@@ -96,6 +97,8 @@ export class RestWebServer implements Rest {
     throw new Error('To be implemented')
   }
 }
+
+/* AUTH ENDPOINTS */
 
 function authLogin(restServer: RestWebServer): void {
   restServer
@@ -138,4 +141,12 @@ function authSignupStudent(restServer: RestWebServer): void {
         return res.status(200).json({ token })
       }
     )
+}
+
+/* STUDENT CONTENT ENDPOINTS */
+
+function studentGetPages(restServer: RestWebServer, apiRouter: express.Router): void {
+  apiRouter.get('/pages', (req: Request, res: Response) => {
+    return res.status(400).json({ error: 'Invalid data' })
+  })
 }

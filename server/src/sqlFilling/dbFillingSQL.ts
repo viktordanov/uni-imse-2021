@@ -1,51 +1,46 @@
-import { getStudents, getPage, getPost } from './mockData'
-import { SQLConnection } from '../sql/sqlConnection'
 import { Page, Post, Student } from '../entities/entities'
+import { SQLConnection } from '../sql/sqlConnection'
 import { SQLQueries } from '../sql/sqlQueries'
 
-function insertData(): void {
-  getStudents().then(students => {
-    console.log(students)
-    insertStudents(students)
+// function insertData(): void {
+//   getStudents().then(students => {
+//     console.log(students)
+//     insertStudents(students)
 
-    getPage().then(pages => {
-      insertPages(pages)
+//     getPage().then(pages => {
+//       insertPages(pages)
 
-      getPost().then(post => {
-        insertPost(post)
-      })
-    })
-  })
-}
+//       getPost().then(post => {
+//         insertPost(post)
+//       })
+//     })
+//   })
+// }
 
-function insertStudents(students: Student[]) {
+function insertStudents(sqlConnection: SQLConnection, students: Student[]) {
   students.forEach(student => {
     console.log('student: ', student)
-    SQLConnection.executeQuery(SQLQueries.addAccount, [
-      student.name,
-      student.email,
-      student.passwordHash,
-      student.dateRegistered
-    ])
+    sqlConnection
+      .executeQuery(SQLQueries.addAccount, [student.name, student.email, student.passwordHash, student.dateRegistered])
       .then(() => {
-        SQLConnection.executeQuery(SQLQueries.addStudentIDLastInserted, [student.university, student.dateRegistered])
+        sqlConnection.executeQuery(SQLQueries.addStudentIDLastInserted, [student.university, student.dateRegistered])
       })
       .then(() => {
-        SQLConnection.executeQuery(SQLQueries.addRandomIsFriendsWith, [])
+        sqlConnection.executeQuery(SQLQueries.addRandomIsFriendsWith, [])
       })
   })
 }
 
-function insertPages(pages: Page[]) {
+function insertPages(sqlConnection: SQLConnection, pages: Page[]) {
   pages.forEach(page => {
-    SQLConnection.executeQuery(SQLQueries.addRandomPage, [page.title, page.description, page.dateCreated])
+    sqlConnection.executeQuery(SQLQueries.addRandomPage, [page.title, page.description, page.dateCreated])
   })
 }
 
-function insertPost(posts: Post[]) {
+function insertPost(sqlConnection: SQLConnection, posts: Post[]) {
   posts.forEach(post => {
-    SQLConnection.executeQuery(SQLQueries.addRandomPost, [post.title, post.content, post.dateCreated])
+    sqlConnection.executeQuery(SQLQueries.addRandomPost, [post.title, post.content, post.dateCreated])
   })
 }
 
-export const SQLFilling = { insertData }
+// export const SQLFilling = { insertData }

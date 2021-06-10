@@ -4,7 +4,7 @@ import { EventsService } from './service/eventsService'
 import { StudentContentService } from './service/studentContentService'
 import { RepositorySQL } from './sql/repositorySQL'
 
-function main() {
+async function main() {
   const HOST = process.env.HOST ?? 'locahost'
   const PORT = process.env.PORT ?? '8080'
   const STATIC_DIR = process.env.STATIC_DIR ?? 'static'
