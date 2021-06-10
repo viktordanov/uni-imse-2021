@@ -9,7 +9,6 @@ async function main() {
   const PORT = process.env.PORT ?? '8080'
   const STATIC_DIR = process.env.STATIC_DIR ?? 'static'
   const JWT_SECRET = process.env.JWT_SECRET ?? 'DEBUG'
-
   const restConfig: RestConfig = {
     host: HOST,
     port: PORT,
