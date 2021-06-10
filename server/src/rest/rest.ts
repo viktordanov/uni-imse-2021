@@ -7,6 +7,8 @@ import cors from 'cors'
 import { AuthService } from '../service/authService'
 import { check, validationResult } from 'express-validator'
 import { Page, Post } from '../entities/entities'
+import { reset } from 'yargs'
+import { post } from 'superagent'
 
 export type RestConfig = {
   host: string
@@ -86,6 +88,8 @@ export class RestWebServer implements Rest {
     getFeedPosts(this, apiRouter)
     addPost(this, apiRouter)
     getPosts(this, apiRouter)
+    likePost(this, apiRouter)
+    unlikePost(this, apiRouter)
 
     this.webServer.use('/api', jwt({ secret: this.config.jwtSecret, algorithms: ['HS256'] }), apiRouter)
     this.webServer.use((err: Error, req: Request, res: Response) => {
@@ -309,7 +313,7 @@ function getPosts(restServer: RestWebServer, apiRouter: express.Router): void {
 
 function addPost(restServer: RestWebServer, apiRouter: express.Router): void {
   apiRouter.post(
-    '/posts/:pageTitle',
+    '/posts/new/:pageTitle',
     [check('title').isLength({ min: 3, max: 150 }), check('content').isLength({ min: 3, max: 300 })],
     async (req: Request, res: Response) => {
       const errors = validationResult(req)
@@ -331,6 +335,102 @@ function addPost(restServer: RestWebServer, apiRouter: express.Router): void {
 
       const post: Post = { title, content, dateCreated: new Date() }
       const err = await restServer.getStudentService().addPostToStudent(studentID, pageTitle, post)
+      if (err !== null) {
+        return res.status(400).json({ error: err.message })
+      }
+      return res.status(200).json({ status: 'OK' })
+    }
+  )
+}
+
+function likePost(restServer: RestWebServer, apiRouter: express.Router): void {
+  apiRouter.post(
+    '/posts/like',
+    [
+      check('postOwnerAddress').isEmail(),
+      check('pageTitle').isLength({ min: 3 }),
+      check('postTitle').isLength({ min: 3 })
+    ],
+    async (req: Request, res: Response) => {
+      const errors = validationResult(req)
+      if (!errors.isEmpty()) return res.status(400).json({ error: 'Invalid data' })
+
+      const { pageTitle, postTitle, postOwnerAddress } = req.body
+
+      const studentID = getIdFromDecodedToken(req)
+
+      const [postOwner, errOwner] = await restServer.getStudentService().getStudentByEmail(postOwnerAddress)
+      if (errOwner !== null) {
+        return res.status(401).json({ error: errOwner.message })
+      }
+
+      const [pages, errPage] = await restServer.getStudentService().getPagesOfStudent(postOwner.id)
+      if (errPage !== null) {
+        return res.status(400).json({ error: errPage.message })
+      }
+      const pageIndex = pages.findIndex(p => p.title === pageTitle)
+      if (pageIndex === -1) {
+        return res.status(400).json({ error: 'page not found' })
+      }
+
+      const [posts, errPosts] = await restServer.getStudentService().getPostsOfPage(studentID, pages[pageIndex].title)
+      if (errPosts !== null) {
+        return res.status(400).json({ error: errPosts.message })
+      }
+      const postExists = posts.findIndex(p => p.title === postTitle) === -1
+      if (postExists) {
+        return res.status(400).json({ error: 'post not found' })
+      }
+
+      const err = await restServer.getStudentService().likePost(studentID, postOwner.id, pageTitle, postTitle)
+      if (err !== null) {
+        return res.status(400).json({ error: err.message })
+      }
+      return res.status(200).json({ status: 'OK' })
+    }
+  )
+}
+
+function unlikePost(restServer: RestWebServer, apiRouter: express.Router): void {
+  apiRouter.post(
+    '/posts/unlike',
+    [
+      check('postOwnerAddress').isEmail(),
+      check('pageTitle').isLength({ min: 3 }),
+      check('postTitle').isLength({ min: 3 })
+    ],
+    async (req: Request, res: Response) => {
+      const errors = validationResult(req)
+      if (!errors.isEmpty()) return res.status(400).json({ error: 'Invalid data' })
+
+      const { pageTitle, postTitle, postOwnerAddress } = req.body
+
+      const studentID = getIdFromDecodedToken(req)
+
+      const [postOwner, errOwner] = await restServer.getStudentService().getStudentByEmail(postOwnerAddress)
+      if (errOwner !== null) {
+        return res.status(401).json({ error: errOwner.message })
+      }
+
+      const [pages, errPage] = await restServer.getStudentService().getPagesOfStudent(postOwner.id)
+      if (errPage !== null) {
+        return res.status(400).json({ error: errPage.message })
+      }
+      const pageIndex = pages.findIndex(p => p.title === pageTitle)
+      if (pageIndex === -1) {
+        return res.status(400).json({ error: 'page not found' })
+      }
+
+      const [posts, errPosts] = await restServer.getStudentService().getPostsOfPage(studentID, pages[pageIndex].title)
+      if (errPosts !== null) {
+        return res.status(400).json({ error: errPosts.message })
+      }
+      const postExists = posts.findIndex(p => p.title === postTitle) === -1
+      if (postExists) {
+        return res.status(400).json({ error: 'post not found' })
+      }
+
+      const err = await restServer.getStudentService().unlikePost(studentID, postOwner.id, pageTitle, postTitle)
       if (err !== null) {
         return res.status(400).json({ error: err.message })
       }

@@ -81,4 +81,20 @@ export class StudentContentService {
     }
     return [following, null]
   }
+
+  async likePost(id: number, whosePostId: number, pageTitle: string, postTitle: string): APIVoid {
+    const ok = await this.repository.addLike(id, whosePostId, pageTitle, postTitle)
+    if (!ok) {
+      return new Error('failed to get all followed students')
+    }
+    return null
+  }
+
+  async unlikePost(id: number, whosePostId: number, pageTitle: string, postTitle: string): APIVoid {
+    const ok = await this.repository.removeLike(id, whosePostId, pageTitle, postTitle)
+    if (!ok) {
+      return new Error('failed to get all followed students')
+    }
+    return null
+  }
 }
