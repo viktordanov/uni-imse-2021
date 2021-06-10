@@ -11,7 +11,6 @@ export class RepositorySQL implements Repository {
   }
 
   getAccountByEmail(email: string): Promise<[Account, boolean]> {
-    console.log(this.sqlConnection)
     return this.sqlConnection.executeScalarType<Account>(queries.getAccountByEmail, [email])
   }
 
