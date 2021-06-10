@@ -12,7 +12,7 @@ $pagePaddingHor: $margin-large;
   padding-bottom: 0;
 
   $headerHeight: 5.5rem;
-  $headerMarginBottom: $margin-medium;
+  $headerMarginBottom: $margin-large * 2;
   header {
     display: flex;
     height: $headerHeight;
