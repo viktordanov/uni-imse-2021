@@ -1,0 +1,50 @@
+version: "3.8"
+
+services:
+  backend-production:
+    container_name: imse-server-production
+    build:
+      context:  ./server/
+      dockerfile:  Dockerfile.production
+    environment:
+      HOST: 0.0.0.0
+      PORT: 8080
+      MARIADB_USER: imse
+      MARIADB_PASSWORD: imse
+    ports:
+      - 127.0.0.1:10100:8080
+    restart: always
+    networks:
+      - backend
+    depends_on: 
+      - mariadb
+      # - mongodb
+  mariadb:
+    container_name: imse-mariadb
+    image: mariadb:10.5
+    ports:
+      - 127.0.0.1:3306:3306
+    volumes:
+      - ./initdb:/docker-entrypoint-initdb.d
+    environment:
+      MARIADB_ROOT_PASSWORD: password
+      MARIADB_USER: imse
+      MARIADB_PASSWORD: imse
+    restart: always
+    networks:
+      - backend
+  # mongodb:
+  #   container_name: imse-mongodb
+  #   image: mongo
+  #   restart: always
+  #   environment:
+  #     MONGO_INITDB_ROOT_USERNAME: root
+  #     MONGO_INITDB_ROOT_PASSWORD: password
+  #   networks:
+  #     - backend
+
+networks:
+  backend:
+    name: backend_network
+  frontend:
+    name: frontend_network

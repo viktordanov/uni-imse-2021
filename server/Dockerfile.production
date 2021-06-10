@@ -1,0 +1,19 @@
+FROM mhart/alpine-node:latest AS BUILD_IMAGE
+
+RUN apk add --no-cache libc6-compat && rm -rf /var/cache/apk/*
+RUN mkdir /app
+WORKDIR /app
+COPY package.json yarn.lock ./
+
+RUN yarn --frozen-lockfile
+
+COPY . .
+RUN yarn build-prod
+RUN npm prune --production
+
+FROM mhart/alpine-node:slim 
+WORKDIR /app
+COPY --from=BUILD_IMAGE /app/out /app
+COPY --from=BUILD_IMAGE /app/node_modules /app/node_modules
+
+CMD ["node", "main.js"]

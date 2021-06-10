@@ -4,6 +4,7 @@
   "main": "index.js",
   "author": "Viktor Danov, Raphael Lachtner",
   "scripts": {
+    "build-prod": "tsc -p .",
     "serve": "tsc -p . && node out/main.js",
     "test": "jest"
   },
