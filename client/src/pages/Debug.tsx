@@ -27,10 +27,10 @@ export const Debug: React.FunctionComponent<DebugProps> = ({ className, onClick 
         description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
       />
       <PostCard
-        owner="Viktor Danov"
+        ownerName="Viktor Danov"
         pageTitle="Thoughts"
-        postTitle="Thought on the universal item sorting system"
-        dateOfCreation={new Date()}
+        title="Thought on the universal item sorting system"
+        dateCreated={new Date()}
         content="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
       />
     </div>
