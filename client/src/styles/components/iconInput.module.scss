@@ -1,0 +1,22 @@
+$inputHeight: 3rem;
+
+.iconInput {
+  width: 100%;
+  height: $inputHeight;
+  position: relative;
+  .icon {
+    position: absolute;
+    top: calc(#{$inputHeight/2} - 12px);
+    left: $margin-medium;
+    size: 24px;
+    width: 24px;
+    height: 24px;
+    z-index: 1;
+  }
+  .input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding-left: $margin-large + $margin-large;
+  }
+}
