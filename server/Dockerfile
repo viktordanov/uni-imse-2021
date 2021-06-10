@@ -1,6 +1,5 @@
-FROM node:alpine
+FROM mhart/alpine-node:slim 
 RUN mkdir /server
 WORKDIR /server
 RUN apk add --no-cache libc6-compat
-RUN yarn install 
-CMD ["yarn", "serve"]
+CMD ./node_modules/.bin/tsc -p . && node out/main.js
