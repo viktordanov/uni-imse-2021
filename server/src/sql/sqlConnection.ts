@@ -27,7 +27,7 @@ export class SQLConnection {
       connection.query(query, params, (err, result) => {
         if (err) {
           console.log('sql error for query ', query, ' with params ', params, ': ', err.message)
-          return reject(err.message)
+          return resolve(false)
         }
         return resolve(true)
       })
@@ -43,7 +43,7 @@ export class SQLConnection {
       connection.query(query, params, (err, result) => {
         if (err) {
           console.log('sql error: ', err.message)
-          return reject(err.message)
+          return resolve([undefined, false])
         } else if (result) {
           return resolve([Object.assign({}, result[0]) as T, true])
         } else {
@@ -62,7 +62,7 @@ export class SQLConnection {
       connection.query(query, params, (err, result) => {
         if (err) {
           console.log('sql error: ', err.message)
-          return reject(err.message)
+          return resolve([undefined, false])
         } else if (result) {
           const list: T[] = []
           result.forEach((element: T) => {
