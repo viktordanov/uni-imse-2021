@@ -5,7 +5,7 @@ grant all privileges on imse.* to 'imse'@'%';
 create table if not exists Account (
       AccountID int not null auto_increment,
       Name varchar(255) not null,
-      EMail varchar(255) not null,
+      EMail unique varchar(255) not null,
       Password_hash varchar(255) not null,
       Date_registered datetime not null,
       primary key (AccountID)
