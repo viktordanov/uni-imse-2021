@@ -169,7 +169,7 @@ function authSignupStudent(restServer: RestWebServer): void {
         const [token, error] = await restServer
           .getAuthService()
           .studentSignup(fullName, email, password, university, matNumber)
-        if (error !== null) return res.status(401).json({ error: 'Unauthorized' })
+        if (error !== null) return res.status(401).json({ error: error.message })
         return res.status(200).json({ token })
       }
     )
