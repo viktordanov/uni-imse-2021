@@ -10,15 +10,75 @@ $feedWidth: calc(100% - #{$followingWidth + $pagesWidth});
   grid-template-columns: $followingWidth $feedWidth $pagesWidth;
 }
 
+.link {
+  @include font-label;
+  color: $color-secondary-dark;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
 .following {
-  background: $color-accent-faded;
   grid-template: following;
+
+  label {
+    @include font-label;
+    width: 100%;
+    display: block;
+    margin-bottom: $margin-large;
+    font-size: 16px;
+    color: $color-accent-faded;
+  }
+
+  .followingWrapper {
+    width: 100%;
+    @include font-body;
+    font-size: 18px;
+    font-weight: 400;
+    p {
+      &:hover {
+        opacity: 1;
+      }
+      text-align: center;
+      opacity: 0.8;
+      line-height: 1.5rem;
+      transition: opacity $time-short;
+    }
+  }
 }
 .feed {
-  background: $color-accent;
   grid-template: feed;
 }
 .pages {
-  background: $color-accent-dark;
   grid-template: pages;
+
+  label {
+    @include font-label;
+    width: 100%;
+    display: block;
+    margin-bottom: $margin-large;
+    font-size: 16px;
+    color: $color-accent-faded;
+  }
+
+  .pagesWrapper {
+    width: 100%;
+    @include font-body;
+    font-size: 18px;
+    font-weight: 400;
+    & > p {
+      &:hover {
+        opacity: 1;
+      }
+      text-align: center;
+      opacity: 0.8;
+      line-height: 1.5rem;
+      transition: opacity $time-short;
+    }
+  }
+  .pageCard {
+    &:not(:last-of-type) {
+      margin-bottom: $margin-small;
+    }
+  }
 }
