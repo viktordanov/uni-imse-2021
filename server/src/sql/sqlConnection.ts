@@ -40,15 +40,14 @@ export class SQLConnection {
     query: string,
     params: any[],
     connection: mysql.Pool | mysql.Connection = this.pool
-  ): Promise<T> {
+  ): Promise<[T, boolean]> {
     return new Promise((resolve, reject) => {
       connection.query(query, params, (err, result) => {
         if (err) {
           console.log('sql error: ', err.message)
-
           return reject(err.message)
         } else if (result) {
-          return resolve(Object.assign({}, result[0]) as T)
+          return resolve([Object.assign({}, result[0]) as T, true])
         }
       })
     })
@@ -58,7 +57,7 @@ export class SQLConnection {
     query: string,
     params: any[],
     connection: mysql.Pool | mysql.Connection = this.pool
-  ): Promise<T[]> {
+  ): Promise<[T[], boolean]> {
     return new Promise((resolve, reject) => {
       connection.query(query, params, (err, result) => {
         if (err) {
@@ -69,7 +68,7 @@ export class SQLConnection {
           result.forEach((element: T) => {
             list.push(Object.assign({}, element) as T)
           })
-          return resolve(list)
+          return resolve([list, true])
         }
       })
     })

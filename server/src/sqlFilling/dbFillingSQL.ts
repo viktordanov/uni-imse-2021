@@ -52,4 +52,4 @@ function insertPost(sqlConnection: SQLConnection, posts: Post[]) {
   })
 }
 
-// export const SQLFilling = { insertData }
+export const SQLFilling = { insertData }

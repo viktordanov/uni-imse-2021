@@ -10,9 +10,8 @@ export class RepositorySQL implements Repository {
     this.sqlConnection = new SQLConnection()
   }
 
-  getAccountByEmail(email: string): Promise<Account> {
+  getAccountByEmail(email: string): Promise<[Account, boolean]> {
     console.log(this.sqlConnection)
-
     return this.sqlConnection.executeScalarType<Account>(queries.getAccountByEmail, [email])
   }
 
@@ -24,7 +23,7 @@ export class RepositorySQL implements Repository {
     return this.sqlConnection.executeQuery(queries.removePage, [studentId, title])
   }
 
-  getPageByTitle(studentId: number, title: string): Promise<Page> {
+  getPageByTitle(studentId: number, title: string): Promise<[Page, boolean]> {
     return this.sqlConnection.executeScalarType<Page>(queries.getPageByTitle, [studentId, title])
   }
 
@@ -52,7 +51,7 @@ export class RepositorySQL implements Repository {
     return this.sqlConnection.executeQuery(queries.removePost, [studentId, pageTitle, title])
   }
 
-  getPostByTitle(studentId: number, pageTitle: string, title: string): Promise<Post> {
+  getPostByTitle(studentId: number, pageTitle: string, title: string): Promise<[Post, boolean]> {
     return this.sqlConnection.executeScalarType<Post>(queries.getPostByTitle, [studentId, pageTitle, title])
   }
 
@@ -66,7 +65,7 @@ export class RepositorySQL implements Repository {
     ])
   }
 
-  getStudentLikesOfPost(studentId: number, pageTitle: string, postTitle: string): Promise<Student[]> {
+  getStudentLikesOfPost(studentId: number, pageTitle: string, postTitle: string): Promise<[Student[], boolean]> {
     return this.sqlConnection.executeQueryType<Student>(queries.getStudentLikesOfPost, [
       studentId,
       pageTitle,
@@ -86,8 +85,8 @@ export class RepositorySQL implements Repository {
               .then(() => {
                 this.sqlConnection
                   .executeScalarType<number>(queries.selectLastInsertID, [], con)
-                  .then((element: number) => {
-                    s.id = element
+                  .then((element: [number, boolean]) => {
+                    s.id = element[0]
                     resolve(true)
                     con.release()
                   })
@@ -101,7 +100,7 @@ export class RepositorySQL implements Repository {
     return this.sqlConnection.executeQuery(queries.removeStudent, [id])
   }
 
-  getStudentById(id: number): Promise<Student> {
+  getStudentById(id: number): Promise<[Student, boolean]> {
     return this.sqlConnection.executeScalarType<Student>(queries.getStudentById, [id])
   }
 
@@ -120,11 +119,11 @@ export class RepositorySQL implements Repository {
     })
   }
 
-  getAllStudents(): Promise<Student[]> {
+  getAllStudents(): Promise<[Student[], boolean]> {
     return this.sqlConnection.executeQueryType<Student>(queries.getStudentLikesOfPost, [])
   }
 
-  getFollowersOf(id: number): Promise<Student[]> {
+  getFollowersOf(id: number): Promise<[Student[], boolean]> {
     return this.sqlConnection.executeQueryType<Student>(queries.getFollowersOf, [id])
   }
 
@@ -136,7 +135,7 @@ export class RepositorySQL implements Repository {
     return this.sqlConnection.executeQuery(queries.removeFollow, [who, followsWhom])
   }
 
-  getLikedPostsOf(id: number): Promise<Post[]> {
+  getLikedPostsOf(id: number): Promise<[Post[], boolean]> {
     return this.sqlConnection.executeQueryType<Post>(queries.getLikedPostsOf, [id])
   }
 
@@ -158,8 +157,8 @@ export class RepositorySQL implements Repository {
             this.sqlConnection.executeQuery(queries.addAdmin, [s.id, s.address, s.ssn], con).then(() => {
               return this.sqlConnection
                 .executeScalarType(queries.selectLastInsertID, [], con)
-                .then((element: number) => {
-                  s.id = element
+                .then((element: [number, boolean]) => {
+                  s.id = element[0]
                   resolve(true)
                   con.release()
                 })
@@ -173,7 +172,7 @@ export class RepositorySQL implements Repository {
     return this.sqlConnection.executeQuery(queries.removeAdmin, [id])
   }
 
-  getAdminById(id: number): Promise<Admin> {
+  getAdminById(id: number): Promise<[Admin, boolean]> {
     return this.sqlConnection.executeScalarType<Admin>(queries.getAdminById, [id])
   }
 
@@ -181,7 +180,7 @@ export class RepositorySQL implements Repository {
     return this.sqlConnection.executeQuery(queries.updateAdmin, [s.address, s.ssn, s.id])
   }
 
-  getAllAdmins(): Promise<Admin[]> {
+  getAllAdmins(): Promise<[Admin[], boolean]> {
     return this.sqlConnection.executeQueryType<Admin>(queries.getAllAdmins, [])
   }
 
@@ -190,11 +189,13 @@ export class RepositorySQL implements Repository {
       this.sqlConnection.getPool().getConnection((err, con) => {
         if (err) console.log('sql error: ', err.message)
         this.sqlConnection.executeQuery(queries.addEvent, [e.name, e.description, e.duration, e.date], con).then(() => {
-          this.sqlConnection.executeScalarType(queries.selectLastInsertID, [], con).then((element: number) => {
-            e.id = element
-            resolve(true)
-            con.release()
-          })
+          this.sqlConnection
+            .executeScalarType(queries.selectLastInsertID, [], con)
+            .then((element: [number, boolean]) => {
+              e.id = element[0]
+              resolve(true)
+              con.release()
+            })
         })
       })
     })
@@ -204,11 +205,11 @@ export class RepositorySQL implements Repository {
     return this.sqlConnection.executeQuery(queries.removeEvent, [id])
   }
 
-  getEventById(id: number): Promise<Event> {
+  getEventById(id: number): Promise<[Event, boolean]> {
     return this.sqlConnection.executeScalarType<Event>(queries.getEventById, [id])
   }
 
-  getEventByName(name: string): Promise<Event> {
+  getEventByName(name: string): Promise<[Event, boolean]> {
     return this.sqlConnection.executeScalarType<Event>(queries.getEventByName, [name])
   }
 
@@ -216,19 +217,19 @@ export class RepositorySQL implements Repository {
     return this.sqlConnection.executeQuery(queries.updateEvent, [e.id])
   }
 
-  getAllEvents(): Promise<Event[]> {
+  getAllEvents(): Promise<[Event[], boolean]> {
     return this.sqlConnection.executeQueryType<Event>(queries.getAllEvents, [])
   }
 
-  getAllPagesOf(studentId: number): Promise<Page[]> {
+  getAllPagesOf(studentId: number): Promise<[Page[], boolean]> {
     return this.sqlConnection.executeQueryType<Page>(queries.getAllPagesOf, [studentId])
   }
 
-  getAllPostsOf(studentId: number, pageTitle: string): Promise<Post[]> {
+  getAllPostsOf(studentId: number, pageTitle: string): Promise<[Post[], boolean]> {
     return this.sqlConnection.executeQueryType<Post>(queries.getAllPostsOf, [studentId, pageTitle])
   }
 
-  getAllEventsCreatedBy(adminId: number): Promise<Event[]> {
+  getAllEventsCreatedBy(adminId: number): Promise<[Event[], boolean]> {
     return this.sqlConnection.executeQueryType<Event>(queries.getAllEventsCreatedBy, [adminId])
   }
 }
