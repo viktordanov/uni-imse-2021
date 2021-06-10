@@ -126,6 +126,10 @@ export class RepositorySQL implements Repository {
     return this.sqlConnection.executeQueryType<Student>(queries.getFollowersOf, [id])
   }
 
+  getFollowing(id: number): Promise<[Student[], boolean]> {
+    return this.sqlConnection.executeQueryType<Student>(queries.getFollowing, [id])
+  }
+
   addFollow(who: number, followsWhom: number): Promise<boolean> {
     return this.sqlConnection.executeQuery(queries.addFollow, [who, followsWhom])
   }
