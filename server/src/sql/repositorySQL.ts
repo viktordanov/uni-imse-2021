@@ -8,9 +8,6 @@ export class RepositorySQL implements Repository {
 
   constructor() {
     this.sqlConnection = new SQLConnection()
-    this.sqlConnection.getPool().on('release', function (connection) {
-      console.log('Connection %d released', connection.threadId)
-    })
   }
 
   getAccountByEmail(email: string): Promise<Account> {
