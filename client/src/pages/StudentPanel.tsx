@@ -7,6 +7,7 @@ import { Menu } from '@/components/menu'
 import { useAuth } from '@/hooks/useAuth'
 import { Route, Switch } from 'react-router'
 import { StudentHome } from './StudentHome'
+import { StudentFollowing } from './StudentFollowing'
 
 type UserInfo = {
   name: string
@@ -39,7 +40,7 @@ export const StudentPanel: React.FunctionComponent = () => {
           <p>page</p>
         </Route>
         <Route path="/following">
-          <p>foll</p>
+          <StudentFollowing />
         </Route>
       </Switch>
     </div>

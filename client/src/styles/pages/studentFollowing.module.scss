@@ -1,0 +1,36 @@
+.studentFollowing {
+  width: 100%;
+  height: 100%;
+  padding: 0 20%;
+  display: flex;
+  flex-direction: column;
+  padding-top: 5vh;
+
+  h1 {
+    @include font-title;
+    font-weight: 600;
+    margin-bottom: $margin-large;
+  }
+  .icon {
+    stroke: $color-secondary-dark;
+  }
+  .iconInput {
+    margin-bottom: $margin-large * 2;
+  }
+  .input {
+    @include background-color-blur(
+      transparentize($color-secondary, 0.75),
+      transparentize($color-secondary, 0.6),
+      $time-short,
+      1rem
+    );
+  }
+  .followedWrapper {
+    p {
+      @include font-body;
+      opacity: 0.5;
+      margin: $margin-normal 0;
+      text-align: center;
+    }
+  }
+}
