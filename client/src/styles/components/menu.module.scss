@@ -9,6 +9,7 @@
   .link {
     padding: $margin-small $margin-normal;
     border-radius: 1.5rem;
+    outline: none !important;
 
     &.selected,
     &:hover {

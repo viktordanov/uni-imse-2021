@@ -14,7 +14,7 @@ export const Menu: React.FunctionComponent<MenuProps> = ({ className, onClick }:
   const { pathname } = useLocation()
 
   const selectedIndex = useMemo(() => {
-    if (pathname === '/test') return 0
+    if (pathname === '/') return 0
     if (pathname === '/pages') return 1
     if (pathname === '/following') return 2
   }, [pathname])
