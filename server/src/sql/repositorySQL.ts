@@ -120,7 +120,7 @@ export class RepositorySQL implements Repository {
   }
 
   getAllStudents(): Promise<[Student[], boolean]> {
-    return this.sqlConnection.executeQueryType<Student>(queries.getStudentLikesOfPost, [])
+    return this.sqlConnection.executeQueryType<Student>(queries.getAllStudents, [])
   }
 
   getFollowersOf(id: number): Promise<[Student[], boolean]> {
