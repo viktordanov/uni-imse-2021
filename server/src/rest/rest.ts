@@ -85,6 +85,7 @@ export class RestWebServer implements Rest {
     followStudentByEmail(this, apiRouter)
     getFeedPosts(this, apiRouter)
     addPost(this, apiRouter)
+    getPosts(this, apiRouter)
 
     this.webServer.use('/api', jwt({ secret: this.config.jwtSecret, algorithms: ['HS256'] }), apiRouter)
     this.webServer.use((err: Error, req: Request, res: Response) => {
@@ -284,9 +285,6 @@ function getFeedPosts(restServer: RestWebServer, apiRouter: express.Router): voi
 
 function getPosts(restServer: RestWebServer, apiRouter: express.Router): void {
   apiRouter.get('/posts/:pageTitle', async (req: Request, res: Response) => {
-    const errors = validationResult(req)
-    if (!errors.isEmpty()) return res.status(400).json({ error: 'Invalid data' })
-    const { title, content } = req.body
     const pageTitle = req.params.pageTitle
     if (pageTitle === null || pageTitle.length < 3) {
       return res.status(400).json({ error: 'page title missing or too short' })
@@ -301,12 +299,11 @@ function getPosts(restServer: RestWebServer, apiRouter: express.Router): void {
       return res.status(400).json({ error: 'page not found' })
     }
 
-    const post: Post = { title, content, dateCreated: new Date() }
-    const err = await restServer.getStudentService().addPostToStudent(studentID, pageTitle, post)
+    const [posts, err] = await restServer.getStudentService().getPostsOfPage(studentID, pageTitle)
     if (err !== null) {
       return res.status(400).json({ error: err.message })
     }
-    return res.status(200).json({ status: 'OK' })
+    return res.status(200).json(posts)
   })
 }
 
