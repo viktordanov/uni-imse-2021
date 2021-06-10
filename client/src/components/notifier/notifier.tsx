@@ -2,7 +2,7 @@
 /* Copyright © 2019 Annorum Viktor Danov. All rights reserved.  */
 
 import { Notification, useNotifications } from '@/context/notifierContext'
-import styles from '@/styles/components/notifier.module.scss'
+import styles from '@/styles/components/notifier/notifier.module.scss'
 import React, { FunctionComponent } from 'react'
 import { createPortal } from 'react-dom'
 import { CSSTransition, TransitionGroup } from 'react-transition-group'

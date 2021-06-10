@@ -1,5 +1,7 @@
 import React from 'react'
 import { BrowserRouter as Router, Redirect, Route, RouteProps, Switch } from 'react-router-dom'
+import { Notifier } from './components/notifier/notifier'
+import { NotifyProvider } from './context/notifierContext'
 import { useAuth } from './hooks/useAuth'
 import { Debug } from './pages/Debug'
 import { Login } from './pages/Login'
@@ -8,20 +10,23 @@ import { StudentPanel } from './pages/StudentPanel'
 export const Root: React.FunctionComponent = () => {
   return (
     <>
-      <Router>
-        <Switch>
-          <Route path="/login">
-            <Login />
-          </Route>
-          <Route path="/debug">
-            <Debug />
-          </Route>
+      <NotifyProvider>
+        <Router>
+          <Switch>
+            <Route path="/login">
+              <Login />
+            </Route>
+            <Route path="/debug">
+              <Debug />
+            </Route>
 
-          <PrivateRoute path="/">
-            <StudentPanel />
-          </PrivateRoute>
-        </Switch>
-      </Router>
+            <PrivateRoute path="/">
+              <StudentPanel />
+            </PrivateRoute>
+          </Switch>
+        </Router>
+        <Notifier />
+      </NotifyProvider>
     </>
   )
 }

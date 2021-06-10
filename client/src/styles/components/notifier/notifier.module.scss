@@ -3,8 +3,8 @@
 
 .notification-wrapper {
   position: fixed;
-  bottom: $page-padding-vert / 2;
-  right: $page-padding-hor;
+  bottom: $margin-small;
+  left: $margin-large;
   width: 20rem;
   height: 100vh;
   display: flex;
@@ -72,7 +72,7 @@
 
   .label,
   .message {
-    @include font-search-input;
+    @include font-body;
   }
   .label {
     font-size: 16px;
@@ -80,12 +80,14 @@
   }
   .message {
     font-size: 14px;
-    color: $color-gray;
+    color: lighten($color-black, 15);
+    letter-spacing: 0.025em;
+
   }
-  transition: $time-quick all;
+  transition: $time-short all;
   margin: $margin-normal 0;
   padding: $margin-normal;
-  border-radius: $border-radius-item;
+  border-radius: $border-radius-normal /1.5;
 }
 .n-enter,
 .n-exit-active {
