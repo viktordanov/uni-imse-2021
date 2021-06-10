@@ -26,6 +26,7 @@ export interface Repository {
 
   // Student followers
   getFollowersOf(id: number): Promise<[Student[], boolean]>
+  getFollowing(id: number): Promise<[Student[], boolean]>
   addFollow(who: number, followsWhom: number): Promise<boolean>
   removeFollow(who: number, followsWhom: number): Promise<boolean>
 
