@@ -18,8 +18,9 @@ async function main() {
   const sqlRepository = new RepositorySQL()
 
   const authService = new AuthService(sqlRepository, JWT_SECRET)
+  const studentService = new StudentContentService(sqlRepository)
 
-  const webServer = new RestWebServer(restConfig, authService, {} as EventsService, {} as StudentContentService)
+  const webServer = new RestWebServer(restConfig, authService, {} as EventsService, studentService)
   webServer.serve()
 }
 

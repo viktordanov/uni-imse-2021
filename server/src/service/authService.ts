@@ -1,7 +1,7 @@
-import { Repository } from '../entities/repository'
 import bcrypt from 'bcrypt'
+import { Student } from '../entities/entities'
+import { Repository } from '../entities/repository'
 import { JWTUtil } from '../jwt'
-import { Account, Student } from '../entities/entities'
 
 type APIResponse<T> = Promise<[T, Error | null]>
 
@@ -15,8 +15,8 @@ export class AuthService {
   }
 
   async login(email: string, password: string): APIResponse<string> {
-    const account = await this.repository.getAccountByEmail(email)
-    if (account.id === undefined) {
+    const [account, ok] = await this.repository.getAccountByEmail(email)
+    if (!ok) {
       return ['', new Error('Unauthorized')]
     }
 
@@ -34,8 +34,8 @@ export class AuthService {
     university: string,
     matNumber: string
   ): APIResponse<string> {
-    let existing = await this.repository.getAccountByEmail(email)
-    if (existing.id !== undefined) {
+    let [existing, ok] = await this.repository.getAccountByEmail(email)
+    if (!ok) {
       return ['', new Error('Account already exists')]
     }
 
@@ -53,9 +53,11 @@ export class AuthService {
     }
 
     await this.repository.addStudent(student)
-    existing = await this.repository.getAccountByEmail(email)
+    const res = await this.repository.getAccountByEmail(email)
+    existing = res[0]
+    ok = res[1]
 
-    if (existing.id === undefined) {
+    if (!ok) {
       return ['', new Error('Something went wrong')]
     }
 
