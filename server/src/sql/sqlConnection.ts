@@ -28,9 +28,11 @@ export class SQLConnection {
         if (err) {
           console.log('sql error for query ', query, ' with params ', params, ': ', err.message)
           return reject(err.message)
+        } else if (result) {
+          return resolve(true)
         }
       })
-      return resolve(true)
+      return resolve(false)
     })
   }
 
@@ -43,7 +45,6 @@ export class SQLConnection {
       connection.query(query, params, (err, result) => {
         if (err) {
           console.log('sql error: ', err.message)
-          console.log('ERROR')
 
           return reject(err.message)
         } else if (result) {

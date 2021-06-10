@@ -19,20 +19,20 @@ export class RepositorySQL implements Repository {
     return this.sqlConnection.executeScalarType<Account>(queries.getAccountByEmail, [email])
   }
 
-  addPage(studentId: number, page: Page): void {
-    this.sqlConnection.executeQuery(queries.addPage, [studentId, page.title, page.description, page.dateCreated])
+  addPage(studentId: number, page: Page): Promise<boolean> {
+    return this.sqlConnection.executeQuery(queries.addPage, [studentId, page.title, page.description, page.dateCreated])
   }
 
-  removePage(studentId: number, title: string): void {
-    this.sqlConnection.executeQuery(queries.removePage, [studentId, title])
+  removePage(studentId: number, title: string): Promise<boolean> {
+    return this.sqlConnection.executeQuery(queries.removePage, [studentId, title])
   }
 
   getPageByTitle(studentId: number, title: string): Promise<Page> {
     return this.sqlConnection.executeScalarType<Page>(queries.getPageByTitle, [studentId, title])
   }
 
-  updatePage(studentId: number, page: Page): void {
-    this.sqlConnection.executeQuery(queries.updatePage, [
+  updatePage(studentId: number, page: Page): Promise<boolean> {
+    return this.sqlConnection.executeQuery(queries.updatePage, [
       page.title,
       page.description,
       page.dateCreated,
@@ -41,20 +41,26 @@ export class RepositorySQL implements Repository {
     ])
   }
 
-  addPost(studentId: number, pageTitle: string, post: Post): void {
-    this.sqlConnection.executeQuery(queries.addPost, [studentId, pageTitle, post.title, post.content, post.dateCreated])
+  addPost(studentId: number, pageTitle: string, post: Post): Promise<boolean> {
+    return this.sqlConnection.executeQuery(queries.addPost, [
+      studentId,
+      pageTitle,
+      post.title,
+      post.content,
+      post.dateCreated
+    ])
   }
 
-  removePost(studentId: number, pageTitle: string, title: string): void {
-    this.sqlConnection.executeQuery(queries.removePost, [studentId, pageTitle, title])
+  removePost(studentId: number, pageTitle: string, title: string): Promise<boolean> {
+    return this.sqlConnection.executeQuery(queries.removePost, [studentId, pageTitle, title])
   }
 
   getPostByTitle(studentId: number, pageTitle: string, title: string): Promise<Post> {
     return this.sqlConnection.executeScalarType<Post>(queries.getPostByTitle, [studentId, pageTitle, title])
   }
 
-  updatePost(studentId: number, pageTitle: string, post: Post): void {
-    this.sqlConnection.executeQuery(queries.updatePost, [
+  updatePost(studentId: number, pageTitle: string, post: Post): Promise<boolean> {
+    return this.sqlConnection.executeQuery(queries.updatePost, [
       post.content,
       post.dateCreated,
       studentId,
@@ -71,35 +77,50 @@ export class RepositorySQL implements Repository {
     ])
   }
 
-  addStudent(s: Student): void {
-    this.sqlConnection.getPool().getConnection((err, con) => {
-      if (err) console.log('sql error: ', err.message)
-      this.sqlConnection
-        .executeQuery(queries.addAccount, [s.name, s.email, s.passwordHash, s.dateRegistered], con)
-        .then(() => {
-          this.sqlConnection
-            .executeQuery(queries.addStudentIDLastInserted, [s.university, s.matNumber], con)
-            .then(() => {
-              this.sqlConnection.executeScalarType(queries.selectLastInsertID, [], con).then((element: number) => {
-                s.id = element
-                con.release()
+  addStudent(s: Student): Promise<boolean> {
+    return new Promise(resolve => {
+      this.sqlConnection.getPool().getConnection((err, con) => {
+        if (err) console.log('sql error: ', err.message)
+        this.sqlConnection
+          .executeQuery(queries.addAccount, [s.name, s.email, s.passwordHash, s.dateRegistered], con)
+          .then(() => {
+            this.sqlConnection
+              .executeQuery(queries.addStudentIDLastInserted, [s.university, s.matNumber], con)
+              .then(() => {
+                this.sqlConnection
+                  .executeScalarType<number>(queries.selectLastInsertID, [], con)
+                  .then((element: number) => {
+                    s.id = element
+                    resolve(true)
+                    con.release()
+                  })
               })
-            })
-        })
+          })
+      })
     })
   }
 
-  removeStudent(id: number): void {
-    this.sqlConnection.executeQuery(queries.removeStudent, [id])
+  removeStudent(id: number): Promise<boolean> {
+    return this.sqlConnection.executeQuery(queries.removeStudent, [id])
   }
 
   getStudentById(id: number): Promise<Student> {
     return this.sqlConnection.executeScalarType<Student>(queries.getStudentById, [id])
   }
 
-  updateStudent(s: Student): void {
-    this.sqlConnection.executeQuery(queries.updateStudent, [s.university, s.matNumber, s.id])
-    this.sqlConnection.executeQuery(queries.updateAccount, [s.name, s.email, s.passwordHash, s.dateRegistered, s.id])
+  updateStudent(s: Student): Promise<boolean> {
+    return new Promise(resolve => {
+      this.sqlConnection
+        .executeQuery(queries.updateStudent, [s.university, s.matNumber, s.id])
+        .then((success: boolean) => {
+          if (success)
+            this.sqlConnection
+              .executeQuery(queries.updateAccount, [s.name, s.email, s.passwordHash, s.dateRegistered, s.id])
+              .then(() => {
+                resolve(true)
+              })
+        })
+    })
   }
 
   getAllStudents(): Promise<Student[]> {
@@ -110,72 +131,80 @@ export class RepositorySQL implements Repository {
     return this.sqlConnection.executeQueryType<Student>(queries.getFollowersOf, [id])
   }
 
-  addFollow(who: number, followsWhom: number): void {
-    this.sqlConnection.executeQuery(queries.addFollow, [who, followsWhom])
+  addFollow(who: number, followsWhom: number): Promise<boolean> {
+    return this.sqlConnection.executeQuery(queries.addFollow, [who, followsWhom])
   }
 
-  removeFollow(who: number, followsWhom: number): void {
-    this.sqlConnection.executeQuery(queries.removeFollow, [who, followsWhom])
+  removeFollow(who: number, followsWhom: number): Promise<boolean> {
+    return this.sqlConnection.executeQuery(queries.removeFollow, [who, followsWhom])
   }
 
   getLikedPostsOf(id: number): Promise<Post[]> {
     return this.sqlConnection.executeQueryType<Post>(queries.getLikedPostsOf, [id])
   }
 
-  addLike(who: number, whosePost: number, pageTitle: string, postTitle: string): void {
-    this.sqlConnection.executeQuery(queries.addLike, [who, whosePost, pageTitle, postTitle])
+  addLike(who: number, whosePost: number, pageTitle: string, postTitle: string): Promise<boolean> {
+    return this.sqlConnection.executeQuery(queries.addLike, [who, whosePost, pageTitle, postTitle])
   }
 
-  removeLike(who: number, whosePost: number, pageTitle: string, postTitle: string): void {
-    this.sqlConnection.executeQuery(queries.removeLike, [who, whosePost, pageTitle, postTitle])
+  removeLike(who: number, whosePost: number, pageTitle: string, postTitle: string): Promise<boolean> {
+    return this.sqlConnection.executeQuery(queries.removeLike, [who, whosePost, pageTitle, postTitle])
   }
 
-  addAdmin(s: Admin): void {
-    this.sqlConnection.getPool().getConnection((err, con) => {
-      if (err) console.log('sql error: ', err.message)
-      this.sqlConnection
-        .executeQuery(queries.addAccount, [s.name, s.email, s.passwordHash, s.dateRegistered], con)
-        .then(() => {
-          this.sqlConnection.executeQuery(queries.addAdmin, [s.id, s.address, s.ssn], con).then(() => {
-            this.sqlConnection.executeScalarType(queries.selectLastInsertID, [], con).then((element: number) => {
-              s.id = element
-              con.release()
+  addAdmin(s: Admin): Promise<boolean> {
+    return new Promise(resolve => {
+      this.sqlConnection.getPool().getConnection((err, con) => {
+        if (err) console.log('sql error: ', err.message)
+        this.sqlConnection
+          .executeQuery(queries.addAccount, [s.name, s.email, s.passwordHash, s.dateRegistered], con)
+          .then(() => {
+            this.sqlConnection.executeQuery(queries.addAdmin, [s.id, s.address, s.ssn], con).then(() => {
+              return this.sqlConnection
+                .executeScalarType(queries.selectLastInsertID, [], con)
+                .then((element: number) => {
+                  s.id = element
+                  resolve(true)
+                  con.release()
+                })
             })
           })
-        })
+      })
     })
   }
 
-  removeAdmin(id: number): void {
-    this.sqlConnection.executeQuery(queries.removeAdmin, [id])
+  removeAdmin(id: number): Promise<boolean> {
+    return this.sqlConnection.executeQuery(queries.removeAdmin, [id])
   }
 
   getAdminById(id: number): Promise<Admin> {
     return this.sqlConnection.executeScalarType<Admin>(queries.getAdminById, [id])
   }
 
-  updateAdmin(s: Admin): void {
-    this.sqlConnection.executeQuery(queries.updateAdmin, [s.address, s.ssn, s.id])
+  updateAdmin(s: Admin): Promise<boolean> {
+    return this.sqlConnection.executeQuery(queries.updateAdmin, [s.address, s.ssn, s.id])
   }
 
   getAllAdmins(): Promise<Admin[]> {
     return this.sqlConnection.executeQueryType<Admin>(queries.getAllAdmins, [])
   }
 
-  addEvent(e: Event): void {
-    this.sqlConnection.getPool().getConnection((err, con) => {
-      if (err) console.log('sql error: ', err.message)
-      this.sqlConnection.executeQuery(queries.addEvent, [e.name, e.description, e.duration, e.date], con).then(() => {
-        this.sqlConnection.executeScalarType(queries.selectLastInsertID, [], con).then((element: number) => {
-          e.id = element
-          con.release()
+  addEvent(e: Event): Promise<boolean> {
+    return new Promise(resolve => {
+      this.sqlConnection.getPool().getConnection((err, con) => {
+        if (err) console.log('sql error: ', err.message)
+        this.sqlConnection.executeQuery(queries.addEvent, [e.name, e.description, e.duration, e.date], con).then(() => {
+          this.sqlConnection.executeScalarType(queries.selectLastInsertID, [], con).then((element: number) => {
+            e.id = element
+            resolve(true)
+            con.release()
+          })
         })
       })
     })
   }
 
-  removeEvent(id: number): void {
-    this.sqlConnection.executeQuery(queries.removeEvent, [id])
+  removeEvent(id: number): Promise<boolean> {
+    return this.sqlConnection.executeQuery(queries.removeEvent, [id])
   }
 
   getEventById(id: number): Promise<Event> {
@@ -186,8 +215,8 @@ export class RepositorySQL implements Repository {
     return this.sqlConnection.executeScalarType<Event>(queries.getEventByName, [name])
   }
 
-  updateEvent(e: Event): void {
-    this.sqlConnection.executeQuery(queries.updateEvent, [e.id])
+  updateEvent(e: Event): Promise<boolean> {
+    return this.sqlConnection.executeQuery(queries.updateEvent, [e.id])
   }
 
   getAllEvents(): Promise<Event[]> {
