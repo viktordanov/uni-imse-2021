@@ -5,28 +5,29 @@ import c from 'classnames'
 export interface PostCardProps {
   className?: string
   onClick?: () => void
-  owner: string
+  ownerName: string
   pageTitle: string
-  postTitle: string
+  title: string
   content: string
-  dateOfCreation: Date
+  dateCreated: Date
 }
 
 export const PostCard: React.FunctionComponent<PostCardProps> = ({
   className,
   onClick,
-  owner,
+  ownerName,
   pageTitle,
-  postTitle,
+  title,
   content,
-  dateOfCreation
+  dateCreated
 }: PostCardProps) => {
   const dateString = useMemo(() => {
-    const year = dateOfCreation.getFullYear()
-    const month = dateOfCreation.getMonth()
-    const date = dateOfCreation.getDate()
-    let hours = dateOfCreation.getHours()
-    const minutes = dateOfCreation.getMinutes()
+    if (dateCreated === null || dateCreated === undefined) return ''
+    const year = dateCreated.getFullYear()
+    const month = dateCreated.getMonth()
+    const date = dateCreated.getDate()
+    let hours = dateCreated.getHours()
+    const minutes = dateCreated.getMinutes()
     const midday = hours >= 12 ? 'pm' : 'am'
     hours = hours % 12
     hours = hours ? hours : 12 // the hour '0' should be '12'
@@ -40,15 +41,15 @@ export const PostCard: React.FunctionComponent<PostCardProps> = ({
         </span>
       </>
     )
-  }, [dateOfCreation])
+  }, [dateCreated])
   return (
     <div className={c(styles.postCard, className)} onClick={onClick}>
       <p className={styles.ownerAndPage}>
-        {owner}
+        {ownerName}
         <span>/</span>
         {pageTitle}
       </p>
-      <p className={styles.postTitle}>{postTitle}</p>
+      <p className={styles.postTitle}>{title}</p>
       <p className={styles.content}>{content}</p>
 
       <p className={styles.date}>{dateString}</p>

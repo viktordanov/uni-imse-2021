@@ -1,14 +1,34 @@
-import express, { json, Request, Response } from 'express'
 import compression from 'compression'
-import { EventsService } from '../service/eventsService'
-import { StudentContentService } from '../service/studentContentService'
-import jwt from 'express-jwt'
 import cors from 'cors'
-import { AuthService } from '../service/authService'
+import express, { json, Request, Response } from 'express'
+import jwt from 'express-jwt'
 import { check, validationResult } from 'express-validator'
 import { Page, Post } from '../entities/entities'
-import { reset } from 'yargs'
-import { post } from 'superagent'
+import { AuthService } from '../service/authService'
+import { EventsService } from '../service/eventsService'
+import { StudentContentService } from '../service/studentContentService'
+
+type PagePayload = {
+  title: string
+  description: string
+  dateCreated: Date
+  ownerName: string
+  postCount: number
+}
+
+type PostPayload = {
+  title: string
+  content: string
+  dateCreated: Date
+  ownerName: string
+  pageTitle: string
+}
+
+type FollowedStudentPayload = {
+  name: string
+  email: string
+  university: string
+}
 
 export type RestConfig = {
   host: string
@@ -80,7 +100,7 @@ export class RestWebServer implements Rest {
     authSignupStudent(this)
 
     const apiRouter = express.Router()
-    studentGetPages(this, apiRouter)
+    getPages(this, apiRouter)
     addPage(this, apiRouter)
     getAllStudents(this, apiRouter)
     getAllFollowedStudents(this, apiRouter)
@@ -157,14 +177,33 @@ function authSignupStudent(restServer: RestWebServer): void {
 
 /* STUDENT CONTENT ENDPOINTS */
 
-function studentGetPages(restServer: RestWebServer, apiRouter: express.Router): void {
+function getPages(restServer: RestWebServer, apiRouter: express.Router): void {
   apiRouter.get('/pages', async (req: Request, res: Response) => {
     const studentID = getIdFromDecodedToken(req)
     const [pages, err] = await restServer.getStudentService().getPagesOfStudent(studentID)
     if (err !== null) {
       return res.status(400).json({ error: err.message })
     }
-    return res.status(200).json(pages)
+
+    const [student, errStu] = await restServer.getStudentService().getStudentById(studentID)
+    if (errStu !== null) {
+      return res.status(400).json({ error: errStu.message })
+    }
+
+    const pagesPayload: PagePayload[] = pages.map<PagePayload>(p => {
+      return { ...p, postCount: 0, ownerName: student.name }
+    })
+
+    let i = 0
+    for (const page of pages) {
+      const [posts, errPosts] = await restServer.getStudentService().getPostsOfPage(studentID, page.title)
+      if (errPosts !== null) {
+        return res.status(400).json({ error: errPosts.message })
+      }
+      pagesPayload[i++].postCount = posts.length
+    }
+
+    return res.status(200).json(pagesPayload)
   })
 }
 
@@ -212,14 +251,8 @@ function getAllFollowedStudents(restServer: RestWebServer, apiRouter: express.Ro
       return res.status(400).json({ error: err.message })
     }
 
-    type FollowedStudent = {
-      name: string
-      email: string
-      university: string
-    }
-
     return res.status(200).json(
-      followed.map<FollowedStudent>(f => ({
+      followed.map<FollowedStudentPayload>(f => ({
         name: f.name,
         email: f.email,
         university: f.university
@@ -264,7 +297,9 @@ function getFeedPosts(restServer: RestWebServer, apiRouter: express.Router): voi
       return res.status(400).json({ error: err.message })
     }
 
-    const allPostsFromLast2Weeks = []
+    const now2WeeksAgo = Date.now() - 1000 * 60 * 60 * 24 * 7 * 2
+
+    const allPostsFromLast2Weeks: PostPayload[] = []
     for (const followedStudent of followed) {
       const [pages, errPages] = await restServer.getStudentService().getPagesOfStudent(followedStudent.id)
       if (errPages !== null) {
@@ -275,8 +310,15 @@ function getFeedPosts(restServer: RestWebServer, apiRouter: express.Router): voi
         if (errPosts !== null) {
           return res.status(400).json({ error: errPosts.message })
         }
-        const now2WeeksAgo = Date.now() - 1000 * 60 * 60 * 24 * 7 * 2
-        allPostsFromLast2Weeks.push(...posts.filter(post => post.dateCreated.getTime() >= now2WeeksAgo))
+        const filteredPosts = posts.filter(post => post.dateCreated.getTime() >= now2WeeksAgo)
+        allPostsFromLast2Weeks.push(
+          ...filteredPosts.map<PostPayload>(p => ({
+            ...p,
+            ownerName: followedStudent.name,
+            pageTitle: page.title,
+            title: p.title
+          }))
+        )
       }
     }
 
@@ -292,6 +334,11 @@ function getPosts(restServer: RestWebServer, apiRouter: express.Router): void {
     }
 
     const studentID = getIdFromDecodedToken(req)
+    const [student, errStu] = await restServer.getStudentService().getStudentById(studentID)
+    if (errStu !== null) {
+      return res.status(400).json({ error: errStu.message })
+    }
+
     const [pages, errPage] = await restServer.getStudentService().getPagesOfStudent(studentID)
     if (errPage !== null) {
       return res.status(400).json({ error: errPage.message })
@@ -304,7 +351,12 @@ function getPosts(restServer: RestWebServer, apiRouter: express.Router): void {
     if (err !== null) {
       return res.status(400).json({ error: err.message })
     }
-    return res.status(200).json(posts)
+
+    return res.status(200).json(
+      posts.map<PostPayload>(p => {
+        return { pageTitle, ...p, ownerName: student.name }
+      })
+    )
   })
 }
 
