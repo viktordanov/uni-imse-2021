@@ -35,7 +35,7 @@ export class AuthService {
     matNumber: string
   ): APIResponse<string> {
     let [existing, ok] = await this.repository.getAccountByEmail(email)
-    if (existing.id === undefined) {
+    if (existing.id !== undefined) {
       return ['', new Error('Account already exists')]
     }
 
