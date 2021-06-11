@@ -5,11 +5,11 @@
       color: $color-white;
     }
     .badge {
-      background-color: transparentize($color: $color-black, $amount: 0.65) !important;
-      color: $color-white;
+      background-color: transparentize($color: $color-black, $amount: 0.45) !important;
+      color: #fff;
     }
   }
-
+  
   .letterCircle,
   .badge {
     transition: background-color $time-normal $easing-swift-out, color $time-normal ease;
@@ -18,7 +18,6 @@
   position: relative;
   display: inline-block;
   height: 64px;
-  width: auto;
 
   user-select: none;
 
@@ -66,8 +65,8 @@
   }
   .badge {
     position: relative;
+    display: inline-block;
     left: -31px;
-    float: left;
     height: 64px;
     padding-left: 32px + 16px;
     padding-right: 24px;

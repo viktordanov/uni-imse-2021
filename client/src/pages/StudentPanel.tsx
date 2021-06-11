@@ -40,7 +40,7 @@ export const StudentPanel: React.FunctionComponent = () => {
           <p>page</p>
         </Route>
         <Route path="/following">
-          <StudentFollowing />
+          <StudentFollowing className={styles.subpage} />
         </Route>
       </Switch>
     </div>
