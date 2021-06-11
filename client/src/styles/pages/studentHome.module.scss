@@ -1,6 +1,6 @@
-$gap: 2rem;
+$gap: 3rem;
 
-$followingWidth: 20rem;
+$followingWidth: 15rem;
 $pagesWidth: 20rem;
 $feedWidth: calc(100% - #{$followingWidth + $pagesWidth + 2 * $gap});
 
@@ -110,7 +110,7 @@ $feedWidth: calc(100% - #{$followingWidth + $pagesWidth + 2 * $gap});
   }
   .pageCard {
     &:not(:last-of-type) {
-      margin-bottom: $margin-small;
+      margin-bottom: $margin-normal;
     }
   }
 }
