@@ -48,6 +48,10 @@ $feedWidth: calc(100% - #{$followingWidth + $pagesWidth + 2 * $gap});
       transition: opacity $time-short;
     }
   }
+  .followedBadge {
+    margin-right: $margin-small;
+    margin-bottom: $margin-small;
+  }
 }
 .feed {
   grid-template: feed;
