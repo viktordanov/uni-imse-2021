@@ -65,7 +65,7 @@ const getFollowersOf =
 const getFollowing =
   'select s.StudentID as id, a.Name as name, a.EMail as email, a.Password_Hash as passwordHash, a.Date_registered as dateRegistered, s.University as university, s.Matriculation_number as matNumber ' +
   'from Student s inner join Account a on s.StudentID = a.AccountID ' +
-  'inner join follows f on f.StudentID = s.StudentID ' +
+  'inner join follows f on f.Friend_StudentID = s.StudentID ' +
   'where f.StudentID = ?;'
 
 const addFollow = 'insert into follows (StudentID, Friend_StudentID) values (?, ?);'
