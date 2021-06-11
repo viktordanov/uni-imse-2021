@@ -30,7 +30,7 @@ export const Menu: React.FunctionComponent<MenuProps> = ({ className, onClick }:
       </Link>
       <span>/</span>
       <Link className={c(styles.link, { [styles.selected]: selectedIndex === 2 })} to="/following">
-        Following
+        Students
       </Link>
       <span>/</span>
       <Link className={c(styles.link)} to="/login" onClick={() => setToken(null)}>
