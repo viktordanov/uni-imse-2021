@@ -56,7 +56,7 @@ export const StudentFollowing: React.FunctionComponent<StudentFollowingProps> = 
     )
     return (
       <>
-        <h1>Search results</h1>
+        <h1>Search results ({matching.length === 0 ? 'none' : matching.length})</h1>
         <div className={styles.followedWrapper}>
           {matching.length > 0 &&
             matching.map((student, index) => {
