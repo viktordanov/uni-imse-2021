@@ -74,6 +74,12 @@ export class StudentContentService {
     return null
   }
 
+  async unfollowStudent(studentID: number, idToFollow: number): APIVoid {
+    const ok = await this.repository.removeFollow(studentID, idToFollow)
+    if (!ok) return new Error('failed to remove follow relationship')
+    return null
+  }
+
   async getFollowed(id: number): APIResponse<Student[]> {
     const [following, ok] = await this.repository.getFollowing(id)
     if (!ok) {

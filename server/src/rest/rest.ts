@@ -105,6 +105,7 @@ export class RestWebServer implements Rest {
     getAllStudents(this, apiRouter)
     getAllFollowedStudents(this, apiRouter)
     followStudentByEmail(this, apiRouter)
+    unfollowStudentByEmail(this, apiRouter)
     getFeedPosts(this, apiRouter)
     addPost(this, apiRouter)
     getPosts(this, apiRouter)
@@ -290,6 +291,34 @@ function followStudentByEmail(restServer: RestWebServer, apiRouter: express.Rout
   })
 }
 
+function unfollowStudentByEmail(restServer: RestWebServer, apiRouter: express.Router): void {
+  apiRouter.delete('/followed', [check('email').isEmail()], async (req: Request, res: Response) => {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) return res.status(400).json({ error: 'Invalid data' })
+    const { email } = req.body
+
+    const [me, errMe] = await restServer.getStudentService().getStudentById(getIdFromDecodedToken(req))
+    if (errMe !== null) {
+      return res.status(403).json({ error: errMe.message })
+    }
+
+    if (me.email === email) {
+      return res.status(400).json({ error: 'cannot follow yourself' })
+    }
+
+    const [toFollow, err] = await restServer.getStudentService().getStudentByEmail(email)
+    if (err !== null) {
+      return res.status(401).json({ error: err.message })
+    }
+
+    const err2 = await restServer.getStudentService().unfollowStudent(getIdFromDecodedToken(req), toFollow.id)
+    if (err2 !== null) {
+      return res.status(400).json({ error: err2.message })
+    }
+
+    return res.status(200).json({ status: 'OK' })
+  })
+}
 function getFeedPosts(restServer: RestWebServer, apiRouter: express.Router): void {
   apiRouter.get('/feed', async (req: Request, res: Response) => {
     const [followed, err] = await restServer.getStudentService().getFollowed(getIdFromDecodedToken(req))
