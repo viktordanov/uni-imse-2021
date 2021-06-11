@@ -263,7 +263,7 @@ function getAllFollowedStudents(restServer: RestWebServer, apiRouter: express.Ro
 }
 
 function followStudentByEmail(restServer: RestWebServer, apiRouter: express.Router): void {
-  apiRouter.post('/followed', [check('email').isEmail()], async (req: Request, res: Response) => {
+  apiRouter.post('/follow', [check('email').isEmail()], async (req: Request, res: Response) => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) return res.status(400).json({ error: 'Invalid data' })
     const { email } = req.body
@@ -292,7 +292,7 @@ function followStudentByEmail(restServer: RestWebServer, apiRouter: express.Rout
 }
 
 function unfollowStudentByEmail(restServer: RestWebServer, apiRouter: express.Router): void {
-  apiRouter.delete('/followed', [check('email').isEmail()], async (req: Request, res: Response) => {
+  apiRouter.post('/unfollow', [check('email').isEmail()], async (req: Request, res: Response) => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) return res.status(400).json({ error: 'Invalid data' })
     const { email } = req.body

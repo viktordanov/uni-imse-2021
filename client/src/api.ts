@@ -5,5 +5,20 @@ export const APIEndpoints = {
   getFollowed: host + 'api/followed',
   getPages: host + 'api/pages',
   getFeed: host + 'api/feed',
-  getAllStudents: host + 'api/students'
+  getAllStudents: host + 'api/students',
+  follow: host + 'api/follow',
+  unfollow: host + 'api/unfollow'
+}
+
+export function makeRequest(
+  url: string,
+  method: 'get' | 'delete' | 'put' | 'post',
+  body: unknown,
+  token: string
+): Promise<Response> {
+  return fetch(url, {
+    body: JSON.stringify(body),
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    method
+  })
 }
