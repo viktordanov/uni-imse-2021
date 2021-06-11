@@ -1,11 +1,13 @@
-import styles from '@/styles/pages/studentFollowing.module.scss'
-import React, { useMemo, useState } from 'react'
-import c from 'classnames'
+import { APIEndpoints, makeRequest } from '@/api'
 import { IconInput } from '@/components/iconInput'
-import { Search } from 'react-feather'
-import { useRequest } from '@/hooks/useRequest'
-import { APIEndpoints } from '@/api'
 import { PersonBadge } from '@/components/personBadge'
+import { NotificationType, useNotifications } from '@/context/notifierContext'
+import { useAuth } from '@/hooks/useAuth'
+import { useRequest } from '@/hooks/useRequest'
+import styles from '@/styles/pages/studentFollowing.module.scss'
+import c from 'classnames'
+import React, { useMemo, useState } from 'react'
+import { Search, UserMinus, UserPlus } from 'react-feather'
 
 type Student = {
   name: string
@@ -22,20 +24,38 @@ export const StudentFollowing: React.FunctionComponent<StudentFollowingProps> = 
   className,
   onClick
 }: StudentFollowingProps) => {
-  const allStudents = useRequest<Student[]>([], APIEndpoints.getAllStudents)
-  const followedStudents = useRequest<Student[]>([], APIEndpoints.getFollowed)
-
-  const [manuallyFollowed, setManuallyFollowed] = useState<Student[]>([])
-
-  const followed = useMemo<Student[]>(() => {
-    return [...followedStudents, ...manuallyFollowed]
-  }, [followedStudents, manuallyFollowed])
+  const { token } = useAuth()
+  const { pushNotification } = useNotifications()
+  const [allStudents] = useRequest<Student[]>([], APIEndpoints.getAllStudents)
+  const [followedStudents, refetchFollowed] = useRequest<Student[]>([], APIEndpoints.getFollowed)
 
   const notFollowed = useMemo<Student[]>(() => {
-    return allStudents.filter(s => !followed.includes(s))
-  }, [allStudents, followed])
+    return allStudents.filter(s => !followedStudents.find(st => st.email === s.email))
+  }, [allStudents, followedStudents])
 
   const [query, setQuery] = useState<string>('')
+
+  const follow = (email: string): void => {
+    makeRequest(APIEndpoints.follow, 'post', { email }, token ?? '').then(res => {
+      if (res.ok) {
+        refetchFollowed()
+        pushNotification(NotificationType.SUCCESS, 'Success', 'Student followed', 1500)
+      } else {
+        pushNotification(NotificationType.ERROR, 'Error', 'Unknown error occurred', 1500)
+      }
+    })
+  }
+
+  const unfollow = (email: string): void => {
+    makeRequest(APIEndpoints.unfollow, 'post', { email }, token ?? '').then(res => {
+      if (res.ok) {
+        refetchFollowed()
+        pushNotification(NotificationType.SUCCESS, 'Success', 'Student unfollowed', 1500)
+      } else {
+        pushNotification(NotificationType.ERROR, 'Error', 'Unknown error occurred', 1500)
+      }
+    })
+  }
 
   const Followed = useMemo(() => {
     if (query === '')
@@ -43,30 +63,48 @@ export const StudentFollowing: React.FunctionComponent<StudentFollowingProps> = 
         <>
           <h1>Who you're following</h1>
           <div className={styles.followedWrapper}>
-            {followed.length > 0 &&
-              followed.map((student, index) => {
-                return <PersonBadge className={styles.followedBadge} mode="full" name={student.name} key={index} />
+            {followedStudents.length > 0 &&
+              followedStudents.map((student, index) => {
+                return (
+                  <PersonBadge
+                    className={styles.followedBadge}
+                    mode="full"
+                    other={student.university}
+                    name={student.name}
+                    key={index}
+                    Icon={UserMinus}
+                    onClick={() => unfollow(student.email)}
+                  />
+                )
               })}
-            {followed.length === 0 && <p>You aren't following anybody yet.</p>}
+            {followedStudents.length === 0 && <p>You aren't following anybody yet.</p>}
           </div>
         </>
       )
-    const matching = notFollowed.filter(
-      nF => matches(nF.name, query) || matches(nF.email, query) || matches(nF.university, query)
-    )
+    const matching = notFollowed.filter(nF => matches(nF.name, query) || matches(nF.university, query))
     return (
       <>
         <h1>Search results ({matching.length === 0 ? 'none' : matching.length})</h1>
         <div className={styles.followedWrapper}>
           {matching.length > 0 &&
             matching.map((student, index) => {
-              return <PersonBadge className={styles.followedBadge} mode="full" name={student.name} key={index} />
+              return (
+                <PersonBadge
+                  className={styles.followedBadge}
+                  other={student.university}
+                  mode="full"
+                  name={student.name}
+                  key={query + index}
+                  Icon={UserPlus}
+                  onClick={() => follow(student.email)}
+                />
+              )
             })}
           {matching.length === 0 && <p>No students found.</p>}
         </div>
       </>
     )
-  }, [followed, query, notFollowed])
+  }, [followedStudents, query, notFollowed])
 
   return (
     <div className={c(styles.studentFollowing, className)} onClick={onClick}>
