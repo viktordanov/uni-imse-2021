@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from './useAuth'
 
-type UseRequestPayload<T> = T
+type UseRequestPayload<T> = [T, () => void]
 
 export function useRequest<T>(
   defaultValue: T | (() => T),
@@ -12,7 +12,7 @@ export function useRequest<T>(
   const { token } = useAuth()
   const [fetchedData, setFetchedData] = useState<T>(defaultValue)
 
-  useEffect(() => {
+  function refetch() {
     fetch(requestURL, { ...fetchData, headers: { Authorization: `Bearer ${token}` } })
       .then(res => {
         if (res.ok) return res.json()
@@ -23,7 +23,10 @@ export function useRequest<T>(
         else setFetchedData(data)
       })
       .catch(e => console.warn('Request ' + requestURL + '\n With data: ', fetchData, '\nfailed with error:', e))
+  }
+  useEffect(() => {
+    refetch()
   }, [token])
 
-  return fetchedData
+  return [fetchedData, refetch]
 }

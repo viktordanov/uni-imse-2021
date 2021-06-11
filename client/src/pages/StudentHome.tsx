@@ -35,8 +35,8 @@ type Post = {
 }
 
 export const StudentHome: React.FunctionComponent<StudentHomeProps> = ({ className, onClick }: StudentHomeProps) => {
-  const followedStudents = useRequest<Student[]>([], APIEndpoints.getFollowed)
-  const feedPosts = useRequest<Post[]>([], APIEndpoints.getFeed, {}, (data: any): Post => {
+  const [followedStudents] = useRequest<Student[]>([], APIEndpoints.getFollowed)
+  const [feedPosts] = useRequest<Post[]>([], APIEndpoints.getFeed, {}, (data: any): Post => {
     return data.map((d: any) => {
       return {
         ownerName: d.ownerName,
@@ -47,7 +47,7 @@ export const StudentHome: React.FunctionComponent<StudentHomeProps> = ({ classNa
       }
     })
   })
-  const pages = useRequest<Page[]>([], APIEndpoints.getPages)
+  const [pages] = useRequest<Page[]>([], APIEndpoints.getPages)
   return (
     <div className={c(styles.studentHome, className)} onClick={onClick}>
       <div className={styles.following}>
