@@ -4,5 +4,6 @@ export const APIEndpoints = {
   signup: host + 'auth/signup',
   getFollowed: host + 'api/followed',
   getPages: host + 'api/pages',
-  getFeed: host + 'api/feed'
+  getFeed: host + 'api/feed',
+  getAllStudents: host + 'api/students'
 }
