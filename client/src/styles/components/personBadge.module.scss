@@ -5,18 +5,22 @@
       color: $color-white;
     }
     .badge {
-      background-color: transparentize($color: $color-black, $amount: 0.45) !important;
+      background-color: transparentize($color: $color-black, $amount: 0.4) !important;
       color: #fff;
       p {
         color: #fff !important;
       }
+    }
+    &.hasIcon .icon {
+      background: transparentize(white, 0.8);
+      stroke: white;
     }
   }
 
   .letterCircle,
   .badge,
   .badge p {
-    transition: background-color $time-normal $easing-swift-out, color $time-normal ease;
+    transition: background-color $time-normal/1.5, color $time-normal/1.5;
   }
 
   position: relative;
@@ -95,6 +99,23 @@
       color: $color-accent-faded;
       opacity: 0.5 !important;
     }
+  }
+  &.hasIcon {
+    cursor: pointer;
+    .badge {
+      padding-right: 54px;
+    }
+  }
+
+  .icon {
+    position: absolute;
+    right: 32px + 16px;
+    top: 64px / 2 - 12px - 8px;
+    width: 24px;
+    height: 24px;
+    padding: 8px;
+    border-radius: 48px;
+    transition: background $time-short, stroke $time-short;
   }
 }
 // TODO: FIX THIS MESS

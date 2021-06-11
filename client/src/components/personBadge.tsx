@@ -2,6 +2,7 @@ import styles from '@/styles/components/personBadge.module.scss'
 import React, { useEffect, useMemo } from 'react'
 import c from 'classnames'
 import { useLocalStorage } from '@/hooks/useLocalStorage'
+import { Icon as IconType } from 'react-feather'
 
 export interface PersonBadgeProps {
   className?: string
@@ -9,6 +10,7 @@ export interface PersonBadgeProps {
   name: string
   other?: string
   mode: 'full' | 'compact' | 'profile'
+  Icon?: IconType
 }
 
 export const PersonBadge: React.FunctionComponent<PersonBadgeProps> = ({
@@ -16,7 +18,8 @@ export const PersonBadge: React.FunctionComponent<PersonBadgeProps> = ({
   onClick,
   name,
   other,
-  mode
+  mode,
+  Icon
 }: PersonBadgeProps) => {
   const [color, setColor] = useLocalStorage<string | null>('color_' + name, null)
 
@@ -69,6 +72,7 @@ export const PersonBadge: React.FunctionComponent<PersonBadgeProps> = ({
         <>
           {circle}
           {badge}
+          {Icon && <Icon className={styles.icon} />}
         </>
       )
     }
@@ -76,7 +80,7 @@ export const PersonBadge: React.FunctionComponent<PersonBadgeProps> = ({
   }, [name, mode, mainColor, secondaryColor])
 
   return (
-    <div className={c(styles.personBadge, className)} onClick={onClick}>
+    <div className={c(styles.personBadge, className, { [styles.hasIcon]: Icon !== undefined })} onClick={onClick}>
       {Badge}
       <div className={'clearfix'}></div>
     </div>
