@@ -7,11 +7,15 @@
     .badge {
       background-color: transparentize($color: $color-black, $amount: 0.45) !important;
       color: #fff;
+      p {
+        color: #fff !important;
+      }
     }
   }
-  
+
   .letterCircle,
-  .badge {
+  .badge,
+  .badge p {
     transition: background-color $time-normal $easing-swift-out, color $time-normal ease;
   }
 
@@ -65,15 +69,32 @@
   }
   .badge {
     position: relative;
-    display: inline-block;
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+
     left: -31px;
     height: 64px;
-    padding-left: 32px + 16px;
+    padding-left: 32px;
     padding-right: 24px;
     border-radius: 0 32px 32px 0;
     backdrop-filter: blur(1rem);
     @include font-body;
     font-weight: 400;
     line-height: 64px;
+    p {
+      font-weight: 600 !important;
+      line-height: 20px;
+      opacity: 1 !important;
+
+      margin: 0 !important;
+      text-align: left !important;
+    }
+    p:nth-child(2) {
+      @include font-label;
+      color: $color-accent-faded;
+      opacity: 0.5 !important;
+    }
   }
 }
+// TODO: FIX THIS MESS

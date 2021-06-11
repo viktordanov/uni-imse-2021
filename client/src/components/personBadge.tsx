@@ -7,7 +7,7 @@ export interface PersonBadgeProps {
   className?: string
   onClick?: (e: React.MouseEvent<HTMLDivElement>) => void
   name: string
-  email?: string
+  other?: string
   mode: 'full' | 'compact' | 'profile'
 }
 
@@ -15,7 +15,7 @@ export const PersonBadge: React.FunctionComponent<PersonBadgeProps> = ({
   className,
   onClick,
   name,
-  email,
+  other,
   mode
 }: PersonBadgeProps) => {
   const [color, setColor] = useLocalStorage<string | null>('color_' + name, null)
@@ -49,7 +49,7 @@ export const PersonBadge: React.FunctionComponent<PersonBadgeProps> = ({
         <>
           <div className={styles.profileInfo}>
             <p>{name}</p>
-            {email && <p>{email}</p>}
+            {other && <p>{other}</p>}
           </div>
           {circle}
         </>
@@ -61,7 +61,8 @@ export const PersonBadge: React.FunctionComponent<PersonBadgeProps> = ({
     if (mode === 'full') {
       const badge = (
         <div className={c(styles.badge)} style={{ backgroundColor: secondaryColor }}>
-          {name}
+          <p>{name}</p>
+          {other && <p>{other}</p>}
         </div>
       )
       return (
