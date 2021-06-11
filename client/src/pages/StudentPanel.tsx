@@ -29,7 +29,7 @@ export const StudentPanel: React.FunctionComponent = () => {
         <Logo />
         <div className={styles.right}>
           <Menu className={styles.menu} />
-          <PersonBadge name={userInfo.name} email={userInfo.email} mode="profile" />
+          <PersonBadge name={userInfo.name} other={userInfo.email} mode="profile" />
         </div>
       </header>
       <Switch>
