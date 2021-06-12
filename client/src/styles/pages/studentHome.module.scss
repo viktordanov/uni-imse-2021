@@ -1,4 +1,4 @@
-$gap: 3rem;
+$gap: 2.5rem;
 
 $followingWidth: 15rem;
 $pagesWidth: 20rem;
@@ -55,6 +55,11 @@ $feedWidth: calc(100% - #{$followingWidth + $pagesWidth + 2 * $gap});
 }
 .feed {
   grid-template: feed;
+  max-height: 100%;
+  padding: 0 0.5rem;
+  padding-bottom: $margin-large;
+  overflow-y: scroll;
+  overflow-x: hidden;
 
   label {
     @include font-title;
@@ -87,6 +92,11 @@ $feedWidth: calc(100% - #{$followingWidth + $pagesWidth + 2 * $gap});
 }
 .pages {
   grid-template: pages;
+  max-height: 100%;
+  padding: 0 0.5rem;
+  padding-bottom: $margin-large;
+  overflow-y: scroll;
+  overflow-x: hidden;
 
   label {
     @include font-label;
@@ -98,7 +108,6 @@ $feedWidth: calc(100% - #{$followingWidth + $pagesWidth + 2 * $gap});
   }
 
   .pagesWrapper {
-    width: 100%;
     @include font-body;
     font-size: 18px;
     font-weight: 400;
