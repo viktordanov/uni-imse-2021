@@ -3,6 +3,12 @@
 :root {
   font-size: 16px;
 }
+*{
+  scrollbar-width: none;
+}
+::-webkit-scrollbar {
+  display: none;
+}
 .clearfix:after {
   content: "";
   display: table;
