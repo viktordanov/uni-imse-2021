@@ -462,14 +462,15 @@ function getPostsOfStudent(restServer: RestWebServer, apiRouter: express.Router)
     }
 
     const meID = getIdFromDecodedToken(req)
+    const meEmail = getEmailFromDecodedToken(req)
 
     const [followed, errFollowed] = await restServer.getStudentService().getFollowed(meID)
     if (errFollowed !== null) {
       return res.status(400).json({ error: errFollowed.message })
     }
 
-    if (followed.findIndex(student => student.email === email) === -1) {
-      return res.status(401).json({ error: 'requester does not follow a student with the given email' })
+    if (followed.findIndex(student => student.email === email) === -1 && email !== meEmail) {
+      return res.status(401).json({ error: 'requester does not follow a student with the given email and is not them' })
     }
 
     const [student, errStudent] = await restServer.getStudentService().getStudentByEmail(email)
@@ -656,4 +657,7 @@ function getStudentInfoByEmail(restServer: RestWebServer, apiRouter: express.Rou
 
 function getIdFromDecodedToken(req: Request): number {
   return (req.user as any)?.sub?.id ?? -1
+}
+function getEmailFromDecodedToken(req: Request): string {
+  return (req.user as any)?.sub?.email ?? ''
 }
