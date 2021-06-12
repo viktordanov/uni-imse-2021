@@ -1,4 +1,4 @@
-.studentFollowing {
+.studentPages {
   width: 100%;
   height: 100%;
   padding: 0 10%;
@@ -7,33 +7,28 @@
   padding-top: 5vh;
 
   h1 {
+    display: inline-block;
     @include font-title;
     font-weight: 600;
+  }
+  .header {
     margin-bottom: $margin-large;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
-  .icon {
-    stroke: $color-accent
+  .pages {
+    max-height: calc(100% - 5rem);
+    display: flex;
+    justify-content: center;
   }
-  .iconText {
-    margin-bottom: $margin-large * 3;
-    left: 75%
-  }
-}
-
-.pages {
-  label {
-    @include font-label;
-    width: 100%;
-    display: block;
-    margin-bottom: $margin-large;
-    font-size: 16px;
-    color: $color-accent-faded;
-  }
-
   .pagesWrapper {
-    display: grid;
-    grid-template-columns: auto auto auto;
-    width: 100%;
+    width: 80%;
+   
+    max-height: 100%;
+    overflow-y: scroll;
+
+    padding: $margin-normal;
     @include font-body;
     font-size: 18px;
     font-weight: 400;
@@ -47,9 +42,10 @@
       transition: opacity $time-short;
     }
   }
-  
+
   .pageCard {
+    display: inline-block;
+    margin-right: $margin-normal;
     margin-bottom: $margin-normal;
-    height: 100px;
   }
 }

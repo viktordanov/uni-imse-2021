@@ -1,15 +1,13 @@
-import { APIEndpoints, makeRequest } from '@/api'
-import { IconInput } from '@/components/iconInput'
-import { IconTextButton } from '@/components/iconTextButton'
+import { APIEndpoints } from '@/api'
+import { IconButton } from '@/components/iconButton'
 import { PageCard } from '@/components/pageCard'
-import { PersonBadge } from '@/components/personBadge'
 import { NotificationType, useNotifications } from '@/context/notifierContext'
 import { useAuth } from '@/hooks/useAuth'
 import { useRequest } from '@/hooks/useRequest'
 import styles from '@/styles/pages/studentPage.module.scss'
 import c from 'classnames'
-import React, { useMemo, useState } from 'react'
-import { UserMinus, UserPlus, Plus } from 'react-feather'
+import React from 'react'
+import { Plus } from 'react-feather'
 
 type Page = {
   title: string
@@ -28,11 +26,28 @@ export const StudentPage: React.FunctionComponent<StudentPageProps> = ({ classNa
   const { pushNotification } = useNotifications()
   const [pages] = useRequest<Page[]>([], APIEndpoints.getPages)
 
-  const Pages = useMemo(() => {
-    return (
+  return (
+    <div className={c(styles.studentPages, className)} onClick={onClick}>
+      <div className={styles.header}>
+        <h1>Your pages</h1>
+        <IconButton
+          Icon={Plus}
+          onClick={() => {
+            pushNotification(NotificationType.INFO, 'test', 'test', 2200)
+            console.log('jamoin')
+          }}
+        >
+          New page
+        </IconButton>
+      </div>
+
       <div className={styles.pages}>
         <div className={styles.pagesWrapper}>
           {pages.length > 0 &&
+            pages.push(...pages) &&
+            pages.push(...pages) &&
+            pages.push(...pages) &&
+            pages.push(...pages) &&
             pages.map((page, index) => {
               return (
                 <PageCard
@@ -47,22 +62,6 @@ export const StudentPage: React.FunctionComponent<StudentPageProps> = ({ classNa
           {pages.length === 0 && <p>You don't have any pages yet.</p>}
         </div>
       </div>
-    )
-  }, [pages])
-
-  return (
-    <div className={c(styles.studentFollowing, className)} onClick={onClick}>
-      <h1>Your pages</h1>
-      <IconTextButton
-        iconClassName={styles.icon}
-        wrapperClassName={styles.iconText}
-        Icon={Plus}
-        value={'new page'}
-        onClick={() => {
-          console.log('jamoin')
-        }}
-      />
-      {Pages}
     </div>
   )
 }
