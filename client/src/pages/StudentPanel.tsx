@@ -6,10 +6,10 @@ import { PersonBadge } from '@/components/personBadge'
 import { Menu } from '@/components/menu'
 import { useAuth } from '@/hooks/useAuth'
 import { Route, Switch } from 'react-router'
-import { StudentHome } from './StudentHome'
-import { StudentFollowing } from './StudentFollowing'
-import { StudentPages } from './StudentPages'
-import { StudentPage } from './StudentPage'
+import { StudentHome } from './Home'
+import { StudentFollowing } from './Students'
+import { StudentPages } from './Pages'
+import { StudentPage } from './StudentPages'
 
 type UserInfo = {
   name: string

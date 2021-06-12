@@ -1,121 +1,61 @@
-import { APIEndpoints, makeRequest } from '@/api'
-import { Button } from '@/components/button'
-import { FormInput } from '@/components/formInput'
+import { APIEndpoints } from '@/api'
 import { IconButton } from '@/components/iconButton'
-import { Modal } from '@/components/modal'
 import { PageCard } from '@/components/pageCard'
-import { NotificationType, useNotifications } from '@/context/notifierContext'
-import { useAuth } from '@/hooks/useAuth'
+import { Placeholder } from '@/components/placeholder'
 import { useRequest } from '@/hooks/useRequest'
-import modalStyles from '@/styles/components/modal.module.scss'
 import styles from '@/styles/pages/studentPages.module.scss'
+import { Page, Student } from '@/types'
 import c from 'classnames'
-import React, { useCallback, useState } from 'react'
-import { Plus } from 'react-feather'
-
-type Page = {
-  title: string
-  description: string
-  dateCreated: Date
-  postCount: number
-}
+import React from 'react'
+import { ChevronLeft } from 'react-feather'
+import { useHistory, useParams } from 'react-router-dom'
 
 export interface StudentPagesProps {
   className?: string
   onClick?: (e: React.MouseEvent<HTMLDivElement>) => void
 }
 
-export const StudentPages: React.FunctionComponent<StudentPagesProps> = ({ className, onClick }: StudentPagesProps) => {
-  const { token } = useAuth()
-  const { pushNotification } = useNotifications()
-  const [pages, refetchPages] = useRequest<Page[]>([], APIEndpoints.getPages)
-
-  const [modalIsOpen, setIsOpen] = React.useState(false)
-  function openModal() {
-    setIsOpen(true)
-  }
-
-  function closeModal() {
-    setIsOpen(false)
-  }
-
-  const [pageTitle, setPageTitle] = useState('')
-  const [description, setDescription] = useState('')
-  const handleNewPage = useCallback(() => {
-    makeRequest(APIEndpoints.newPage, 'post', { title: pageTitle, description }, token ?? '').then(res => {
-      if (res.ok) {
-        closeModal()
-        pushNotification(NotificationType.SUCCESS, 'New page', 'Successfully added new page', 2000)
-        refetchPages()
-      } else {
-        pushNotification(NotificationType.ERROR, 'Error', 'Unknown error occurred ' + res.statusText, 2000)
-      }
-    })
-  }, [pageTitle, description, token])
-  const handlePageDelete = useCallback(
-    (pageTitle: string) => {
-      makeRequest(APIEndpoints.deletePage, 'delete', { title: pageTitle }, token ?? '').then(res => {
-        if (res.ok) {
-          pushNotification(NotificationType.SUCCESS, 'Success', 'Successfully delete page', 2000)
-          refetchPages()
-        } else {
-          pushNotification(NotificationType.ERROR, 'Error', 'Unknown error occurred ' + res.statusText, 2000)
-        }
-      })
-    },
-    [token]
+export const StudentPage: React.FunctionComponent<StudentPagesProps> = ({ className, onClick }: StudentPagesProps) => {
+  const { studentEmail } = useParams<{ studentEmail: string }>()
+  const { goBack } = useHistory()
+  const [studentInfo] = useRequest<Student>(
+    { email: '', name: '', university: '' },
+    APIEndpoints.getStudentInfo(decodeURI(studentEmail))
   )
+  const [pages] = useRequest<Page[]>([], APIEndpoints.getPagesOfStudent(decodeURI(studentEmail)))
+
   return (
     <div className={c(styles.studentPages, className)} onClick={onClick}>
-      <div className={styles.header}>
-        <h1>Your pages</h1>
-        <IconButton
-          Icon={Plus}
-          onClick={() => {
-            openModal()
-          }}
-        >
-          New page
-        </IconButton>
-      </div>
-      <Modal
-        isOpen={modalIsOpen}
-        onRequestClose={closeModal}
-        overlayClassName={modalStyles.modalOverlay}
-        title="New page"
-      >
-        <FormInput
-          className={styles.formInput}
-          value={pageTitle}
-          onChange={e => setPageTitle(e.currentTarget.value)}
-          label={'page title'}
-        />
-        <FormInput
-          className={styles.formInput}
-          value={description}
-          onChange={e => setDescription(e.currentTarget.value)}
-          label={'description'}
-        />
-        <Button className={styles.right} onClick={handleNewPage}>
-          Add page
-        </Button>
-      </Modal>
       <div className={styles.pages}>
         <div className={styles.pagesWrapper}>
-          {pages.length > 0 &&
-            pages.map((page, index) => {
-              return (
-                <PageCard
-                  onDeleteClick={() => handlePageDelete(page.title)}
-                  className={styles.pageCard}
-                  pageTitle={page.title}
-                  description={page.description}
-                  postCount={page.postCount}
-                  key={index}
-                />
-              )
-            })}
-          {pages.length === 0 && <p>You don't have any pages yet.</p>}
+          {pages.length > 0 && (
+            <>
+              <div className={styles.header}>
+                <h1>
+                  {studentInfo.name}'s pages ({pages.length})
+                </h1>
+                <IconButton Icon={ChevronLeft} onClick={goBack}>
+                  Back
+                </IconButton>
+              </div>
+              {pages.map((page, index) => {
+                return (
+                  <PageCard
+                    className={styles.pageCard}
+                    pageTitle={page.title}
+                    description={page.description}
+                    postCount={page.postCount}
+                    key={index}
+                  />
+                )
+              })}
+            </>
+          )}
+          {pages.length === 0 && (
+            <Placeholder>
+              <p>{studentInfo.name} doesn't have any pages yet.</p>
+            </Placeholder>
+          )}
         </div>
       </div>
     </div>

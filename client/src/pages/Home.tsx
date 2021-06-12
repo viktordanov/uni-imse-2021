@@ -52,7 +52,7 @@ export const StudentHome: React.FunctionComponent<StudentHomeProps> = ({ classNa
               <p>
                 You aren't following anybody yet.
                 <br />
-                <Link className={styles.link} to="/following">
+                <Link className={styles.link} to="/students">
                   Find students to follow
                 </Link>
               </p>
@@ -82,7 +82,7 @@ export const StudentHome: React.FunctionComponent<StudentHomeProps> = ({ classNa
               <p>
                 Your feed is empty. Follow more students to enrich your feed!
                 <br />
-                <Link className={styles.link} to="/following">
+                <Link className={styles.link} to="/students">
                   Discover other students
                 </Link>
               </p>
