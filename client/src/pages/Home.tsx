@@ -1,8 +1,9 @@
-import { APIEndpoints } from '@/api'
+import { APIEndpoints, makeRequest } from '@/api'
 import { PageCard } from '@/components/pageCard'
 import { PersonBadge } from '@/components/personBadge'
 import { Placeholder } from '@/components/placeholder'
 import { PostCard } from '@/components/postCard'
+import { NotificationType, useNotifications } from '@/context/notifierContext'
 import { useAuth } from '@/hooks/useAuth'
 import { useRequest } from '@/hooks/useRequest'
 import styles from '@/styles/pages/studentHome.module.scss'
@@ -17,7 +18,8 @@ export interface HomeProps {
 }
 
 export const Home: React.FunctionComponent<HomeProps> = ({ className, onClick }: HomeProps) => {
-  const { decodedToken } = useAuth()
+  const { token, decodedToken } = useAuth()
+  const { pushNotification } = useNotifications()
   const [followedStudents] = useRequest<Student[]>([], APIEndpoints.getFollowed)
   const { push } = useHistory()
   const [feedPosts] = useRequest<Post[]>([], APIEndpoints.getFeed, {}, (data: any): Post => {
@@ -34,7 +36,65 @@ export const Home: React.FunctionComponent<HomeProps> = ({ className, onClick }:
   })
   const [pages] = useRequest<Page[]>([], APIEndpoints.getPages)
 
-  const handleLike = useCallback((ownerEmail: string, pageTitle: string, postTitle: string) => {}, [])
+  const [likedPosts, refetchLikes] = useRequest<Post[]>([], APIEndpoints.getLiked, {}, (data: any): Post => {
+    return data.map((d: any) => {
+      return {
+        title: d.title,
+        content: d.content,
+        dateCreated: new Date(d.dateCreated)
+      }
+    })
+  })
+
+  const isPostLiked = useCallback(
+    (post: Post): boolean => {
+      return (
+        likedPosts.findIndex(p => {
+          return (
+            p.content === post.content &&
+            p.dateCreated.getTime() === post.dateCreated.getTime() &&
+            p.title === post.title
+          )
+        }) !== -1
+      )
+    },
+    [likedPosts]
+  )
+  const handleLike = useCallback(
+    (post: Post) => {
+      const liked = isPostLiked(post)
+      if (!liked) {
+        makeRequest(
+          APIEndpoints.likePost,
+          'post',
+          { postOwnerAddress: post.ownerEmail, postTitle: post.title, pageTitle: post.pageTitle },
+          token ?? ''
+        ).then(res => {
+          if (res.ok) {
+            pushNotification(NotificationType.INFO, post.title, 'Post liked', 2000)
+            refetchLikes()
+          } else {
+            pushNotification(NotificationType.ERROR, 'Error', 'Something went wrong ' + res.statusText, 2000)
+          }
+        })
+      } else {
+        makeRequest(
+          APIEndpoints.unlikePost,
+          'post',
+          { postOwnerAddress: post.ownerEmail, postTitle: post.title, pageTitle: post.pageTitle },
+          token ?? ''
+        ).then(res => {
+          if (res.ok) {
+            pushNotification(NotificationType.INFO, post.title, 'Post like removed', 2000)
+            refetchLikes()
+          } else {
+            pushNotification(NotificationType.ERROR, 'Error', 'Something went wrong ' + res.statusText, 2000)
+          }
+        })
+      }
+    },
+    [isPostLiked, refetchLikes, token]
+  )
 
   return (
     <div className={c(styles.studentHome, className)} onClick={onClick}>
@@ -80,7 +140,8 @@ export const Home: React.FunctionComponent<HomeProps> = ({ className, onClick }:
                   pageTitle={post.pageTitle}
                   title={post.title}
                   key={index}
-                  onClick={() => handleLike(post.ownerEmail, post.pageTitle, post.pageTitle)}
+                  liked={isPostLiked(post)}
+                  onClick={() => handleLike(post)}
                 />
               )
             })}
