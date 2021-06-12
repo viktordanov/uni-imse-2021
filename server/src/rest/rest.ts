@@ -102,6 +102,7 @@ export class RestWebServer implements Rest {
     const apiRouter = express.Router()
     getPages(this, apiRouter)
     getPagesOfStudentByEmail(this, apiRouter)
+    getPostsOfStudent(this, apiRouter)
     addPage(this, apiRouter)
     removePage(this, apiRouter)
     getAllStudents(this, apiRouter)
@@ -438,6 +439,53 @@ function getPosts(restServer: RestWebServer, apiRouter: express.Router): void {
     }
 
     const [posts, err] = await restServer.getStudentService().getPostsOfPage(studentID, pageTitle)
+    if (err !== null) {
+      return res.status(400).json({ error: err.message })
+    }
+
+    return res.status(200).json(
+      posts.map<PostPayload>(p => {
+        return { pageTitle, ...p, ownerName: student.name }
+      })
+    )
+  })
+}
+
+function getPostsOfStudent(restServer: RestWebServer, apiRouter: express.Router): void {
+  apiRouter.get('/posts/student/:email/:pageTitle', async (req: Request, res: Response) => {
+    const { email, pageTitle } = req.params
+    if (email === null || email.length < 3) {
+      return res.status(400).json({ error: 'email missing or too short' })
+    }
+    if (pageTitle === null || pageTitle.length < 3) {
+      return res.status(400).json({ error: 'page title missing or too short' })
+    }
+
+    const meID = getIdFromDecodedToken(req)
+
+    const [followed, errFollowed] = await restServer.getStudentService().getFollowed(meID)
+    if (errFollowed !== null) {
+      return res.status(400).json({ error: errFollowed.message })
+    }
+
+    if (followed.findIndex(student => student.email === email) === -1) {
+      return res.status(401).json({ error: 'requester does not follow a student with the given email' })
+    }
+
+    const [student, errStudent] = await restServer.getStudentService().getStudentByEmail(email)
+    if (errStudent !== null) {
+      return res.status(400).json({ error: errStudent.message })
+    }
+
+    const [pages, errPage] = await restServer.getStudentService().getPagesOfStudent(student.id)
+    if (errPage !== null) {
+      return res.status(400).json({ error: errPage.message })
+    }
+    if (pages.findIndex(p => p.title === pageTitle) === -1) {
+      return res.status(400).json({ error: 'page not found' })
+    }
+
+    const [posts, err] = await restServer.getStudentService().getPostsOfPage(student.id, pageTitle)
     if (err !== null) {
       return res.status(400).json({ error: err.message })
     }
