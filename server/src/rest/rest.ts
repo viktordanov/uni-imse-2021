@@ -101,6 +101,7 @@ export class RestWebServer implements Rest {
 
     const apiRouter = express.Router()
     getPages(this, apiRouter)
+    getPagesOfStudentByEmail(this, apiRouter)
     addPage(this, apiRouter)
     removePage(this, apiRouter)
     getAllStudents(this, apiRouter)
@@ -199,6 +200,49 @@ function getPages(restServer: RestWebServer, apiRouter: express.Router): void {
     let i = 0
     for (const page of pages) {
       const [posts, errPosts] = await restServer.getStudentService().getPostsOfPage(studentID, page.title)
+      if (errPosts !== null) {
+        return res.status(400).json({ error: errPosts.message })
+      }
+      pagesPayload[i++].postCount = posts.length
+    }
+
+    return res.status(200).json(pagesPayload)
+  })
+}
+function getPagesOfStudentByEmail(restServer: RestWebServer, apiRouter: express.Router): void {
+  apiRouter.get('/pages/:email', async (req: Request, res: Response) => {
+    const email = req.params.email
+    if (email === null || email.length < 3) {
+      return res.status(400).json({ error: 'page title missing or too short' })
+    }
+
+    const studentID = getIdFromDecodedToken(req)
+    const [followed, errFollowed] = await restServer.getStudentService().getFollowed(studentID)
+    if (errFollowed !== null) {
+      return res.status(400).json({ error: errFollowed.message })
+    }
+
+    if (followed.findIndex(student => student.email === email) === -1) {
+      return res.status(400).json({ error: 'requester does not follow a student with the given email' })
+    }
+
+    const [student, errStu] = await restServer.getStudentService().getStudentByEmail(email)
+    if (errStu !== null) {
+      return res.status(400).json({ error: errStu.message })
+    }
+
+    const [pages, err] = await restServer.getStudentService().getPagesOfStudent(student.id)
+    if (err !== null) {
+      return res.status(400).json({ error: err.message })
+    }
+
+    const pagesPayload: PagePayload[] = pages.map<PagePayload>(p => {
+      return { ...p, postCount: 0, ownerName: student.name }
+    })
+
+    let i = 0
+    for (const page of pages) {
+      const [posts, errPosts] = await restServer.getStudentService().getPostsOfPage(student.id, page.title)
       if (errPosts !== null) {
         return res.status(400).json({ error: errPosts.message })
       }
