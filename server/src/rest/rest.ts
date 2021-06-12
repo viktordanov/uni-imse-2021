@@ -5,7 +5,6 @@ import jwt from 'express-jwt'
 import { check, validationResult } from 'express-validator'
 import { Page, Post } from '../entities/entities'
 import { AuthService } from '../service/authService'
-import { EventsService } from '../service/eventsService'
 import { StudentContentService } from '../service/studentContentService'
 
 type PagePayload = {
@@ -53,8 +52,8 @@ export class RestWebServer implements Rest {
   config: RestConfig
   private webServer: express.Express
   private authService: AuthService
-  private eventsService: EventsService
   private studentService: StudentContentService
+  private repoImpl: 'sql' | 'mongo'
 
   getServer(): express.Express {
     return this.webServer
@@ -64,24 +63,16 @@ export class RestWebServer implements Rest {
     return this.authService
   }
 
-  getEventsService(): EventsService {
-    return this.eventsService
-  }
-
   getStudentService(): StudentContentService {
     return this.studentService
   }
 
-  constructor(
-    config: RestConfig,
-    authService: AuthService,
-    eventsService: EventsService,
-    studentService: StudentContentService
-  ) {
+  constructor(config: RestConfig, authService: AuthService, studentService: StudentContentService) {
     this.config = config
     this.authService = authService
-    this.eventsService = eventsService
     this.studentService = studentService
+
+    this.repoImpl = 'sql'
 
     this.webServer = express()
 

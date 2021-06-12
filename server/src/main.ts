@@ -1,6 +1,5 @@
 import { RestConfig, RestWebServer } from './rest/rest'
 import { AuthService } from './service/authService'
-import { EventsService } from './service/eventsService'
 import { StudentContentService } from './service/studentContentService'
 import { RepositorySQL } from './sql/repositorySQL'
 
@@ -20,7 +19,7 @@ async function main() {
   const authService = new AuthService(sqlRepository, JWT_SECRET)
   const studentService = new StudentContentService(sqlRepository)
 
-  const webServer = new RestWebServer(restConfig, authService, {} as EventsService, studentService)
+  const webServer = new RestWebServer(restConfig, authService, studentService)
   webServer.serve()
 }
 
