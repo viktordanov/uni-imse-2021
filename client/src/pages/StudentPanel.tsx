@@ -8,7 +8,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { Route, Switch } from 'react-router'
 import { StudentHome } from './StudentHome'
 import { StudentFollowing } from './StudentFollowing'
-import { StudentPages } from './StudentPage'
+import { StudentPages } from './StudentPages'
 
 type UserInfo = {
   name: string
