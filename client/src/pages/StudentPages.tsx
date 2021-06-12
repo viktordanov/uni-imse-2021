@@ -9,6 +9,8 @@ import c from 'classnames'
 import React from 'react'
 import { Plus } from 'react-feather'
 
+import Modal from 'react-modal'
+
 type Page = {
   title: string
   description: string
@@ -26,6 +28,8 @@ export const StudentPages: React.FunctionComponent<StudentPagesProps> = ({ class
   const { pushNotification } = useNotifications()
   const [pages] = useRequest<Page[]>([], APIEndpoints.getPages)
 
+  const [modalIsOpen, setIsOpen] = React.useState(false)
+
   return (
     <div className={c(styles.studentPages, className)} onClick={onClick}>
       <div className={styles.header}>
@@ -40,14 +44,27 @@ export const StudentPages: React.FunctionComponent<StudentPagesProps> = ({ class
           New page
         </IconButton>
       </div>
-
+      <Modal
+        isOpen={modalIsOpen}
+        // onAfterOpen={afterOpenModal}
+        // onRequestClose={closeModal}
+        // style={customStyles}
+        contentLabel="Example Modal"
+      >
+        <h2>Hello</h2>
+        <button>close</button>
+        <div>I am a modal</div>
+        <form>
+          <input />
+          <button>tab navigation</button>
+          <button>stays</button>
+          <button>inside</button>
+          <button>the modal</button>
+        </form>
+      </Modal>
       <div className={styles.pages}>
         <div className={styles.pagesWrapper}>
           {pages.length > 0 &&
-            pages.push(...pages) &&
-            pages.push(...pages) &&
-            pages.push(...pages) &&
-            pages.push(...pages) &&
             pages.map((page, index) => {
               return (
                 <PageCard
