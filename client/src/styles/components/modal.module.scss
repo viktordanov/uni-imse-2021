@@ -34,7 +34,7 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: transparentize($color: $color-black, $amount: 0.5);
+  background: transparentize($color: $color-black, $amount: 0.1);
   backdrop-filter: blur(0.5rem);
   display: flex;
   justify-content: center;
