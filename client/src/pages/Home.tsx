@@ -3,6 +3,7 @@ import { PageCard } from '@/components/pageCard'
 import { PersonBadge } from '@/components/personBadge'
 import { Placeholder } from '@/components/placeholder'
 import { PostCard } from '@/components/postCard'
+import { useAuth } from '@/hooks/useAuth'
 import { useRequest } from '@/hooks/useRequest'
 import styles from '@/styles/pages/studentHome.module.scss'
 import { Page, Post, Student } from '@/types'
@@ -16,6 +17,7 @@ export interface HomeProps {
 }
 
 export const Home: React.FunctionComponent<HomeProps> = ({ className, onClick }: HomeProps) => {
+  const { decodedToken } = useAuth()
   const [followedStudents] = useRequest<Student[]>([], APIEndpoints.getFollowed)
   const { push } = useHistory()
   const [feedPosts] = useRequest<Post[]>([], APIEndpoints.getFeed, {}, (data: any): Post => {
@@ -101,6 +103,9 @@ export const Home: React.FunctionComponent<HomeProps> = ({ className, onClick }:
                   pageTitle={page.title}
                   description={page.description}
                   postCount={page.postCount}
+                  onClick={() =>
+                    push('/students/' + ((decodedToken?.sub as any)?.email ?? '') + '/' + encodeURI(page.title))
+                  }
                   key={index}
                 />
               )

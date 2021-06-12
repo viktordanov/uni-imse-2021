@@ -13,6 +13,7 @@ import styles from '@/styles/pages/studentPages.module.scss'
 import c from 'classnames'
 import React, { useCallback, useState } from 'react'
 import { Plus } from 'react-feather'
+import { useHistory } from 'react-router-dom'
 
 type Page = {
   title: string
@@ -27,7 +28,8 @@ export interface PagesProps {
 }
 
 export const Pages: React.FunctionComponent<PagesProps> = ({ className, onClick }: PagesProps) => {
-  const { token } = useAuth()
+  const { token, decodedToken } = useAuth()
+  const { push } = useHistory()
   const { pushNotification } = useNotifications()
   const [pages, refetchPages] = useRequest<Page[]>([], APIEndpoints.getPages)
 
@@ -112,6 +114,9 @@ export const Pages: React.FunctionComponent<PagesProps> = ({ className, onClick 
                   pageTitle={page.title}
                   description={page.description}
                   postCount={page.postCount}
+                  onClick={() =>
+                    push('/students/' + ((decodedToken?.sub as any)?.email ?? '') + '/' + encodeURI(page.title))
+                  }
                   key={index}
                 />
               )

@@ -17,7 +17,7 @@ export interface StudentPagesProps {
 
 export const StudentPages: React.FunctionComponent<StudentPagesProps> = ({ className, onClick }: StudentPagesProps) => {
   const { studentEmail } = useParams<{ studentEmail: string }>()
-  const { goBack } = useHistory()
+  const { goBack, push } = useHistory()
   const [studentInfo] = useRequest<Student>(
     { email: '', name: '', university: '' },
     APIEndpoints.getStudentInfo(decodeURI(studentEmail))
@@ -45,6 +45,7 @@ export const StudentPages: React.FunctionComponent<StudentPagesProps> = ({ class
                     pageTitle={page.title}
                     description={page.description}
                     postCount={page.postCount}
+                    onClick={() => push('/students/' + studentEmail + '/' + encodeURI(page.title))}
                     key={index}
                   />
                 )
