@@ -11,7 +11,7 @@ import { useRequest } from '@/hooks/useRequest'
 import modalStyles from '@/styles/components/modal.module.scss'
 import styles from '@/styles/pages/studentPages.module.scss'
 import c from 'classnames'
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useRef, useState } from 'react'
 import { Plus } from 'react-feather'
 import { useHistory } from 'react-router-dom'
 
@@ -42,16 +42,37 @@ export const Pages: React.FunctionComponent<PagesProps> = ({ className, onClick 
     setIsOpen(false)
   }
 
+  const titleRef = useRef<HTMLInputElement>(null)
+  const descriptionRef = useRef<HTMLInputElement>(null)
   const [pageTitle, setPageTitle] = useState('')
   const [description, setDescription] = useState('')
   const handleNewPage = useCallback(() => {
+    if (!titleRef.current?.validity.valid) {
+      pushNotification(
+        NotificationType.WARNING,
+        'Title invalid',
+        'Please ensure your title is longer than 3 character',
+        3500
+      )
+      return
+    }
+    if (!descriptionRef.current?.validity.valid) {
+      pushNotification(
+        NotificationType.WARNING,
+        'Content invalid',
+        'Please ensure your description is longer than 3 character and shorter than 1500',
+        3500
+      )
+      return
+    }
+
     makeRequest(APIEndpoints.newPage, 'post', { title: pageTitle, description }, token ?? '').then(res => {
       if (res.ok) {
         closeModal()
         pushNotification(NotificationType.SUCCESS, 'New page', 'Successfully added new page', 2000)
         refetchPages()
       } else {
-        pushNotification(NotificationType.ERROR, 'Error', 'Page alreadyt exists', 2000)
+        pushNotification(NotificationType.ERROR, 'Error', 'Page already exists', 2000)
       }
     })
   }, [pageTitle, description, token])
@@ -88,12 +109,18 @@ export const Pages: React.FunctionComponent<PagesProps> = ({ className, onClick 
         title="New page"
       >
         <FormInput
+          ref={titleRef}
+          required
+          minLength={3}
           className={styles.formInput}
           value={pageTitle}
           onChange={e => setPageTitle(e.currentTarget.value)}
           label={'page title'}
         />
         <FormInput
+          ref={descriptionRef}
+          required
+          minLength={3}
           className={styles.formInput}
           value={description}
           onChange={e => setDescription(e.currentTarget.value)}
