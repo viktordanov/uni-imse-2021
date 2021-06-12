@@ -80,7 +80,7 @@ export const Pages: React.FunctionComponent<PagesProps> = ({ className, onClick 
     (pageTitle: string) => {
       makeRequest(APIEndpoints.deletePage, 'delete', { title: pageTitle }, token ?? '').then(res => {
         if (res.ok) {
-          pushNotification(NotificationType.SUCCESS, 'Success', 'Successfully delete page', 2000)
+          pushNotification(NotificationType.SUCCESS, 'Success', 'Successfully deleted page', 2000)
           refetchPages()
         } else {
           pushNotification(NotificationType.ERROR, 'Error', 'Unknown error occurred ' + res.statusText, 2000)
