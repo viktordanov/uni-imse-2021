@@ -40,6 +40,7 @@ export const StudentPosts: React.FunctionComponent<StudentPostsProps> = ({ class
       return data.map((d: any) => {
         return {
           ownerName: d.ownerName,
+          ownerEmail: d.ownerEmail,
           pageTitle: d.pageTitle,
           title: d.title,
           content: d.content,
@@ -101,6 +102,66 @@ export const StudentPosts: React.FunctionComponent<StudentPostsProps> = ({ class
     })
   }, [postTitle, content, token, pageTitle])
 
+  const [likedPosts, refetchLikes] = useRequest<Post[]>([], APIEndpoints.getLiked, {}, (data: any): Post => {
+    return data.map((d: any) => {
+      return {
+        title: d.title,
+        content: d.content,
+        dateCreated: new Date(d.dateCreated)
+      }
+    })
+  })
+
+  const isPostLiked = useCallback(
+    (post: Post): boolean => {
+      return (
+        likedPosts.findIndex(p => {
+          return (
+            p.content === post.content &&
+            p.dateCreated.getTime() === post.dateCreated.getTime() &&
+            p.title === post.title
+          )
+        }) !== -1
+      )
+    },
+    [likedPosts]
+  )
+  const handleLike = useCallback(
+    (post: Post) => {
+      const liked = isPostLiked(post)
+      if (!liked) {
+        makeRequest(
+          APIEndpoints.likePost,
+          'post',
+          { postOwnerAddress: post.ownerEmail, postTitle: post.title, pageTitle: post.pageTitle },
+          token ?? ''
+        ).then(res => {
+          if (res.ok) {
+            pushNotification(NotificationType.INFO, post.title, 'Post liked', 2000)
+            refetchLikes()
+          } else {
+            pushNotification(NotificationType.ERROR, 'Error', 'Something went wrong ' + res.statusText, 2000)
+          }
+        })
+      } else {
+        makeRequest(
+          APIEndpoints.unlikePost,
+          'post',
+          { postOwnerAddress: post.ownerEmail, postTitle: post.title, pageTitle: post.pageTitle },
+          token ?? ''
+        ).then(res => {
+          if (res.ok) {
+            pushNotification(NotificationType.INFO, post.title, 'Post like removed', 2000)
+            refetchLikes()
+          } else {
+            pushNotification(NotificationType.ERROR, 'Error', 'Something went wrong ' + res.statusText, 2000)
+          }
+        })
+      }
+    },
+    [isPostLiked, refetchLikes, token]
+  )
+
   return (
     <div className={c(styles.studentPages, className)} onClick={onClick}>
       <div className={styles.pages}>
@@ -135,6 +196,8 @@ export const StudentPosts: React.FunctionComponent<StudentPostsProps> = ({ class
                       dateCreated={post.dateCreated}
                       content={post.content}
                       ownerName={who}
+                      liked={isPostLiked(post)}
+                      onClick={() => handleLike(post)}
                       key={index}
                     />
                   )
