@@ -29,7 +29,16 @@ export const PageCard: React.FunctionComponent<PageCardProps> = ({
       className={c(styles.pageCard, className, { [styles.hasDeleteAction]: onDeleteClick !== undefined })}
       onClick={onClick}
     >
-      {onDeleteClick && <Trash className={styles.icon} size="16" onClick={onDeleteClick} />}
+      {onDeleteClick && (
+        <Trash
+          className={styles.icon}
+          size="16"
+          onClick={e => {
+            onDeleteClick?.()
+            e.stopPropagation()
+          }}
+        />
+      )}
       <p className={styles.title}>{pageTitle}</p>
       <p className={styles.postCount}>{postLabel}</p>
       <div className="clearfix"></div>
