@@ -4,14 +4,16 @@ export const APIEndpoints = {
   signup: host + 'auth/signup',
   getFollowed: host + 'api/followed',
   getPages: host + 'api/pages',
-  getStudentInfo: (email: string): string => host + 'api/info/' + email,
-  getPagesOfStudent: (email: string): string => host + 'api/pages/' + email,
-  getPostsOfStudent: (email: string,pageTitle:string): string => host + 'api/pages/' + email,
+  getStudentInfo: (email: string): string => host + 'api/info/' + encodeURI(email),
+  getPagesOfStudent: (email: string): string => host + 'api/pages/' + encodeURI(email),
+  getPostsOfStudent: (email: string, pageTitle: string): string =>
+    host + 'api/posts/student/' + encodeURI(email) + '/' + encodeURI(pageTitle),
   getFeed: host + 'api/feed',
   getAllStudents: host + 'api/students',
   follow: host + 'api/follow',
   unfollow: host + 'api/unfollow',
   newPage: host + 'api/pages',
+  newPost: (page: string): string => host + 'api/posts/new/' + encodeURI(page),
   deletePage: host + 'api/pages'
 }
 
