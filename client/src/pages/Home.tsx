@@ -127,7 +127,7 @@ export const Home: React.FunctionComponent<HomeProps> = ({ className, onClick }:
         </div>
       </div>
       <div className={styles.feed}>
-        <label>New from your followers</label>
+        <label>New from the people you follow</label>
         <div className={styles.feedWrapper}>
           {feedPosts.length > 0 &&
             feedPosts.map((post, index) => {
