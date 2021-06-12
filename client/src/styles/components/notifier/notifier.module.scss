@@ -11,6 +11,7 @@
   flex-direction: column-reverse;
   overflow: hidden;
   pointer-events: none;
+  z-index: 1000000;
 }
 .notification {
   @supports (backdrop-filter: blur(0)) {
@@ -22,12 +23,18 @@
       font-weight: bolder;
       color: darken($color: $color-success, $amount: 0.35);
     }
+    .message {
+      color: darken($color: $color-success, $amount: 0.95);
+    }
     background: transparentize($color: $color-success, $amount: 0.65);
   }
   &.type-1 {
     .label {
       font-weight: bolder;
       color: darken($color: $color-info, $amount: 0.35);
+    }
+    .message {
+      color: lighten($color: $color-info, $amount: 0.35);
     }
     background: transparentize($color: $color-info, $amount: 0.65);
   }
@@ -36,6 +43,9 @@
       font-weight: bolder;
       color: darken($color: $color-warning, $amount: 0.35);
     }
+    .message {
+      color: lighten($color: $color-warning, $amount: 0.35);
+    }
     background: transparentize($color: $color-warning, $amount: 0.65);
   }
   &.type-3 {
@@ -43,12 +53,19 @@
       font-weight: bolder;
       color: darken($color: $color-error, $amount: 0.35);
     }
+    .message {
+      color: lighten($color: $color-error, $amount: 0.65);
+    }
+    color: white !important;
     background: transparentize($color: $color-error, $amount: 0.65);
   }
   &.type-4 {
     .label {
       font-weight: bolder;
       color: darken($color: $color-debug, $amount: 0.35);
+    }
+    .message {
+      color: lighten($color: $color-white, $amount: 0.35);
     }
     background: transparentize($color: $color-debug, $amount: 0.65);
   }
@@ -73,6 +90,7 @@
   .label,
   .message {
     @include font-body;
+    font-weight: 400;
   }
   .label {
     font-size: 16px;
@@ -80,14 +98,12 @@
   }
   .message {
     font-size: 14px;
-    color: lighten($color-black, 15);
     letter-spacing: 0.025em;
-
   }
   transition: $time-short all;
   margin: $margin-normal 0;
   padding: $margin-normal;
-  border-radius: $border-radius-normal /1.5;
+  border-radius: $border-radius-normal / 1.5;
 }
 .n-enter,
 .n-exit-active {
