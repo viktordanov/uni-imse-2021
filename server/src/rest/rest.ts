@@ -115,6 +115,7 @@ export class RestWebServer implements Rest {
     getPosts(this, apiRouter)
     likePost(this, apiRouter)
     unlikePost(this, apiRouter)
+    getLikedPosts(this, apiRouter)
     getStudentInfoByEmail(this, apiRouter)
 
     this.webServer.use('/api', jwt({ secret: this.config.jwtSecret, algorithms: ['HS256'] }), apiRouter)
@@ -627,6 +628,19 @@ function unlikePost(restServer: RestWebServer, apiRouter: express.Router): void 
       return res.status(200).json({ status: 'OK' })
     }
   )
+}
+
+function getLikedPosts(restServer: RestWebServer, apiRouter: express.Router): void {
+  apiRouter.get('/liked', async (req: Request, res: Response) => {
+    const studentID = getIdFromDecodedToken(req)
+
+    const [posts, errPosts] = await restServer.getStudentService().getLikedPosts(studentID)
+    if (errPosts !== null) {
+      return res.status(400).json({ error: errPosts.message })
+    }
+
+    return res.status(200).json(posts)
+  })
 }
 
 function getStudentInfoByEmail(restServer: RestWebServer, apiRouter: express.Router): void {

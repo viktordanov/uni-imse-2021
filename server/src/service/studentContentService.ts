@@ -99,7 +99,7 @@ export class StudentContentService {
   async likePost(id: number, whosePostId: number, pageTitle: string, postTitle: string): APIVoid {
     const ok = await this.repository.addLike(id, whosePostId, pageTitle, postTitle)
     if (!ok) {
-      return new Error('failed to get all followed students')
+      return new Error('failed to set like post relationship')
     }
     return null
   }
@@ -107,8 +107,16 @@ export class StudentContentService {
   async unlikePost(id: number, whosePostId: number, pageTitle: string, postTitle: string): APIVoid {
     const ok = await this.repository.removeLike(id, whosePostId, pageTitle, postTitle)
     if (!ok) {
-      return new Error('failed to get all followed students')
+      return new Error('failed to set unlike post relationship')
     }
     return null
+  }
+
+  async getLikedPosts(studentID: number): APIResponse<Post[]> {
+    const [posts, ok] = await this.repository.getLikedPostsOf(studentID)
+    if (!ok) {
+      return [[], new Error('failed to get liked posts')]
+    }
+    return [posts, null]
   }
 }
