@@ -7,7 +7,9 @@ export const APIEndpoints = {
   getFeed: host + 'api/feed',
   getAllStudents: host + 'api/students',
   follow: host + 'api/follow',
-  unfollow: host + 'api/unfollow'
+  unfollow: host + 'api/unfollow',
+  newPage: host + 'api/pages',
+  deletePage: host + 'api/pages'
 }
 
 export function makeRequest(
