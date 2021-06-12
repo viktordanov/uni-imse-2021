@@ -53,6 +53,7 @@ export class RestWebServer implements Rest {
   private webServer: express.Express
   private authService: AuthService
   private studentService: StudentContentService
+  private repoImpl: 'sql' | 'mongo'
 
   getServer(): express.Express {
     return this.webServer
@@ -70,6 +71,8 @@ export class RestWebServer implements Rest {
     this.config = config
     this.authService = authService
     this.studentService = studentService
+
+    this.repoImpl = 'sql'
 
     this.webServer = express()
 
