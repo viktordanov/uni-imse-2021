@@ -42,7 +42,7 @@ export const PersonBadge: React.FunctionComponent<PersonBadgeProps> = ({
     const letter = name.charAt(0).toUpperCase()
     const circleClass = mode === 'profile' ? styles.smallCircle : ''
     const circle = (
-      <div className={c(styles.letterCircle, circleClass)} style={{ backgroundColor: mainColor }}>
+      <div title={name} className={c(styles.letterCircle, circleClass)} style={{ backgroundColor: mainColor }}>
         {letter}
       </div>
     )
@@ -80,7 +80,15 @@ export const PersonBadge: React.FunctionComponent<PersonBadgeProps> = ({
   }, [name, mode, mainColor, secondaryColor])
 
   return (
-    <div className={c(styles.personBadge, className, { [styles.hasIcon]: Icon !== undefined })} onClick={onClick}>
+    <div
+      className={c(
+        styles.personBadge,
+        className,
+        { [styles.hasIcon]: Icon !== undefined },
+        { [styles.pointer]: onClick !== undefined }
+      )}
+      onClick={onClick}
+    >
       {Badge}
       <div className={'clearfix'}></div>
     </div>

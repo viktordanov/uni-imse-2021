@@ -101,6 +101,8 @@
       opacity: 0.5 !important;
     }
   }
+  &.pointer {
+    cursor: pointer;}
   &.hasIcon {
     cursor: pointer;
     .badge {
