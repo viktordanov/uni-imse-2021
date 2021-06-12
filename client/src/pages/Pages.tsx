@@ -51,7 +51,7 @@ export const Pages: React.FunctionComponent<PagesProps> = ({ className, onClick 
         pushNotification(NotificationType.SUCCESS, 'New page', 'Successfully added new page', 2000)
         refetchPages()
       } else {
-        pushNotification(NotificationType.ERROR, 'Error', 'Unknown error occurred ' + res.statusText, 2000)
+        pushNotification(NotificationType.ERROR, 'Error', 'Page alreadyt exists', 2000)
       }
     })
   }, [pageTitle, description, token])
