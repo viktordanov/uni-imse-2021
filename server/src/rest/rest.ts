@@ -564,7 +564,9 @@ function likePost(restServer: RestWebServer, apiRouter: express.Router): void {
         return res.status(400).json({ error: 'page not found' })
       }
 
-      const [posts, errPosts] = await restServer.getStudentService().getPostsOfPage(studentID, pages[pageIndex].title)
+      const [posts, errPosts] = await restServer
+        .getStudentService()
+        .getPostsOfPage(postOwner.id, pages[pageIndex].title)
       if (errPosts !== null) {
         return res.status(400).json({ error: errPosts.message })
       }
@@ -612,7 +614,9 @@ function unlikePost(restServer: RestWebServer, apiRouter: express.Router): void 
         return res.status(400).json({ error: 'page not found' })
       }
 
-      const [posts, errPosts] = await restServer.getStudentService().getPostsOfPage(studentID, pages[pageIndex].title)
+      const [posts, errPosts] = await restServer
+        .getStudentService()
+        .getPostsOfPage(postOwner.id, pages[pageIndex].title)
       if (errPosts !== null) {
         return res.status(400).json({ error: errPosts.message })
       }
