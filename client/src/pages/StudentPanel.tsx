@@ -6,10 +6,11 @@ import { PersonBadge } from '@/components/personBadge'
 import { Menu } from '@/components/menu'
 import { useAuth } from '@/hooks/useAuth'
 import { Route, Switch } from 'react-router'
-import { StudentHome } from './Home'
-import { StudentFollowing } from './Students'
-import { StudentPages } from './Pages'
-import { StudentPage } from './StudentPages'
+import { Home } from './Home'
+import { Students } from './Students'
+import { Pages } from './Pages'
+import { StudentPages } from './StudentPages'
+import { StudentPosts } from './StudentPosts'
 
 type UserInfo = {
   name: string
@@ -36,19 +37,19 @@ export const StudentPanel: React.FunctionComponent = () => {
       </header>
       <Switch>
         <Route exact path="/">
-          <StudentHome className={styles.subpage} />
+          <Home className={styles.subpage} />
         </Route>
         <Route exact path="/pages">
-          <StudentPages className={styles.subpage} />
+          <Pages className={styles.subpage} />
         </Route>
         <Route exact path="/students">
-          <StudentFollowing className={styles.subpage} />
+          <Students className={styles.subpage} />
         </Route>
         <Route exact path="/students/:studentEmail">
-          <StudentPage className={styles.subpage} />
+          <StudentPages className={styles.subpage} />
         </Route>
         <Route exact path="/students/:studentEmail/:pageTitle">
-          <div>2</div>
+          <StudentPosts className={styles.subpage} />
         </Route>
       </Switch>
     </div>

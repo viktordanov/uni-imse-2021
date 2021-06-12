@@ -10,12 +10,12 @@ import c from 'classnames'
 import React from 'react'
 import { Link, useHistory } from 'react-router-dom'
 
-export interface StudentHomeProps {
+export interface HomeProps {
   className?: string
   onClick?: (e: React.MouseEvent<HTMLDivElement>) => void
 }
 
-export const StudentHome: React.FunctionComponent<StudentHomeProps> = ({ className, onClick }: StudentHomeProps) => {
+export const Home: React.FunctionComponent<HomeProps> = ({ className, onClick }: HomeProps) => {
   const [followedStudents] = useRequest<Student[]>([], APIEndpoints.getFollowed)
   const { push } = useHistory()
   const [feedPosts] = useRequest<Post[]>([], APIEndpoints.getFeed, {}, (data: any): Post => {

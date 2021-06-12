@@ -10,15 +10,12 @@ import c from 'classnames'
 import React, { useMemo, useState } from 'react'
 import { Search, UserMinus, UserPlus } from 'react-feather'
 
-export interface StudentFollowingProps {
+export interface StudentsProps {
   className?: string
   onClick?: (e: React.MouseEvent<HTMLDivElement>) => void
 }
 
-export const StudentFollowing: React.FunctionComponent<StudentFollowingProps> = ({
-  className,
-  onClick
-}: StudentFollowingProps) => {
+export const Students: React.FunctionComponent<StudentsProps> = ({ className, onClick }: StudentsProps) => {
   const { token } = useAuth()
   const { pushNotification } = useNotifications()
   const [allStudents] = useRequest<Student[]>([], APIEndpoints.getAllStudents)

@@ -21,12 +21,12 @@ type Page = {
   postCount: number
 }
 
-export interface StudentPagesProps {
+export interface PagesProps {
   className?: string
   onClick?: (e: React.MouseEvent<HTMLDivElement>) => void
 }
 
-export const StudentPages: React.FunctionComponent<StudentPagesProps> = ({ className, onClick }: StudentPagesProps) => {
+export const Pages: React.FunctionComponent<PagesProps> = ({ className, onClick }: PagesProps) => {
   const { token } = useAuth()
   const { pushNotification } = useNotifications()
   const [pages, refetchPages] = useRequest<Page[]>([], APIEndpoints.getPages)

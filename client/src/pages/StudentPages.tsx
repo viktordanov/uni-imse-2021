@@ -15,7 +15,7 @@ export interface StudentPagesProps {
   onClick?: (e: React.MouseEvent<HTMLDivElement>) => void
 }
 
-export const StudentPage: React.FunctionComponent<StudentPagesProps> = ({ className, onClick }: StudentPagesProps) => {
+export const StudentPages: React.FunctionComponent<StudentPagesProps> = ({ className, onClick }: StudentPagesProps) => {
   const { studentEmail } = useParams<{ studentEmail: string }>()
   const { goBack } = useHistory()
   const [studentInfo] = useRequest<Student>(
