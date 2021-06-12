@@ -8,7 +8,7 @@ import { useRequest } from '@/hooks/useRequest'
 import styles from '@/styles/pages/studentHome.module.scss'
 import { Page, Post, Student } from '@/types'
 import c from 'classnames'
-import React from 'react'
+import React, { useCallback } from 'react'
 import { Link, useHistory } from 'react-router-dom'
 
 export interface HomeProps {
@@ -24,6 +24,7 @@ export const Home: React.FunctionComponent<HomeProps> = ({ className, onClick }:
     return data.map((d: any) => {
       return {
         ownerName: d.ownerName,
+        ownerEmail: d.ownerEmail,
         pageTitle: d.pageTitle,
         title: d.title,
         content: d.content,
@@ -32,6 +33,9 @@ export const Home: React.FunctionComponent<HomeProps> = ({ className, onClick }:
     })
   })
   const [pages] = useRequest<Page[]>([], APIEndpoints.getPages)
+
+  const handleLike = useCallback((ownerEmail: string, pageTitle: string, postTitle: string) => {}, [])
+
   return (
     <div className={c(styles.studentHome, className)} onClick={onClick}>
       <div className={styles.following}>
@@ -76,6 +80,7 @@ export const Home: React.FunctionComponent<HomeProps> = ({ className, onClick }:
                   pageTitle={post.pageTitle}
                   title={post.title}
                   key={index}
+                  onClick={() => handleLike(post.ownerEmail, post.pageTitle, post.pageTitle)}
                 />
               )
             })}

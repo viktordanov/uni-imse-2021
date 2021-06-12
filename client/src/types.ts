@@ -13,6 +13,7 @@ export type Page = {
 
 export type Post = {
   ownerName: string
+  ownerEmail: string
   pageTitle: string
   title: string
   content: string

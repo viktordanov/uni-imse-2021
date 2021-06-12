@@ -21,6 +21,7 @@ type PostPayload = {
   content: string
   dateCreated: Date
   ownerName: string
+  ownerEmail: string
   pageTitle: string
 }
 
@@ -406,6 +407,7 @@ function getFeedPosts(restServer: RestWebServer, apiRouter: express.Router): voi
           ...filteredPosts.map<PostPayload>(p => ({
             ...p,
             ownerName: followedStudent.name,
+            ownerEmail: followedStudent.email,
             pageTitle: page.title,
             title: p.title
           }))
@@ -445,7 +447,7 @@ function getPosts(restServer: RestWebServer, apiRouter: express.Router): void {
 
     return res.status(200).json(
       posts.map<PostPayload>(p => {
-        return { pageTitle, ...p, ownerName: student.name }
+        return { pageTitle, ...p, ownerName: student.name, ownerEmail: student.email }
       })
     )
   })
@@ -493,7 +495,7 @@ function getPostsOfStudent(restServer: RestWebServer, apiRouter: express.Router)
 
     return res.status(200).json(
       posts.map<PostPayload>(p => {
-        return { pageTitle, ...p, ownerName: student.name }
+        return { pageTitle, ...p, ownerName: student.name, ownerEmail: student.email }
       })
     )
   })
