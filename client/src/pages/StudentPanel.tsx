@@ -8,7 +8,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { Route, Switch } from 'react-router'
 import { StudentHome } from './StudentHome'
 import { StudentFollowing } from './StudentFollowing'
-import { StudentPage } from './StudentPage'
+import { StudentPages } from './StudentPage'
 
 type UserInfo = {
   name: string
@@ -38,7 +38,7 @@ export const StudentPanel: React.FunctionComponent = () => {
           <StudentHome className={styles.subpage} />
         </Route>
         <Route path="/pages">
-          <StudentPage className={styles.subpage} />
+          <StudentPages className={styles.subpage} />
         </Route>
         <Route path="/following">
           <StudentFollowing className={styles.subpage} />

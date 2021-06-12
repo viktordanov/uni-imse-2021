@@ -4,7 +4,7 @@ import { PageCard } from '@/components/pageCard'
 import { NotificationType, useNotifications } from '@/context/notifierContext'
 import { useAuth } from '@/hooks/useAuth'
 import { useRequest } from '@/hooks/useRequest'
-import styles from '@/styles/pages/studentPage.module.scss'
+import styles from '@/styles/pages/studentPages.module.scss'
 import c from 'classnames'
 import React from 'react'
 import { Plus } from 'react-feather'
@@ -16,12 +16,12 @@ type Page = {
   postCount: number
 }
 
-export interface StudentPageProps {
+export interface StudentPagesProps {
   className?: string
   onClick?: (e: React.MouseEvent<HTMLDivElement>) => void
 }
 
-export const StudentPage: React.FunctionComponent<StudentPageProps> = ({ className, onClick }: StudentPageProps) => {
+export const StudentPages: React.FunctionComponent<StudentPagesProps> = ({ className, onClick }: StudentPagesProps) => {
   const { token } = useAuth()
   const { pushNotification } = useNotifications()
   const [pages] = useRequest<Page[]>([], APIEndpoints.getPages)
