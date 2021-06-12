@@ -11,12 +11,14 @@
     @include font-title;
     font-weight: 600;
   }
+
   .header {
     margin-bottom: $margin-large;
     display: flex;
     justify-content: space-between;
     align-items: center;
   }
+
   .pages {
     max-height: calc(100% - 5rem);
     display: flex;
@@ -24,7 +26,7 @@
   }
   .pagesWrapper {
     width: 80%;
-   
+
     max-height: 100%;
     overflow-y: scroll;
 
@@ -48,4 +50,12 @@
     margin-right: $margin-normal;
     margin-bottom: $margin-normal;
   }
+}
+
+.formInput {
+  margin-bottom: $margin-small;
+}
+
+.right {
+  float: right;
 }
