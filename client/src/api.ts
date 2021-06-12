@@ -8,6 +8,9 @@ export const APIEndpoints = {
   getPagesOfStudent: (email: string): string => host + 'api/pages/' + encodeURI(email),
   getPostsOfStudent: (email: string, pageTitle: string): string =>
     host + 'api/posts/student/' + encodeURI(email) + '/' + encodeURI(pageTitle),
+  getLiked: host + 'api/liked',
+  likePost: host + 'api/posts/like',
+  unlikePost: host + 'api/posts/unlike',
   getFeed: host + 'api/feed',
   getAllStudents: host + 'api/students',
   follow: host + 'api/follow',
