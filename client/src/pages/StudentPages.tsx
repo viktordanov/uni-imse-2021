@@ -28,16 +28,16 @@ export const StudentPages: React.FunctionComponent<StudentPagesProps> = ({ class
     <div className={c(styles.studentPages, className)} onClick={onClick}>
       <div className={styles.pages}>
         <div className={styles.pagesWrapper}>
+          <div className={styles.header}>
+            <h1>
+              {studentInfo.name}'s pages ({pages.length})
+            </h1>
+            <IconButton Icon={ChevronLeft} onClick={goBack}>
+              Back
+            </IconButton>
+          </div>
           {pages.length > 0 && (
             <>
-              <div className={styles.header}>
-                <h1>
-                  {studentInfo.name}'s pages ({pages.length})
-                </h1>
-                <IconButton Icon={ChevronLeft} onClick={goBack}>
-                  Back
-                </IconButton>
-              </div>
               {pages.map((page, index) => {
                 return (
                   <PageCard
