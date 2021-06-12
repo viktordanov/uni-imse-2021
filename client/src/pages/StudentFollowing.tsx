@@ -5,15 +5,10 @@ import { NotificationType, useNotifications } from '@/context/notifierContext'
 import { useAuth } from '@/hooks/useAuth'
 import { useRequest } from '@/hooks/useRequest'
 import styles from '@/styles/pages/studentFollowing.module.scss'
+import { Student } from '@/types'
 import c from 'classnames'
 import React, { useMemo, useState } from 'react'
 import { Search, UserMinus, UserPlus } from 'react-feather'
-
-type Student = {
-  name: string
-  email: string
-  university: string
-}
 
 export interface StudentFollowingProps {
   className?: string

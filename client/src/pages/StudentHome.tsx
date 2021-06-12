@@ -5,6 +5,7 @@ import { Placeholder } from '@/components/placeholder'
 import { PostCard } from '@/components/postCard'
 import { useRequest } from '@/hooks/useRequest'
 import styles from '@/styles/pages/studentHome.module.scss'
+import { Page, Post, Student } from '@/types'
 import c from 'classnames'
 import React from 'react'
 import { Link, useHistory } from 'react-router-dom'
@@ -12,27 +13,6 @@ import { Link, useHistory } from 'react-router-dom'
 export interface StudentHomeProps {
   className?: string
   onClick?: (e: React.MouseEvent<HTMLDivElement>) => void
-}
-
-type Student = {
-  name: string
-  email: string
-  university: string
-}
-
-type Page = {
-  title: string
-  description: string
-  dateCreated: Date
-  postCount: number
-}
-
-type Post = {
-  ownerName: string
-  pageTitle: string
-  title: string
-  content: string
-  dateCreated: Date
 }
 
 export const StudentHome: React.FunctionComponent<StudentHomeProps> = ({ className, onClick }: StudentHomeProps) => {
@@ -59,7 +39,7 @@ export const StudentHome: React.FunctionComponent<StudentHomeProps> = ({ classNa
             followedStudents.map((student, index) => {
               return (
                 <PersonBadge
-                  onClick={() => push('/students/' + student.email)}
+                  onClick={() => push('/students/' + encodeURI(student.email))}
                   className={styles.followedBadge}
                   mode="compact"
                   name={student.name}

@@ -9,6 +9,7 @@ import { Route, Switch } from 'react-router'
 import { StudentHome } from './StudentHome'
 import { StudentFollowing } from './StudentFollowing'
 import { StudentPages } from './StudentPages'
+import { StudentPage } from './StudentPage'
 
 type UserInfo = {
   name: string
@@ -40,13 +41,13 @@ export const StudentPanel: React.FunctionComponent = () => {
         <Route exact path="/pages">
           <StudentPages className={styles.subpage} />
         </Route>
-        <Route path="/students">
+        <Route exact path="/students">
           <StudentFollowing className={styles.subpage} />
         </Route>
-        <Route exact path="/students/:student">
-          <div>1</div>
+        <Route exact path="/students/:studentEmail">
+          <StudentPage className={styles.subpage} />
         </Route>
-        <Route exact path="/students/:student/:pageTitle">
+        <Route exact path="/students/:studentEmail/:pageTitle">
           <div>2</div>
         </Route>
       </Switch>
