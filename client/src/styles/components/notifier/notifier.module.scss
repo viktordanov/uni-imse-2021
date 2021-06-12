@@ -21,40 +21,40 @@
   &.type-0 {
     .label {
       font-weight: bolder;
-      color: darken($color: $color-success, $amount: 0.35);
+      color: darken($color: $color-success, $amount: 20);
     }
     .message {
-      color: darken($color: $color-success, $amount: 0.95);
+      color: darken($color: $color-success, $amount: 20);
     }
     background: transparentize($color: $color-success, $amount: 0.65);
   }
   &.type-1 {
     .label {
       font-weight: bolder;
-      color: darken($color: $color-info, $amount: 0.35);
+      color: darken($color: $color-info, $amount: 35);
     }
     .message {
-      color: lighten($color: $color-info, $amount: 0.35);
+      color: darken($color: $color-info, $amount: 30);
     }
     background: transparentize($color: $color-info, $amount: 0.65);
   }
   &.type-2 {
     .label {
       font-weight: bolder;
-      color: darken($color: $color-warning, $amount: 0.35);
+      color: lighten($color: $color-warning, $amount: 6);
     }
     .message {
-      color: lighten($color: $color-warning, $amount: 0.35);
+      color: lighten($color: $color-warning, $amount: 2);
     }
     background: transparentize($color: $color-warning, $amount: 0.65);
   }
   &.type-3 {
     .label {
       font-weight: bolder;
-      color: darken($color: $color-error, $amount: 0.35);
+      color: lighten($color: $color-error, $amount: 12);
     }
     .message {
-      color: lighten($color: $color-error, $amount: 0.65);
+      color: lighten($color: $color-error, $amount: 10);
     }
     color: white !important;
     background: transparentize($color: $color-error, $amount: 0.65);
