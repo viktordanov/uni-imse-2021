@@ -29,7 +29,7 @@ export const Menu: React.FunctionComponent<MenuProps> = ({ className, onClick }:
         Pages
       </Link>
       <span>/</span>
-      <Link className={c(styles.link, { [styles.selected]: selectedIndex === 2 })} to="/following">
+      <Link className={c(styles.link, { [styles.selected]: selectedIndex === 2 })} to="/students">
         Students
       </Link>
       <span>/</span>

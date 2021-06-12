@@ -37,11 +37,17 @@ export const StudentPanel: React.FunctionComponent = () => {
         <Route exact path="/">
           <StudentHome className={styles.subpage} />
         </Route>
-        <Route path="/pages">
+        <Route exact path="/pages">
           <StudentPages className={styles.subpage} />
         </Route>
-        <Route path="/following">
+        <Route path="/students">
           <StudentFollowing className={styles.subpage} />
+        </Route>
+        <Route exact path="/students/:student">
+          <div>1</div>
+        </Route>
+        <Route exact path="/students/:student/:pageTitle">
+          <div>2</div>
         </Route>
       </Switch>
     </div>
