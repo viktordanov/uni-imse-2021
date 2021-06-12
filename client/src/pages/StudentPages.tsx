@@ -1,15 +1,15 @@
 import { APIEndpoints } from '@/api'
 import { IconButton } from '@/components/iconButton'
+import { Modal } from '@/components/modal'
 import { PageCard } from '@/components/pageCard'
 import { NotificationType, useNotifications } from '@/context/notifierContext'
 import { useAuth } from '@/hooks/useAuth'
 import { useRequest } from '@/hooks/useRequest'
+import modalStyles from '@/styles/components/modal.module.scss'
 import styles from '@/styles/pages/studentPages.module.scss'
 import c from 'classnames'
 import React from 'react'
-import { Plus } from 'react-feather'
-
-import Modal from 'react-modal'
+import { Plus, X } from 'react-feather'
 
 type Page = {
   title: string
@@ -29,6 +29,13 @@ export const StudentPages: React.FunctionComponent<StudentPagesProps> = ({ class
   const [pages] = useRequest<Page[]>([], APIEndpoints.getPages)
 
   const [modalIsOpen, setIsOpen] = React.useState(false)
+  function openModal() {
+    setIsOpen(true)
+  }
+
+  function closeModal() {
+    setIsOpen(false)
+  }
 
   return (
     <div className={c(styles.studentPages, className)} onClick={onClick}>
@@ -38,29 +45,14 @@ export const StudentPages: React.FunctionComponent<StudentPagesProps> = ({ class
           Icon={Plus}
           onClick={() => {
             pushNotification(NotificationType.INFO, 'test', 'test', 2200)
-            console.log('jamoin')
+            openModal()
           }}
         >
           New page
         </IconButton>
       </div>
-      <Modal
-        isOpen={modalIsOpen}
-        // onAfterOpen={afterOpenModal}
-        // onRequestClose={closeModal}
-        // style={customStyles}
-        contentLabel="Example Modal"
-      >
-        <h2>Hello</h2>
-        <button>close</button>
-        <div>I am a modal</div>
-        <form>
-          <input />
-          <button>tab navigation</button>
-          <button>stays</button>
-          <button>inside</button>
-          <button>the modal</button>
-        </form>
+      <Modal isOpen={modalIsOpen} onRequestClose={closeModal} overlayClassName={modalStyles.modalOverlay}>
+        <p>SDllksdfjsdlf</p>
       </Modal>
       <div className={styles.pages}>
         <div className={styles.pagesWrapper}>

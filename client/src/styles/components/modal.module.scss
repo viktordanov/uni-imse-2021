@@ -1,0 +1,43 @@
+.modal {
+  @include font-body;
+  position: absolute;
+  width: 50%;
+  background: $color-white;
+  border-radius: $border-radius-normal;
+  outline: none;
+  padding: $margin-large;
+  z-index: 1;
+
+  .header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $margin-large;
+    user-select: none;
+  }
+ 
+  .closeIcon {
+    padding: 6px;
+    border-radius: 24px;
+    cursor: pointer;
+    @include background-color-blur(transparent, transparentize($color-error, 0.7), $time-short, 0);
+  }
+  h1 {
+    @include font-title;
+  }
+}
+
+.modalOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: transparentize($color: $color-black, $amount: 0.5);
+  backdrop-filter: blur(0.5rem);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+}
