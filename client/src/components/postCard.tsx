@@ -1,6 +1,7 @@
 import styles from '@/styles/components/postCard.module.scss'
 import React, { useMemo } from 'react'
 import c from 'classnames'
+import { Heart } from 'react-feather'
 
 export interface PostCardProps {
   className?: string
@@ -10,6 +11,7 @@ export interface PostCardProps {
   title: string
   content: string
   dateCreated: Date
+  liked?: boolean
 }
 
 export const PostCard: React.FunctionComponent<PostCardProps> = ({
@@ -19,7 +21,8 @@ export const PostCard: React.FunctionComponent<PostCardProps> = ({
   pageTitle,
   title,
   content,
-  dateCreated
+  dateCreated,
+  liked
 }: PostCardProps) => {
   const dateString = useMemo(() => {
     if (dateCreated === null || dateCreated === undefined) return ''
@@ -53,6 +56,8 @@ export const PostCard: React.FunctionComponent<PostCardProps> = ({
       <p className={styles.content}>{content}</p>
 
       <p className={styles.date}>{dateString}</p>
+
+      <Heart className={c(styles.icon, { [styles.filled]: !!liked })} />
     </div>
   )
 }
