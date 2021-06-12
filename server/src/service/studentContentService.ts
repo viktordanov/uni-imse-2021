@@ -24,6 +24,14 @@ export class StudentContentService {
     return null
   }
 
+  async removePageFromStudent(studentID: number, pageTitle: string): APIVoid {
+    const ok = await this.repository.removePage(studentID, pageTitle)
+    if (!ok) {
+      return new Error('failed to remove page')
+    }
+    return null
+  }
+
   async getPostsOfPage(studentID: number, pageTitle: string): APIResponse<Post[]> {
     const [posts, ok] = await this.repository.getAllPostsOf(studentID, pageTitle)
     if (!ok) {

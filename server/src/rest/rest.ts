@@ -102,6 +102,7 @@ export class RestWebServer implements Rest {
     const apiRouter = express.Router()
     getPages(this, apiRouter)
     addPage(this, apiRouter)
+    removePage(this, apiRouter)
     getAllStudents(this, apiRouter)
     getAllFollowedStudents(this, apiRouter)
     followStudentByEmail(this, apiRouter)
@@ -229,6 +230,21 @@ function addPage(restServer: RestWebServer, apiRouter: express.Router): void {
   )
 }
 
+function removePage(restServer: RestWebServer, apiRouter: express.Router): void {
+  apiRouter.delete('/pages', [check('title').isLength({ min: 3, max: 150 })], async (req: Request, res: Response) => {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) return res.status(400).json({ error: 'Invalid data' })
+
+    const { title } = req.body
+
+    const studentID = getIdFromDecodedToken(req)
+    const err = await restServer.getStudentService().removePageFromStudent(studentID, title)
+    if (err !== null) {
+      return res.status(400).json({ error: err.message })
+    }
+    return res.status(200).json({ status: 'OK' })
+  })
+}
 function getAllStudents(restServer: RestWebServer, apiRouter: express.Router): void {
   apiRouter.get('/students', async (req: Request, res: Response) => {
     const [me, err2] = await restServer.getStudentService().getStudentById(getIdFromDecodedToken(req))
