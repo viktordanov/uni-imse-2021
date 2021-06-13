@@ -18,8 +18,8 @@ const SCSSModulesLoader = {
   test: /\.scss$/,
   include: /\.module.scss$/,
   use: [
-    'cache-loader',
-    'style-loader',
+    !isProduction && 'cache-loader',
+    isProduction ? MiniCssExtractPlugin.loader : 'style-loader',
     {
       loader: 'css-loader',
       options: {
@@ -45,15 +45,15 @@ const SCSSModulesLoader = {
         ]
       }
     }
-  ]
+  ].filter(Boolean)
 }
 
 const SCSSLoader = {
   test: /\.scss$/,
   exclude: /\.module.scss$/,
   use: [
-    'cache-loader',
-    'style-loader',
+    !isProduction && 'cache-loader',
+    isProduction ? MiniCssExtractPlugin.loader : 'style-loader',
     {
       loader: 'css-loader',
       options: {
@@ -79,14 +79,14 @@ const SCSSLoader = {
         ]
       }
     }
-  ]
+  ].filter(Boolean)
 }
 
 const CSSLoader = {
   test: /\.css$/,
   use: [
-    'cache-loader',
-    'style-loader',
+    !isProduction && 'cache-loader',
+    isProduction ? MiniCssExtractPlugin.loader : 'style-loader',
     {
       loader: 'css-loader',
       options: {
@@ -97,21 +97,29 @@ const CSSLoader = {
         importLoaders: true
       }
     }
-  ]
+  ].filter(Boolean)
 }
 
 const plugins = [
   isProduction && new MiniCssExtractPlugin(),
   new HtmlWebpackPlugin({
     filename: 'index.html',
-    template: path.resolve(__dirname, './public/index.html')
+    template: path.resolve(__dirname, './public/index.html'),
+    inject: 'head'
   }),
   isDevelopment && new webpack.HotModuleReplacementPlugin(),
   isDevelopment && new ReactRefreshWebpackPlugin(),
   isProduction && new CleanWebpackPlugin(),
   isProduction &&
     new CopyPlugin({
-      patterns: [{ from: 'public' }]
+      patterns: [
+        {
+          from: 'public',
+          globOptions: {
+            ignore: ['**/index.html']
+          }
+        }
+      ]
     }),
   isProduction &&
     new CompressionPlugin({
@@ -124,8 +132,8 @@ module.exports = {
   entry: './src/index.tsx',
   output: {
     path: path.resolve(__dirname, 'dist/'),
-    filename: '[name].js',
-    chunkFilename: isDevelopment ? '[name].chunk.js' : '[name].[chunkhash:8].chunk.js',
+    filename: '[name].[hash:8].js',
+    chunkFilename: isDevelopment ? '[name].chunk.js' : '[name].[hash:8].chunk.js',
     publicPath: '/',
     pathinfo: isDevelopment
   },
