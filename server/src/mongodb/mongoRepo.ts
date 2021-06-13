@@ -25,16 +25,18 @@ export class MongoRepository implements Repository {
     this.client = await MongoClient.connect(
       'mongodb://' + process.env.MONGODB_USER + ':' + process.env.MONGODB_PASSWORD + '@imse-mongodb:27017'
     )
-    await Promise.all([
-      this.client.db().createCollection('accounts'),
-      this.client.db().createCollection('events'),
-      this.client.db().createCollection('pages'),
-      this.client.db().createCollection('posts')
-    ])
+    if ((await this.db().listCollections().toArray()).length === 0) {
+      await Promise.all([
+        this.db().createCollection('accounts'),
+        this.db().createCollection('events'),
+        this.db().createCollection('pages'),
+        this.db().createCollection('posts')
+      ])
+    }
   }
 
   db(): Db {
-    return this.client.db()
+    return this.client.db('imse')
   }
 
   accounts(): Collection {
@@ -94,8 +96,8 @@ export class MongoRepository implements Repository {
 
   async getAccountByEmail(email: string): Promise<[Account, boolean]> {
     const res: Student = await this.accounts().findOne({ email })
-    console.log(res)
-    return [null, false]
+    if (res === null) return [null, false]
+    return [res as Student, true]
   }
 
   async addStudent(s: Student): Promise<boolean> {
