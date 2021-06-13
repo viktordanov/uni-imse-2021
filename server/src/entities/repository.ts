@@ -57,5 +57,5 @@ export interface Repository {
 
   // Reports
   getReportStudentActivity(weeks: number): Promise<[ReportStudentActivity[], boolean]>
-  getReportFamousStudents(): Promise<[ReportFamousStudents[], boolean]>
+  getReportFamousStudents(searchPostTitle: string): Promise<[ReportFamousStudents[], boolean]>
 }

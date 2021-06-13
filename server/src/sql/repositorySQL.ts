@@ -249,7 +249,7 @@ export class RepositorySQL implements Repository {
     return this.sqlConnection.executeQueryType<ReportStudentActivity>(queries.getReportStudentActivity, [weeks])
   }
 
-  getReportFamousStudents(): Promise<[ReportFamousStudents[], boolean]> {
-    return this.sqlConnection.executeQueryType<ReportFamousStudents>(queries.getReportFamousStudents, [])
+  getReportFamousStudents(searchPostTitle: string): Promise<[ReportFamousStudents[], boolean]> {
+    return this.sqlConnection.executeQueryType<ReportFamousStudents>(queries.getReportFamousStudents, [searchPostTitle])
   }
 }
