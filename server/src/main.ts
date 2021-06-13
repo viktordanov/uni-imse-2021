@@ -1,7 +1,7 @@
+import { MongoRepository } from './mongodb/mongoRepo'
 import { RestConfig, RestWebServer } from './rest/rest'
 import { AuthService } from './service/authService'
 import { StudentContentService } from './service/studentContentService'
-import { RepositorySQL } from './sql/repositorySQL'
 
 async function main() {
   const HOST = process.env.HOST ?? 'locahost'
@@ -14,10 +14,13 @@ async function main() {
     staticDir: STATIC_DIR,
     jwtSecret: JWT_SECRET
   }
-  const sqlRepository = new RepositorySQL()
+  // const sqlRepository = new RepositorySQL()
+  const mongoRepo = new MongoRepository()
 
-  const authService = new AuthService(sqlRepository, JWT_SECRET)
-  const studentService = new StudentContentService(sqlRepository)
+  await mongoRepo.initialize()
+
+  const authService = new AuthService(mongoRepo, JWT_SECRET)
+  const studentService = new StudentContentService(mongoRepo)
 
   const webServer = new RestWebServer(restConfig, authService, studentService)
   webServer.serve()

@@ -11,10 +11,20 @@ import {
 } from '../entities/entities'
 import { Repository } from '../entities/repository'
 
+// type MongoStudent = {
+//   _id: number
+//   name: string
+//   email: string
+//   dateCreated: Date
+//   passWord
+// }
+
 export class MongoRepository implements Repository {
   private client: MongoClient
   async initialize(): Promise<void> {
-    this.client = await MongoClient.connect('mongodb://imse-mongodb:27017')
+    this.client = await MongoClient.connect(
+      'mongodb://' + process.env.MONGODB_USER + ':' + process.env.MONGODB_PASS + '@imse-mongodb:27017'
+    )
     await Promise.all([
       this.client.db().createCollection('accounts'),
       this.client.db().createCollection('events'),
@@ -82,8 +92,10 @@ export class MongoRepository implements Repository {
     throw new Error('Method not implemented.')
   }
 
-  getAccountByEmail(email: string): Promise<[Account, boolean]> {
-    throw new Error('Method not implemented.')
+  async getAccountByEmail(email: string): Promise<[Account, boolean]> {
+    const res: Student = await this.accounts().findOne({ email })
+    console.log(res)
+    return [null, false]
   }
 
   async addStudent(s: Student): Promise<boolean> {
@@ -97,11 +109,13 @@ export class MongoRepository implements Repository {
   }
 
   async getStudentById(id: number): Promise<[Student, boolean]> {
-    const res = await this.accounts().findOne({ _id: id })
+    // const res = await this.accounts().findOne({ _id: id })
+    return [null, false]
   }
 
-  updateStudent(s: Student): Promise<boolean> {
-    throw new Error('Method not implemented.')
+  async updateStudent(s: Student): Promise<boolean> {
+    const res = await this.accounts().findOneAndUpdate({ _id: s.id }, { $set: s })
+    return res.ok === 1
   }
 
   getAllStudents(): Promise<[Student[], boolean]> {
