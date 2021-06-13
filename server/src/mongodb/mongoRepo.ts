@@ -23,7 +23,7 @@ export class MongoRepository implements Repository {
   private client: MongoClient
   async initialize(): Promise<void> {
     this.client = await MongoClient.connect(
-      'mongodb://' + process.env.MONGODB_USER + ':' + process.env.MONGODB_PASS + '@imse-mongodb:27017'
+      'mongodb://' + process.env.MONGODB_USER + ':' + process.env.MONGODB_PASSWORD + '@imse-mongodb:27017'
     )
     await Promise.all([
       this.client.db().createCollection('accounts'),
