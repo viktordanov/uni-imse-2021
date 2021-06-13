@@ -18,3 +18,7 @@ export type Page = { title: string; description: string; dateCreated: Date }
 export type Post = { title: string; content: string; dateCreated: Date }
 
 export type Event = { id: number; name: string; description: string; duration: Duration; date: Date }
+
+export type ReportStudentActivity = { studentName: string; sumPages: number; sumPosts: number; likedPosts: number }
+
+export type ReportFamousStudents = { pageTitle: string; title: string; likes: number; studentFollowers: number }

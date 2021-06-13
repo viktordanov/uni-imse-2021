@@ -108,6 +108,8 @@ export class RestWebServer implements Rest {
     unlikePost(this, apiRouter)
     getLikedPosts(this, apiRouter)
     getStudentInfoByEmail(this, apiRouter)
+    getReportStudentActivity(this, apiRouter)
+    getReportFamousStudents(this, apiRouter)
 
     this.webServer.use('/api', jwt({ secret: this.config.jwtSecret, algorithms: ['HS256'] }), apiRouter)
     this.webServer.use((err: Error, req: Request, res: Response) => {
@@ -663,6 +665,37 @@ function getStudentInfoByEmail(restServer: RestWebServer, apiRouter: express.Rou
     return res
       .status(200)
       .json({ email: student.email, name: student.name, university: student.university } as FollowedStudentPayload)
+  })
+}
+
+function getReportStudentActivity(restServer: RestWebServer, apiRouter: express.Router): void {
+  apiRouter.get('/report1', async (req: Request, res: Response) => {
+    const weeks = req.params.weeks
+    if (weeks == null || !isNaN(+weeks)) {
+      return res.status(400).json({ error: 'weeks missing or not a number' })
+    }
+    const weeksNumber = parseInt(weeks)
+    const [report, errReport] = await restServer.getStudentService().getReportStudentActivity(weeksNumber)
+    if (errReport !== null) {
+      return res.status(400).json({ error: errReport.message })
+    }
+
+    return res.status(200).json(report)
+  })
+}
+
+function getReportFamousStudents(restServer: RestWebServer, apiRouter: express.Router): void {
+  apiRouter.get('/report2', async (req: Request, res: Response) => {
+    const searchPostTitle = req.params.searchPostTitle
+    if (searchPostTitle === null || searchPostTitle.length < 3) {
+      return res.status(400).json({ error: 'searchPostTitle missing or too short' })
+    }
+    const [report, errReport] = await restServer.getStudentService().getReportFamousStudents(searchPostTitle)
+    if (errReport !== null) {
+      return res.status(400).json({ error: errReport.message })
+    }
+
+    return res.status(200).json(report)
   })
 }
 

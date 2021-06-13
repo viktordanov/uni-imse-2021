@@ -1,4 +1,4 @@
-import { Page, Admin, Student, Post, Event, Account } from './entities'
+import { Page, Admin, Student, Post, Event, Account, ReportStudentActivity, ReportFamousStudents } from './entities'
 
 export interface Repository {
   // Page CRUD
@@ -54,4 +54,13 @@ export interface Repository {
   getAllPagesOf(studentId: number): Promise<[Page[], boolean]>
   getAllPostsOf(studentId: number, pageTitle: string): Promise<[Post[], boolean]>
   getAllEventsCreatedBy(adminId: number): Promise<[Event[], boolean]>
+
+  // Reports
+  getReportStudentActivity(weeks: number): Promise<[ReportStudentActivity[], boolean]>
+  getReportFamousStudents(searchPostTitle: string): Promise<[ReportFamousStudents[], boolean]>
+
+  // dbFilling
+  addRandomPost(p: Post): Promise<boolean>
+  addRandomFollows(): Promise<boolean>
+  addRandomLikes(): Promise<boolean>
 }

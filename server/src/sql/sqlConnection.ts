@@ -4,12 +4,7 @@ const sqlConfig: PoolConfig = {
   user: process.env.MARIADB_USER,
   password: process.env.MARIADB_PASSWORD,
   database: 'imse',
-  multipleStatements: true,
-  connectionLimit: 15,
-  queueLimit: 30,
-  connectTimeout: 60 * 60 * 1000,
-  acquireTimeout: 60 * 60 * 1000,
-  timeout: 60 * 60 * 1000
+  multipleStatements: true
 }
 export class SQLConnection {
   private pool: mysql.Pool

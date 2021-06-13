@@ -6,23 +6,52 @@ import { getPage, getPost, getStudents } from './mockData'
 
 function insertData(repository: Repository): void {
   getStudents().then(students => {
-    console.log(students)
+    // console.log(students)
     getPage().then(pages => {
+      // console.log(pages)
       getPost().then(posts => {
+        const promises: Promise<boolean | void>[] = []
         students.forEach(student => {
-          repository.addStudent(student).then(() => {
-            pages.forEach(page => {
-              repository.addPage(student.id, page).then(() => {
-                posts.forEach(post => {
-                  repository.addPost(student.id, page.title, post)
-                })
-              })
+          promises.push(
+            repository.addStudent(student).then(() => {
+              const shuffledPages = pages.sort((a, b) => 0.5 - Math.random())
+              for (let i = 0; i < randomNumber(1, 4); i++) {
+                promises.push(
+                  repository.addPage(student.id, shuffledPages[i]).then(() => {
+                    const shufflePosts = posts.sort((a, b) => 0.5 - Math.random())
+                    for (let i = 0; i < randomNumber(1, 4); i++) {
+                      repository.addRandomPost(shufflePosts[i])
+                    }
+                  })
+                )
+              }
             })
-          })
+          )
+        })
+        Promise.all(promises).then(() => {
+          for (let i = 0; i < randomNumber(5, 10); i++) {
+            repository.addRandomFollows()
+            repository.addRandomLikes()
+          }
         })
       })
     })
   })
+  const student: Student = {
+    id: 0,
+    name: 'Raph Lach',
+    email: 'test@gmail.com',
+    passwordHash: '$2b$10$zKqP3TmC6EClVL9rGj17..40giJdDuW71sUCsXrVJ4vMZtbEcXC4m',
+    dateRegistered: new Date(),
+    accountType: 'student',
+    university: 'University of Vienna',
+    matNumber: '12345678'
+  }
+  repository.addStudent(student)
+}
+
+function randomNumber(min: number, max: number): number {
+  return Math.floor(Math.random() * max) + min
 }
 
 function insertStudents(repository: Repository, students: Student[]) {

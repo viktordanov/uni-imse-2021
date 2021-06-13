@@ -1,4 +1,4 @@
-const selectLastInsertID = 'select last_insert_id();'
+const selectLastInsertID = 'select last_insert_id() as id;'
 
 const addRandomPage =
   'insert into Page (StudentID, Title, Description, Date_created) values ((select StudentID from Student order by rand() limit 1), ?, ?, ?);'
@@ -7,9 +7,14 @@ const addRandomPost =
   'set @studentID = (select StudentID from Page order by rand() limit 1); ' +
   'insert into Post (StudentID, Page_Title, Title, Content, Date_created) values (@studentID, (select Title from Page where StudentID = @studentID order by rand() limit 1), ?, ?, ?);'
 
-const addRandomIsFriendsWith =
+const addRandomFollows =
   'set @studentID = (select StudentID from Page order by rand() limit 1); ' +
   'insert into follows (StudentID, Friend_StudentID) values (@studentID, (select StudentID from Student where StudentID != @studentID order by rand() limit 1));'
+
+const addRandomLikes = `set @studentID = (select StudentID from Post order by rand() limit 1);
+  set @pageTitle = (select Page_Title from Post where StudentID = @studentID order by rand() limit 1);
+  set @postTitle = (select Title from Post where StudentID = @studentID and Page_Title = @pageTitle order by rand() limit 1);
+  insert into likes (StudentID, Post_StudentID, Post_Page_Title, Post_Title) values ((select StudentID from Student where StudentID != @studentID order by rand() limit 1), @studentID, @pageTitle, @postTitle);`
 
 const addPage = 'insert into Page (StudentID, Title, Description, Date_created) values (?, ?, ?, ?);'
 
@@ -124,6 +129,29 @@ const getAllEventsCreatedBy =
 const getAccountByEmail =
   'select AccountID as id, Name as name, EMail as email, Password_Hash as passwordHash, Date_registered as dateRegistered from Account where EMail = ?;'
 
+const getReportStudentActivity = `
+  select a.Name as studentName
+    , count(p.Title) as sumPages
+    , (select count(p1.Title) from Post p1 where p1.StudentID = s.StudentID and p1.Page_Title = p.Title) as sumPosts 
+    , (select count(l.StudentID) from likes l where l.StudentID = s.StudentID) as likedPosts 
+  from Student s 
+  inner join Account a on s.StudentID = a.AccountID 
+  inner join Page p on p.StudentID = s.StudentID 
+  where a.Date_registered >= date_sub(now(), interval ? week) 
+  group by s.StudentID, a.Name 
+  order by a.Name;`
+
+const getReportFamousStudents = `
+  select p.Page_Title as pageTitle
+    , p.Title as title
+    , (select count(*) from likes l
+      inner join Student s on l.StudentID = s.StudentID
+      where l.Post_Title = p.Title and l.Post_Page_Title = p.Page_Title) as likes
+    , (select count(f.StudentID) from follows f where f.Friend_StudentID = p.StudentID) as studentFollowers
+  from Post p
+  where p.Title like ?
+  group by p.Page_Title;`
+
 export const SQLQueries = {
   selectLastInsertID,
   addPage,
@@ -150,7 +178,6 @@ export const SQLQueries = {
   addLike,
   removeLike,
   addAdmin,
-  addRandomIsFriendsWith,
   addRandomPage,
   addRandomPost,
   removeAdmin,
@@ -166,5 +193,9 @@ export const SQLQueries = {
   getAllPagesOf,
   getAllPostsOf,
   getAllEventsCreatedBy,
-  getAccountByEmail
+  getAccountByEmail,
+  getReportStudentActivity,
+  getReportFamousStudents,
+  addRandomFollows,
+  addRandomLikes
 }

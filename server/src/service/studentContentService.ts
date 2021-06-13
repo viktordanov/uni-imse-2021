@@ -1,4 +1,4 @@
-import { Page, Post, Student } from '../entities/entities'
+import { Page, Post, ReportFamousStudents, ReportStudentActivity, Student } from '../entities/entities'
 import { Repository } from '../entities/repository'
 type APIResponse<T> = Promise<[T, Error | null]>
 type APIVoid = Promise<Error>
@@ -118,5 +118,21 @@ export class StudentContentService {
       return [[], new Error('failed to get liked posts')]
     }
     return [posts, null]
+  }
+
+  async getReportStudentActivity(weeks: number): APIResponse<ReportStudentActivity[]> {
+    const [report, ok] = await this.repository.getReportStudentActivity(weeks)
+    if (!ok) {
+      return [[], new Error('failed to get student activity report')]
+    }
+    return [report, null]
+  }
+
+  async getReportFamousStudents(searchPostTitle: string): APIResponse<ReportFamousStudents[]> {
+    const [report, ok] = await this.repository.getReportFamousStudents(searchPostTitle)
+    if (!ok) {
+      return [[], new Error('failed to get famouse students report')]
+    }
+    return [report, null]
   }
 }

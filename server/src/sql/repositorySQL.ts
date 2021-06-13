@@ -1,4 +1,13 @@
-import { Account, Admin, Event, Page, Post, Student } from '../entities/entities'
+import {
+  Account,
+  Admin,
+  Event,
+  Page,
+  Post,
+  ReportFamousStudents,
+  ReportStudentActivity,
+  Student
+} from '../entities/entities'
 import { Repository } from '../entities/repository'
 import { SQLConnection } from '../sql/sqlConnection'
 import { SQLQueries as queries } from './sqlQueries'
@@ -83,9 +92,9 @@ export class RepositorySQL implements Repository {
               .executeQuery(queries.addStudentIDLastInserted, [s.university, s.matNumber], con)
               .then(() => {
                 this.sqlConnection
-                  .executeScalarType<number>(queries.selectLastInsertID, [], con)
-                  .then((element: [number, boolean]) => {
-                    s.id = element[0]
+                  .executeScalarType<{ id: number }>(queries.selectLastInsertID, [], con)
+                  .then((element: [{ id: number }, boolean]) => {
+                    s.id = element[0].id
                     resolve(true)
                     con.release()
                   })
@@ -159,9 +168,9 @@ export class RepositorySQL implements Repository {
           .then(() => {
             this.sqlConnection.executeQuery(queries.addAdmin, [s.id, s.address, s.ssn], con).then(() => {
               return this.sqlConnection
-                .executeScalarType(queries.selectLastInsertID, [], con)
-                .then((element: [number, boolean]) => {
-                  s.id = element[0]
+                .executeScalarType<{ id: number }>(queries.selectLastInsertID, [], con)
+                .then((element: [{ id: number }, boolean]) => {
+                  s.id = element[0].id
                   resolve(true)
                   con.release()
                 })
@@ -193,9 +202,9 @@ export class RepositorySQL implements Repository {
         if (err) console.log('sql error: ', err.message)
         this.sqlConnection.executeQuery(queries.addEvent, [e.name, e.description, e.duration, e.date], con).then(() => {
           this.sqlConnection
-            .executeScalarType(queries.selectLastInsertID, [], con)
-            .then((element: [number, boolean]) => {
-              e.id = element[0]
+            .executeScalarType<{ id: number }>(queries.selectLastInsertID, [], con)
+            .then((element: [{ id: number }, boolean]) => {
+              e.id = element[0].id
               resolve(true)
               con.release()
             })
@@ -234,5 +243,25 @@ export class RepositorySQL implements Repository {
 
   getAllEventsCreatedBy(adminId: number): Promise<[Event[], boolean]> {
     return this.sqlConnection.executeQueryType<Event>(queries.getAllEventsCreatedBy, [adminId])
+  }
+
+  getReportStudentActivity(weeks: number): Promise<[ReportStudentActivity[], boolean]> {
+    return this.sqlConnection.executeQueryType<ReportStudentActivity>(queries.getReportStudentActivity, [weeks])
+  }
+
+  getReportFamousStudents(searchPostTitle: string): Promise<[ReportFamousStudents[], boolean]> {
+    return this.sqlConnection.executeQueryType<ReportFamousStudents>(queries.getReportFamousStudents, [searchPostTitle])
+  }
+
+  addRandomPost(p: Post): Promise<boolean> {
+    return this.sqlConnection.executeQuery(queries.addRandomPost, [p.title, p.content, p.dateCreated])
+  }
+
+  addRandomFollows(): Promise<boolean> {
+    return this.sqlConnection.executeQuery(queries.addRandomFollows, [])
+  }
+
+  addRandomLikes(): Promise<boolean> {
+    return this.sqlConnection.executeQuery(queries.addRandomLikes, [])
   }
 }
