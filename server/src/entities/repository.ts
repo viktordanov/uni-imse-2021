@@ -56,6 +56,6 @@ export interface Repository {
   getAllEventsCreatedBy(adminId: number): Promise<[Event[], boolean]>
 
   // Reports
-  getReportStudentActivity(): Promise<[ReportStudentActivity[], boolean]>
+  getReportStudentActivity(weeks: number): Promise<[ReportStudentActivity[], boolean]>
   getReportFamousStudents(): Promise<[ReportFamousStudents[], boolean]>
 }
