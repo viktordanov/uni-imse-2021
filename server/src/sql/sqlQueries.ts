@@ -124,7 +124,7 @@ const getAllEventsCreatedBy =
 const getAccountByEmail =
   'select AccountID as id, Name as name, EMail as email, Password_Hash as passwordHash, Date_registered as dateRegistered from Account where EMail = ?;'
 
-const reportStudentActivity = `
+const getReportStudentActivity = `
   select a.Name as studentName
     , sum(p.Title) as sumPages
     , (select count(p1.Title) from Post p1 where p1.StudentID = s.StudentID and p1.Page_Title = p.Title) as sumPosts 
@@ -136,13 +136,13 @@ const reportStudentActivity = `
   group by s.StudentID, a.Name 
   order by a.Name;`
 
-const reportFamousStudents = `
+const getReportFamousStudents = `
   select p.Page_Title as pageTitle
     , p.Title as title
     , (select count(*) from likes l
       inner join Student s on l.StudentID = s.StudentID
       where l.Post_Title = p.Title and l.Post_Page_Title = p.Page_Title) as likes
-    , (select count(f.StudentID) from follows f where f.Friend_StudentID = p.StudentID) as postOwnerFollowers
+    , (select count(f.StudentID) from follows f where f.Friend_StudentID = p.StudentID) as studentFollowers
   from Post p
   group by p.Page_Title;`
 
@@ -188,5 +188,7 @@ export const SQLQueries = {
   getAllPagesOf,
   getAllPostsOf,
   getAllEventsCreatedBy,
-  getAccountByEmail
+  getAccountByEmail,
+  getReportStudentActivity,
+  getReportFamousStudents
 }

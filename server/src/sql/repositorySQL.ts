@@ -1,4 +1,13 @@
-import { Account, Admin, Event, Page, Post, Student } from '../entities/entities'
+import {
+  Account,
+  Admin,
+  Event,
+  Page,
+  Post,
+  ReportFamousStudents,
+  ReportStudentActivity,
+  Student
+} from '../entities/entities'
 import { Repository } from '../entities/repository'
 import { SQLConnection } from '../sql/sqlConnection'
 import { SQLQueries as queries } from './sqlQueries'
@@ -234,5 +243,13 @@ export class RepositorySQL implements Repository {
 
   getAllEventsCreatedBy(adminId: number): Promise<[Event[], boolean]> {
     return this.sqlConnection.executeQueryType<Event>(queries.getAllEventsCreatedBy, [adminId])
+  }
+
+  getReportStudentActivity(): Promise<[ReportStudentActivity[], boolean]> {
+    return this.sqlConnection.executeQueryType<ReportStudentActivity>(queries.getReportStudentActivity, [])
+  }
+
+  getReportFamousStudents(): Promise<[ReportFamousStudents[], boolean]> {
+    return this.sqlConnection.executeQueryType<ReportFamousStudents>(queries.getReportFamousStudents, [])
   }
 }
