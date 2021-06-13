@@ -7,9 +7,14 @@ const addRandomPost =
   'set @studentID = (select StudentID from Page order by rand() limit 1); ' +
   'insert into Post (StudentID, Page_Title, Title, Content, Date_created) values (@studentID, (select Title from Page where StudentID = @studentID order by rand() limit 1), ?, ?, ?);'
 
-const addRandomIsFriendsWith =
+const addRandomFollows =
   'set @studentID = (select StudentID from Page order by rand() limit 1); ' +
   'insert into follows (StudentID, Friend_StudentID) values (@studentID, (select StudentID from Student where StudentID != @studentID order by rand() limit 1));'
+
+const addRandomLikes = `set @studentID = (select StudentID from Post order by rand() limit 1);
+  set @pageTitle = (select Page_Title from Post where StudentID = @studentID order by rand() limit 1);
+  set @postTitle = (select Title from Post where StudentID = @studentID and Page_Title = @pageTitle order by rand() limit 1);
+  insert into likes (StudentID, Post_StudentID, Post_Page_Title, Post_Title) values ((select StudentID from Student where StudentID != @studentID order by rand() limit 1), @studentID, @pageTitle, @postTitle);`
 
 const addPage = 'insert into Page (StudentID, Title, Description, Date_created) values (?, ?, ?, ?);'
 
@@ -126,7 +131,7 @@ const getAccountByEmail =
 
 const getReportStudentActivity = `
   select a.Name as studentName
-    , sum(p.Title) as sumPages
+    , count(p.Title) as sumPages
     , (select count(p1.Title) from Post p1 where p1.StudentID = s.StudentID and p1.Page_Title = p.Title) as sumPosts 
     , (select count(l.StudentID) from likes l where l.StudentID = s.StudentID) as likedPosts 
   from Student s 
@@ -144,7 +149,7 @@ const getReportFamousStudents = `
       where l.Post_Title = p.Title and l.Post_Page_Title = p.Page_Title) as likes
     , (select count(f.StudentID) from follows f where f.Friend_StudentID = p.StudentID) as studentFollowers
   from Post p
-  where p.Title = ?
+  where p.Title like ?
   group by p.Page_Title;`
 
 export const SQLQueries = {
@@ -173,7 +178,6 @@ export const SQLQueries = {
   addLike,
   removeLike,
   addAdmin,
-  addRandomIsFriendsWith,
   addRandomPage,
   addRandomPost,
   removeAdmin,
@@ -191,5 +195,7 @@ export const SQLQueries = {
   getAllEventsCreatedBy,
   getAccountByEmail,
   getReportStudentActivity,
-  getReportFamousStudents
+  getReportFamousStudents,
+  addRandomFollows,
+  addRandomLikes
 }

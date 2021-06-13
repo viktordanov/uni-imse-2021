@@ -58,4 +58,9 @@ export interface Repository {
   // Reports
   getReportStudentActivity(weeks: number): Promise<[ReportStudentActivity[], boolean]>
   getReportFamousStudents(searchPostTitle: string): Promise<[ReportFamousStudents[], boolean]>
+
+  // dbFilling
+  addRandomPost(p: Post): Promise<boolean>
+  addRandomFollows(): Promise<boolean>
+  addRandomLikes(): Promise<boolean>
 }
