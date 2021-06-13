@@ -11,6 +11,8 @@ services:
       PORT: 8080
       MARIADB_USER: imse
       MARIADB_PASSWORD: imse
+      MONGODB_USER: root
+      MONGODB_PASSWORD: password
     ports:
       - 127.0.0.1:10100:8080
     restart: always

@@ -1,3 +1,4 @@
+import { Collection, Db, MongoClient } from 'mongodb'
 import {
   Page,
   Post,
@@ -11,8 +12,42 @@ import {
 import { Repository } from '../entities/repository'
 
 export class MongoRepository implements Repository {
-  addPage(studentId: number, page: Page): Promise<boolean> {
-    throw new Error('Method not implemented.')
+  private client: MongoClient
+  async initialize(): Promise<void> {
+    this.client = await MongoClient.connect('mongodb://imse-mongodb:27017')
+    await Promise.all([
+      this.client.db().createCollection('accounts'),
+      this.client.db().createCollection('events'),
+      this.client.db().createCollection('pages'),
+      this.client.db().createCollection('posts')
+    ])
+  }
+
+  db(): Db {
+    return this.client.db()
+  }
+
+  accounts(): Collection {
+    return this.db().collection('accounts')
+  }
+
+  events(): Collection {
+    return this.db().collection('events')
+  }
+
+  posts(): Collection {
+    return this.db().collection('posts')
+  }
+
+  pages(): Collection {
+    return this.db().collection('pages')
+  }
+
+  async addPage(studentId: number, page: Page): Promise<boolean> {
+    const res = await this.pages().insertOne(page)
+    if (res.insertedCount !== 1) return false
+    const res2 = await this.accounts().findOneAndUpdate({ _id: studentId }, { $push: { pages: res.insertedId } })
+    return (res2.ok ?? 0) === 1
   }
 
   removePage(studentId: number, title: string): Promise<boolean> {
@@ -51,16 +86,18 @@ export class MongoRepository implements Repository {
     throw new Error('Method not implemented.')
   }
 
-  addStudent(s: Student): Promise<boolean> {
-    throw new Error('Method not implemented.')
+  async addStudent(s: Student): Promise<boolean> {
+    const res = await this.accounts().insertOne(s)
+    return res.insertedCount === 1
   }
 
-  removeStudent(id: number): Promise<boolean> {
-    throw new Error('Method not implemented.')
+  async removeStudent(id: number): Promise<boolean> {
+    const res = await this.accounts().deleteOne({ _id: id })
+    return res.deletedCount === 1
   }
 
-  getStudentById(id: number): Promise<[Student, boolean]> {
-    throw new Error('Method not implemented.')
+  async getStudentById(id: number): Promise<[Student, boolean]> {
+    const res = await this.accounts().findOne({ _id: id })
   }
 
   updateStudent(s: Student): Promise<boolean> {
