@@ -1,4 +1,4 @@
-const selectLastInsertID = 'select last_insert_id();'
+const selectLastInsertID = 'select last_insert_id() as id;'
 
 const addRandomPage =
   'insert into Page (StudentID, Title, Description, Date_created) values ((select StudentID from Student order by rand() limit 1), ?, ?, ?);'
