@@ -92,9 +92,9 @@ export class RepositorySQL implements Repository {
               .executeQuery(queries.addStudentIDLastInserted, [s.university, s.matNumber], con)
               .then(() => {
                 this.sqlConnection
-                  .executeScalarType<number>(queries.selectLastInsertID, [], con)
-                  .then((element: [number, boolean]) => {
-                    s.id = element[0]
+                  .executeScalarType<{ id: number }>(queries.selectLastInsertID, [], con)
+                  .then((element: [{ id: number }, boolean]) => {
+                    s.id = element[0].id
                     resolve(true)
                     con.release()
                   })
@@ -168,9 +168,9 @@ export class RepositorySQL implements Repository {
           .then(() => {
             this.sqlConnection.executeQuery(queries.addAdmin, [s.id, s.address, s.ssn], con).then(() => {
               return this.sqlConnection
-                .executeScalarType(queries.selectLastInsertID, [], con)
-                .then((element: [number, boolean]) => {
-                  s.id = element[0]
+                .executeScalarType<{ id: number }>(queries.selectLastInsertID, [], con)
+                .then((element: [{ id: number }, boolean]) => {
+                  s.id = element[0].id
                   resolve(true)
                   con.release()
                 })
@@ -202,9 +202,9 @@ export class RepositorySQL implements Repository {
         if (err) console.log('sql error: ', err.message)
         this.sqlConnection.executeQuery(queries.addEvent, [e.name, e.description, e.duration, e.date], con).then(() => {
           this.sqlConnection
-            .executeScalarType(queries.selectLastInsertID, [], con)
-            .then((element: [number, boolean]) => {
-              e.id = element[0]
+            .executeScalarType<{ id: number }>(queries.selectLastInsertID, [], con)
+            .then((element: [{ id: number }, boolean]) => {
+              e.id = element[0].id
               resolve(true)
               con.release()
             })
