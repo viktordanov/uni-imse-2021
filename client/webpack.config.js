@@ -120,11 +120,6 @@ const plugins = [
           }
         }
       ]
-    }),
-  isProduction &&
-    new CompressionPlugin({
-      algorithm: 'gzip',
-      deleteOriginalAssets: true
     })
 ].filter(Boolean)
 

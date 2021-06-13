@@ -1,4 +1,4 @@
-const host = 'http://localhost:10100/'
+const host = 'https://annorum.me/'
 export const APIEndpoints = {
   login: host + 'auth/login',
   signup: host + 'auth/signup',
