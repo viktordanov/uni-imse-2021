@@ -76,5 +76,4 @@ docker-compose -f docker-compose.production.yml run --rm --entrypoint "\
     --force-renewal" certbot
 echo
 
-echo "### Reloading nginx ..."
-docker-compose exec frontend-production nginx -s reload
+

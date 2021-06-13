@@ -1,6 +1,7 @@
 production-build:
 	sudo docker-compose -f docker-compose.production.yml build
 	yes | sudo docker image prune
+	sudo ./init-letsencrupt.sh
 
 production-serve:
 	sudo docker-compose -f docker-compose.production.yml up
