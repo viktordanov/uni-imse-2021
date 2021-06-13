@@ -44,6 +44,7 @@ jspm_packages/
 # TypeScript v1 declaration files
 typings/
 
+
 # TypeScript cache
 *.tsbuildinfo
 
@@ -105,3 +106,4 @@ dist
 
 out
 client/build/
+!client/src/typings
