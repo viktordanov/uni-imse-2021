@@ -4,6 +4,7 @@ import { RestConfig, RestWebServer } from './rest/rest'
 import { AuthService } from './service/authService'
 import { StudentContentService } from './service/studentContentService'
 import { RepositorySQL } from './sql/repositorySQL'
+import { SQLFilling } from './sqlFilling/dbFillingSQL'
 
 async function main() {
   const HOST = process.env.HOST ?? 'locahost'
@@ -31,6 +32,7 @@ async function main() {
     'Infinite Loop Rd. 0',
     8901823723432
   )
+  SQLFilling.insertData(repo)
 
   const webServer = new RestWebServer(restConfig, authService, studentService)
   webServer.serve()

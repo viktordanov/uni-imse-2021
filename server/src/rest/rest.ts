@@ -112,13 +112,14 @@ export class RestWebServer implements Rest {
     unlikePost(this, apiRouter)
     getLikedPosts(this, apiRouter)
     getStudentInfoByEmail(this, apiRouter)
-    getReportStudentActivity(this, apiRouter)
-    getReportFamousStudents(this, apiRouter)
 
     this.webServer.use('/api', jwt({ secret: this.config.jwtSecret, algorithms: ['HS256'] }), apiRouter)
 
     const adminRouter = express.Router()
     getHasMigrated(this, adminRouter)
+    getReportStudentActivity(this, adminRouter)
+    getReportFamousStudents(this, adminRouter)
+
     adminRouter.use(jwt({ secret: this.config.jwtSecret, algorithms: ['HS256'] }))
     adminRouter.use((req: Request, res: Response, next: NextFunction) => {
       const email = getEmailFromDecodedToken(req)
@@ -692,9 +693,10 @@ function getStudentInfoByEmail(restServer: RestWebServer, apiRouter: express.Rou
 }
 
 function getReportStudentActivity(restServer: RestWebServer, apiRouter: express.Router): void {
-  apiRouter.get('/report1', async (req: Request, res: Response) => {
+  apiRouter.get('/report1/:weeks', async (req: Request, res: Response) => {
     const weeks = req.params.weeks
-    if (weeks == null || !isNaN(+weeks)) {
+
+    if (weeks == null || isNaN(+weeks)) {
       return res.status(400).json({ error: 'weeks missing or not a number' })
     }
     const weeksNumber = parseInt(weeks)
@@ -708,12 +710,12 @@ function getReportStudentActivity(restServer: RestWebServer, apiRouter: express.
 }
 
 function getReportFamousStudents(restServer: RestWebServer, apiRouter: express.Router): void {
-  apiRouter.get('/report2', async (req: Request, res: Response) => {
-    const searchPostTitle = req.params.searchPostTitle
-    if (searchPostTitle === null || searchPostTitle.length < 3) {
-      return res.status(400).json({ error: 'searchPostTitle missing or too short' })
+  apiRouter.get('/report2/:postTitle', async (req: Request, res: Response) => {
+    const postTitle = req.params.postTitle
+    if (postTitle === null || postTitle.length < 3) {
+      return res.status(400).json({ error: 'postTitle missing or too short' })
     }
-    const [report, errReport] = await restServer.getStudentService().getReportFamousStudents(searchPostTitle)
+    const [report, errReport] = await restServer.getStudentService().getReportFamousStudents(postTitle)
     if (errReport !== null) {
       return res.status(400).json({ error: errReport.message })
     }
