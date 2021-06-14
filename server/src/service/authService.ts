@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt'
-import { Student } from '../entities/entities'
+import { Admin, Student } from '../entities/entities'
 import { Repository } from '../entities/repository'
 import { JWTUtil } from '../jwt'
 
@@ -53,6 +53,37 @@ export class AuthService {
     }
 
     await this.repository.addStudent(student)
+    const res = await this.repository.getAccountByEmail(email)
+    existing = res[0]
+    ok = res[1]
+
+    if (!ok) {
+      return ['', new Error('Something went wrong')]
+    }
+
+    return [JWTUtil.signJWT(existing, this.jwtSecret), null]
+  }
+
+  async adminSignup(name: string, email: string, password: string, address: string, ssn: number): APIResponse<string> {
+    let [existing, ok] = await this.repository.getAccountByEmail(email)
+    if (existing?.id !== undefined) {
+      return ['', new Error('Account already exists')]
+    }
+
+    const passwordHash = bcrypt.hashSync(password, 10)
+
+    const admin: Admin = {
+      id: 0,
+      accountType: 'admin',
+      dateRegistered: new Date(),
+      email,
+      address,
+      name,
+      ssn,
+      passwordHash
+    }
+
+    await this.repository.addAdmin(admin)
     const res = await this.repository.getAccountByEmail(email)
     existing = res[0]
     ok = res[1]

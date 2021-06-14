@@ -1,7 +1,9 @@
+import { Admin } from './entities/entities'
 import { MongoRepository } from './mongodb/mongoRepo'
 import { RestConfig, RestWebServer } from './rest/rest'
 import { AuthService } from './service/authService'
 import { StudentContentService } from './service/studentContentService'
+import { RepositorySQL } from './sql/repositorySQL'
 
 async function main() {
   const HOST = process.env.HOST ?? 'locahost'
@@ -14,13 +16,21 @@ async function main() {
     staticDir: STATIC_DIR,
     jwtSecret: JWT_SECRET
   }
-  // const sqlRepository = new RepositorySQL()
-  const mongoRepo = new MongoRepository()
+  const repo = new RepositorySQL()
+  // const repo = new MongoRepository()
 
-  await mongoRepo.initialize()
+  // await repo.initialize()
 
-  const authService = new AuthService(mongoRepo, JWT_SECRET)
-  const studentService = new StudentContentService(mongoRepo)
+  const authService = new AuthService(repo, JWT_SECRET)
+  const studentService = new StudentContentService(repo)
+
+  const err = await authService.adminSignup(
+    'Admin Account',
+    'admin@annorum.me',
+    'adminpassword',
+    'Infinite Loop Rd. 0',
+    8901823723432
+  )
 
   const webServer = new RestWebServer(restConfig, authService, studentService)
   webServer.serve()

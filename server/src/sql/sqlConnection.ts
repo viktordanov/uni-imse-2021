@@ -1,6 +1,6 @@
 import mysql, { PoolConfig } from 'mysql'
 const sqlConfig: PoolConfig = {
-  host: 'mariadb',
+  host: 'imse-mariadb',
   user: process.env.MARIADB_USER,
   password: process.env.MARIADB_PASSWORD,
   database: 'imse',

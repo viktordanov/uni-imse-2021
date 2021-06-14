@@ -87,7 +87,7 @@ const addLike = 'insert into likes (StudentID, Post_StudentID, Post_Page_Title, 
 const removeLike =
   'delete from likes where StudentID = ? and Post_StudentID = ? and Post_Page_Title = ? and Post_Title = ?;'
 
-const addAdmin = 'insert into Admin (AdminID, Address, SSN) values (?, ?, ?);'
+const addAdmin = 'insert into Admin (AdminID, Address, SSN) values (last_insert_id(), ?, ?);'
 
 const removeAdmin = 'delete from Admin where AdminID = ?;'
 
