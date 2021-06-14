@@ -154,7 +154,7 @@ const getReportFamousStudents = `
       where l.Post_Title = p.Title and l.Post_Page_Title = p.Page_Title) as likes
     , (select count(f.StudentID) from follows f where f.Friend_StudentID = p.StudentID) as studentFollowers
   from Post p
-  where p.Content like ?
+  where p.Title like ?
   group by p.Page_Title;`
 
 export const SQLQueries = {
