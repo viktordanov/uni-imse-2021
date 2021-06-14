@@ -1,4 +1,4 @@
-import { Collection, Db, MongoClient } from 'mongodb'
+import { Collection, Cursor, Db, MongoClient, ObjectId } from 'mongodb'
 import {
   Page,
   Post,
@@ -58,39 +58,68 @@ export class MongoRepository implements Repository {
   async addPage(studentId: number, page: Page): Promise<boolean> {
     const res = await this.pages().insertOne(page)
     if (res.insertedCount !== 1) return false
-    const res2 = await this.accounts().findOneAndUpdate({ _id: studentId }, { $push: { pages: res.insertedId } })
+    const res2 = await this.accounts().findOneAndUpdate({ id: studentId }, { $push: { pages: res.insertedId } })
     return (res2.ok ?? 0) === 1
   }
 
-  removePage(studentId: number, title: string): Promise<boolean> {
-    throw new Error('Method not implemented.')
+  async removePage(studentId: number, title: string): Promise<boolean> {
+    /* const res = await this.accounts().aggregate([
+      { $lookup: { from: 'pages', localField: 'pages', foreignField: '_id', as: 'studentPages' } },
+      { $match: { 'studentPages.title': title, id: studentId } },
+      { $project: { studentPages: 1 } }
+    ])
+    const doc = await res.next()
+    const pageId = doc.studentPages[0]._id */
+    const pageId = await this.getPageObjectId(studentId, title)
+    const del = await this.pages().deleteOne({ _id: pageId })
+    return del.deletedCount === 1
   }
 
   getPageByTitle(studentId: number, title: string): Promise<[Page, boolean]> {
+    // unused
     throw new Error('Method not implemented.')
   }
 
   updatePage(studentId: number, page: Page): Promise<boolean> {
+    // unused
     throw new Error('Method not implemented.')
   }
 
-  addPost(studentId: number, pageTitle: string, post: Post): Promise<boolean> {
-    throw new Error('Method not implemented.')
+  async addPost(studentId: number, pageTitle: string, post: Post): Promise<boolean> {
+    /* const res = await this.accounts().aggregate([
+      { $lookup: { from: 'pages', localField: 'pages', foreignField: '_id', as: 'studentPages' } },
+      { $match: { 'studentPages.title': pageTitle, id: studentId } },
+      { $project: { studentPages: 1 } }
+    ])
+    const doc = await res.next()
+    if (!doc) return false
+    console.log(doc)
+    const pageId = doc.studentPages[0]._id */
+    const pageId = await this.getPageObjectId(studentId, pageTitle)
+
+    const res2 = await this.posts().insertOne(post)
+    if (res2.insertedCount !== 1) return false
+    const res3 = await this.pages().findOneAndUpdate({ _id: pageId }, { $push: { posts: res2.insertedId } })
+    return (res3.ok ?? 0) === 1
   }
 
   removePost(studentId: number, pageTitle: string, title: string): Promise<boolean> {
+    // unused
     throw new Error('Method not implemented.')
   }
 
   getPostByTitle(studentId: number, pageTitle: string, title: string): Promise<[Post, boolean]> {
+    // unused
     throw new Error('Method not implemented.')
   }
 
   updatePost(studentId: number, pageTitle: string, post: Post): Promise<boolean> {
+    // unused
     throw new Error('Method not implemented.')
   }
 
   getStudentLikesOfPost(studentId: number, pageTitle: string, postTitle: string): Promise<[Student[], boolean]> {
+    // unused
     throw new Error('Method not implemented.')
   }
 
@@ -111,8 +140,9 @@ export class MongoRepository implements Repository {
   }
 
   async getStudentById(id: number): Promise<[Student, boolean]> {
-    // const res = await this.accounts().findOne({ _id: id })
-    return [null, false]
+    const res = await this.accounts().findOne({ id: id })
+    if (res === null) return [null, false]
+    return [res as Student, true]
   }
 
   async updateStudent(s: Student): Promise<boolean> {
@@ -120,91 +150,185 @@ export class MongoRepository implements Repository {
     return res.ok === 1
   }
 
-  getAllStudents(): Promise<[Student[], boolean]> {
-    throw new Error('Method not implemented.')
+  async getAllStudents(): Promise<[Student[], boolean]> {
+    const res = await this.accounts().find({ accountType: 'student' })
+    if (res) {
+      const list: Student[] = []
+      while (await res.hasNext()) {
+        const doc = await res.next()
+        list.push(Object.assign({}, doc) as Student)
+      }
+      return [list, true]
+    }
+
+    return [null, false]
   }
 
   getFollowersOf(id: number): Promise<[Student[], boolean]> {
+    // unused
     throw new Error('Method not implemented.')
   }
 
-  getFollowing(id: number): Promise<[Student[], boolean]> {
-    throw new Error('Method not implemented.')
+  async getFollowing(id: number): Promise<[Student[], boolean]> {
+    const res = await this.accounts().aggregate([
+      { $lookup: { from: 'accounts', localField: 'followed_students', foreignField: '_id', as: 'followedStudents' } },
+      { $match: { id: id } },
+      { $project: { followedStudents: 1 } }
+    ])
+
+    if (res) {
+      const list: Student[] = []
+      const doc = await res.next()
+      doc.followedStudents.forEach((element: Student) => {
+        list.push(Object.assign({}, element) as Student)
+      })
+      return [list, true]
+    }
+
+    return [null, false]
   }
 
-  addFollow(who: number, followsWhom: number): Promise<boolean> {
-    throw new Error('Method not implemented.')
+  async addFollow(who: number, followsWhom: number): Promise<boolean> {
+    const res = await this.accounts().findOne({ id: followsWhom })
+    if (res === null) return false
+
+    const res2 = await this.accounts().findOneAndUpdate({ id: who }, { $push: { followed_students: res._id } })
+    return (res2.ok ?? 0) === 1
   }
 
-  removeFollow(who: number, followsWhom: number): Promise<boolean> {
-    throw new Error('Method not implemented.')
+  async removeFollow(who: number, followsWhom: number): Promise<boolean> {
+    const res = await this.accounts().findOne({ id: followsWhom })
+    if (res === null) return false
+
+    const res2 = await this.accounts().findOneAndUpdate({ id: who }, { $pull: { followed_students: res._id } })
+    return (res2.ok ?? 0) === 1
   }
 
-  getLikedPostsOf(id: number): Promise<[Post[], boolean]> {
-    throw new Error('Method not implemented.')
+  async getLikedPostsOf(id: number): Promise<[Post[], boolean]> {
+    const res = await this.accounts().aggregate([
+      { $lookup: { from: 'posts', localField: 'liked_posts', foreignField: '_id', as: 'likedPosts' } },
+      { $match: { id: id } },
+      { $project: { likedPosts: 1 } }
+    ])
+
+    if (res) {
+      const list: Post[] = []
+      const doc = await res.next()
+      doc.likedPosts.forEach((element: Post) => {
+        list.push(Object.assign({}, element) as Post)
+      })
+      return [list, true]
+    }
+
+    return [null, false]
   }
 
-  addLike(who: number, whosePost: number, pageTitle: string, postTitle: string): Promise<boolean> {
-    throw new Error('Method not implemented.')
+  async addLike(who: number, whosePost: number, pageTitle: string, postTitle: string): Promise<boolean> {
+    const postId = await this.getPostObjectId(whosePost, pageTitle, postTitle)
+    if (postId == null) return false
+    const res = await this.accounts().findOneAndUpdate({ id: who }, { $push: { liked_posts: postId } })
+    return (res.ok ?? 0) === 1
   }
 
-  removeLike(who: number, whosePost: number, pageTitle: string, postTitle: string): Promise<boolean> {
-    throw new Error('Method not implemented.')
+  async removeLike(who: number, whosePost: number, pageTitle: string, postTitle: string): Promise<boolean> {
+    const postId = await this.getPostObjectId(whosePost, pageTitle, postTitle)
+    if (postId == null) return false
+    const res = await this.accounts().findOneAndUpdate({ id: who }, { $pull: { liked_posts: postId } })
+    return (res.ok ?? 0) === 1
   }
 
   addAdmin(s: Admin): Promise<boolean> {
+    // unused
     throw new Error('Method not implemented.')
   }
 
   removeAdmin(id: number): Promise<boolean> {
+    // unused
     throw new Error('Method not implemented.')
   }
 
   getAdminById(id: number): Promise<[Admin, boolean]> {
+    // unused
     throw new Error('Method not implemented.')
   }
 
   updateAdmin(s: Admin): Promise<boolean> {
+    // unused
     throw new Error('Method not implemented.')
   }
 
   getAllAdmins(): Promise<[Admin[], boolean]> {
+    // unused
     throw new Error('Method not implemented.')
   }
 
   addEvent(e: Event): Promise<boolean> {
+    // unused
     throw new Error('Method not implemented.')
   }
 
   removeEvent(id: number): Promise<boolean> {
+    // unused
     throw new Error('Method not implemented.')
   }
 
   getEventById(id: number): Promise<[Event, boolean]> {
+    // unused
     throw new Error('Method not implemented.')
   }
 
   getEventByName(name: string): Promise<[Event, boolean]> {
+    // unused
     throw new Error('Method not implemented.')
   }
 
   updateEvent(e: Event): Promise<boolean> {
+    // unused
     throw new Error('Method not implemented.')
   }
 
   getAllEvents(): Promise<[Event[], boolean]> {
+    // unused
     throw new Error('Method not implemented.')
   }
 
-  getAllPagesOf(studentId: number): Promise<[Page[], boolean]> {
-    throw new Error('Method not implemented.')
+  async getAllPagesOf(studentId: number): Promise<[Page[], boolean]> {
+    const res = await this.accounts().aggregate([
+      { $lookup: { from: 'pages', localField: 'pages', foreignField: '_id', as: 'studentPages' } },
+      { $match: { id: studentId } },
+      { $project: { studentPages: 1 } }
+    ])
+    if (res) {
+      const list: Page[] = []
+      while (await res.hasNext()) {
+        const doc = await res.next()
+        list.push(Object.assign({}, doc.studentPages[0]) as Page)
+      }
+      return [list, true]
+    }
+    return [null, false]
   }
 
-  getAllPostsOf(studentId: number, pageTitle: string): Promise<[Post[], boolean]> {
-    throw new Error('Method not implemented.')
+  async getAllPostsOf(studentId: number, pageTitle: string): Promise<[Post[], boolean]> {
+    const res = await this.accounts().aggregate([
+      { $lookup: { from: 'pages', localField: 'pages', foreignField: '_id', as: 'studentPages' } },
+      { $lookup: { from: 'posts', localField: 'studentPages.posts', foreignField: '_id', as: 'studentPosts' } },
+      { $match: { id: studentId, 'studentPages.title': pageTitle } },
+      { $project: { studentPosts: 1 } }
+    ])
+    if (res) {
+      const list: Post[] = []
+      while (await res.hasNext()) {
+        const doc = await res.next()
+        list.push(Object.assign({}, doc.studentPosts[0]) as Post)
+      }
+      return [list, true]
+    }
+    return [null, false]
   }
 
   getAllEventsCreatedBy(adminId: number): Promise<[Event[], boolean]> {
+    // unused
     throw new Error('Method not implemented.')
   }
 
@@ -217,14 +341,42 @@ export class MongoRepository implements Repository {
   }
 
   addRandomPost(p: Post): Promise<boolean> {
+    // unused
     throw new Error('Method not implemented.')
   }
 
   addRandomFollows(): Promise<boolean> {
+    // unused
     throw new Error('Method not implemented.')
   }
 
   addRandomLikes(): Promise<boolean> {
+    // unused
     throw new Error('Method not implemented.')
+  }
+
+  async getPageObjectId(studentId: number, pageTitle: string): Promise<ObjectId> {
+    const res = await this.accounts().aggregate([
+      { $lookup: { from: 'pages', localField: 'pages', foreignField: '_id', as: 'studentPages' } },
+      { $match: { 'studentPages.title': pageTitle, id: studentId } },
+      { $project: { studentPages: 1 } }
+    ])
+    if (!res) return null
+    const doc = await res.next()
+    if (!doc) return null
+    return doc.studentPages[0]._id
+  }
+
+  async getPostObjectId(studentId: number, pageTitle: string, postTitle: string): Promise<ObjectId> {
+    const pageId = await this.getPageObjectId(studentId, pageTitle)
+    const res = await this.pages().aggregate([
+      { $lookup: { from: 'posts', localField: 'posts', foreignField: '_id', as: 'pagePosts' } },
+      { $match: { 'pagePosts.title': postTitle, _id: pageId } },
+      { $project: { pagePosts: 1 } }
+    ])
+    if (!res) return null
+    const doc = await res.next()
+    if (!doc) return null
+    return doc.pagePosts[0]._id
   }
 }
