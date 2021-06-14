@@ -13,6 +13,7 @@ $pagePaddingHor: $margin-large;
   background-size: 100%, 15%, 25%, 100%;
   padding: $pagePaddingVert $pagePaddingHor;
   padding-bottom: 0;
+  overflow-y: scroll;
 
   $headerHeight: 5.5rem;
   $headerMarginBottom: $margin-large * 2;
@@ -30,5 +31,61 @@ $pagePaddingHor: $margin-large;
     }
   }
 
+  .label {
+    @include font-label;
+    font-size: 18px;
+    display: block;
+    margin: $margin-medium 0;
+  }
 
+  h1 {
+    &.not {
+      color: $color-error;
+    }
+    margin-bottom: $margin-normal;
+    @include font-body;
+    font-weight: 400;
+    font-size: 20px;
+    color: darken($color-success, 10);
+  }
+
+  .table {
+    width: 100%;
+    margin-bottom: $margin-large * 2;
+    thead {
+      th {
+        @include font-label;
+        font-weight: bold;
+        font-size: 16px;
+        text-align: left;
+        padding: $margin-normal;
+
+        background: transparentize($color: $color-accent-faded, $amount: 0.75);
+        &:nth-child(1) {
+          border-radius: $border-radius-normal 0 0 $border-radius-normal;
+        }
+        &:last-child {
+          border-radius: 0 $border-radius-normal $border-radius-normal 0;
+        }
+      }
+    }
+    tr {
+      &:nth-child(even) {
+        background: transparentize($color: $color-accent-faded, $amount: 0.9);
+      }
+    }
+    td {
+      @include font-label;
+      padding: $margin-normal;
+      font-size: 16px;
+      text-align: left;
+
+      &:nth-child(1) {
+        border-radius: $border-radius-normal 0 0 $border-radius-normal;
+      }
+      &:last-child {
+        border-radius: 0 $border-radius-normal $border-radius-normal 0;
+      }
+    }
+  }
 }
