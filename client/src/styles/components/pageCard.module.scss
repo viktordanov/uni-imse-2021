@@ -58,6 +58,10 @@
     font-size: 18px;
     font-weight: 400;
     margin-bottom: $margin-normal;
+    overflow: hidden;
+    max-width: 80%;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
   .postCount {
     position: absolute;
