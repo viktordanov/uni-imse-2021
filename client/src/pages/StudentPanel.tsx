@@ -39,6 +39,9 @@ export const StudentPanel: React.FunctionComponent = () => {
         <Route exact path="/">
           <Home className={styles.subpage} />
         </Route>
+        <Route exact path="/admin">
+          <Pages className={styles.subpage} />
+        </Route>
         <Route exact path="/pages">
           <Pages className={styles.subpage} />
         </Route>

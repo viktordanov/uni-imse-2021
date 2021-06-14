@@ -1,0 +1,36 @@
+$pagePaddingVert: $margin-medium;
+$pagePaddingHor: $margin-large;
+
+.admin {
+  width: 100%;
+  height: 100vh;
+  background: $color-white;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.7) 0%, transparent 10.5%),
+    url('~assets/background-top.svg'), url('~assets/background-bottom.svg'),
+    linear-gradient(-45deg, transparentize(saturate($color-accent-dark, 100%), 0.95) 0%, transparent 100%);
+  background-repeat: no-repeat;
+  background-position: top center, top -20vh right 5vw, bottom -20vh left 7vw, bottom right;
+  background-size: 100%, 15%, 25%, 100%;
+  padding: $pagePaddingVert $pagePaddingHor;
+  padding-bottom: 0;
+
+  $headerHeight: 5.5rem;
+  $headerMarginBottom: $margin-large * 2;
+  header {
+    display: flex;
+    height: $headerHeight;
+    justify-content: space-between;
+    margin-bottom: $headerMarginBottom;
+    .menu {
+      margin-right: 2rem;
+    }
+    .right {
+      display: flex;
+      align-items: center;
+    }
+  }
+
+  .subpage {
+    height: calc(100vh - #{$headerHeight + $headerMarginBottom + $pagePaddingVert});
+  }
+}
