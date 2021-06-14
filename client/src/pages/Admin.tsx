@@ -6,6 +6,12 @@ import styles from '@/styles/pages/admin.module.scss'
 import c from 'classnames'
 import React, { useMemo } from 'react'
 
+type UserInfo = {
+  name: string
+  email: string
+  accountType: 'admin' | 'student'
+}
+
 export interface AdminProps {
   className?: string
   onClick?: (e: React.MouseEvent<HTMLDivElement>) => void

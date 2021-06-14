@@ -20,7 +20,7 @@ services:
       - backend
     depends_on: 
       - mariadb
-      - mongo
+      # - mongo
   mariadb:
     container_name: imse-mariadb
     image: mariadb:10.5
@@ -35,27 +35,27 @@ services:
     restart: always
     networks:
       - backend
-  mongo:
-    container_name: imse-mongodb
-    image: mongo
-    restart: always
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: password
-    networks:
-      - backend
-  mongo-express:
-    image: mongo-express
-    restart: always
-    ports:
-      - 8081:8081
-    networks:
-      - backend
-    depends_on:
-      - mongo
-    environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: root
-      ME_CONFIG_MONGODB_ADMINPASSWORD: password
+  # mongo:
+  #   container_name: imse-mongodb
+  #   image: mongo
+  #   restart: always
+  #   environment:
+  #     MONGO_INITDB_ROOT_USERNAME: root
+  #     MONGO_INITDB_ROOT_PASSWORD: password
+  #   networks:
+  #     - backend
+  # mongo-express:
+  #   image: mongo-express
+  #   restart: always
+  #   ports:
+  #     - 8081:8081
+  #   networks:
+  #     - backend
+  #   depends_on:
+  #     - mongo
+  #   environment:
+  #     ME_CONFIG_MONGODB_ADMINUSERNAME: root
+  #     ME_CONFIG_MONGODB_ADMINPASSWORD: password
 
 networks:
   backend:

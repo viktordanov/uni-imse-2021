@@ -19,14 +19,16 @@ export interface LoginProps {
 
 export const Login: React.FunctionComponent<LoginProps> = ({ className, onClick }: LoginProps) => {
   const [mode, setMode] = useState<'login' | 'singup'>('login')
-
+  const { pushNotification } = useNotifications()
+  const { setToken } = useAuth()
+  const { push } = useHistory()
   const handleLoginAsAdmin = useCallback(async () => {
     const { token } = await fetch(APIEndpoints.login, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ email:'admin@annorum.me', '' })
+      body: JSON.stringify({ email: 'admin@annorum.me', password: 'adminpassword' })
     })
       .then(res => {
         if (res.ok) {
@@ -43,7 +45,7 @@ export const Login: React.FunctionComponent<LoginProps> = ({ className, onClick 
       return
     }
     setToken(token)
-    push('/')
+    push('/admin')
     pushNotification(NotificationType.SUCCESS, 'Authentication successful', 'Welcome back to Conligo', 2500)
   }, [])
 
