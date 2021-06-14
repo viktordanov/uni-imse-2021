@@ -85,19 +85,21 @@ export const Admin: React.FunctionComponent<AdminProps> = ({ className, onClick 
         </div>
       </header>
       <div className={styles.wrapper}>
-        <Placeholder>
+        <Placeholder className={styles.placeholder}>
           <h1 className={c({ [styles.not]: !hasMigrated })}>
             Database has {hasMigrated ? 'been' : 'not been'} migrated
           </h1>
           {!hasMigrated && <IconButton Icon={Codepen}>Migrate to MongoDB</IconButton>}
         </Placeholder>
-        <label className={styles.label}>Famous students report</label>
-        <IconButton
-          onClick={cycleActivitySort}
-          Icon={activitySortMode.split('-')[1] === 'asc' ? ChevronUp : ChevronDown}
-        >
-          {'By ' + activitySortMode.split('-')[0]}
-        </IconButton>
+        <div className={styles.header}>
+          <label className={styles.label}>Famous students report</label>
+          <IconButton
+            onClick={cycleActivitySort}
+            Icon={activitySortMode.split('-')[1] === 'asc' ? ChevronUp : ChevronDown}
+          >
+            {'By ' + activitySortMode.split('-')[0]}
+          </IconButton>
+        </div>
         <table className={styles.table}>
           <thead>
             <tr>
@@ -118,10 +120,12 @@ export const Admin: React.FunctionComponent<AdminProps> = ({ className, onClick 
             ))}
           </tbody>
         </table>
-        <label className={styles.label}>Student activity report</label>
-        <IconButton onClick={cycleFamousSort} Icon={famousSortMode.split('-')[1] === 'asc' ? ChevronUp : ChevronDown}>
-          {'By ' + famousSortMode.split('-')[0]}
-        </IconButton>
+        <div className={styles.header}>
+          <label className={styles.label}>Student activity report</label>
+          <IconButton onClick={cycleFamousSort} Icon={famousSortMode.split('-')[1] === 'asc' ? ChevronUp : ChevronDown}>
+            {'By ' + famousSortMode.split('-')[0]}
+          </IconButton>
+        </div>
         <table className={styles.table}>
           <thead>
             <tr>
