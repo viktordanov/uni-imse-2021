@@ -1,23 +1,15 @@
-import { Collection, Cursor, Db, MongoClient, ObjectId } from 'mongodb'
+import { Collection, Db, MongoClient, ObjectId } from 'mongodb'
 import {
-  Page,
-  Post,
-  Student,
   Account,
   Admin,
   Event,
+  Page,
+  Post,
+  ReportFamousStudents,
   ReportStudentActivity,
-  ReportFamousStudents
+  Student
 } from '../entities/entities'
 import { Repository } from '../entities/repository'
-
-// type MongoStudent = {
-//   _id: number
-//   name: string
-//   email: string
-//   dateCreated: Date
-//   passWord
-// }
 
 export class MongoRepository implements Repository {
   private client: MongoClient
@@ -237,9 +229,9 @@ export class MongoRepository implements Repository {
     return (res.ok ?? 0) === 1
   }
 
-  addAdmin(s: Admin): Promise<boolean> {
-    // unused
-    throw new Error('Method not implemented.')
+  async addAdmin(s: Admin): Promise<boolean> {
+    const res = await this.accounts().insertOne(s)
+    return res.insertedCount === 1
   }
 
   removeAdmin(id: number): Promise<boolean> {
