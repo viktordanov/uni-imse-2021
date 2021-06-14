@@ -1,7 +1,7 @@
 $pagePaddingVert: $margin-medium;
 $pagePaddingHor: $margin-large;
 
-.admin {
+.adminPanel {
   width: 100%;
   height: 100vh;
   background: $color-white;
@@ -30,7 +30,5 @@ $pagePaddingHor: $margin-large;
     }
   }
 
-  .subpage {
-    height: calc(100vh - #{$headerHeight + $headerMarginBottom + $pagePaddingVert});
-  }
+
 }

@@ -1,5 +1,5 @@
+import { AdminMenu } from '@/components/adminMenu'
 import { Logo } from '@/components/logo'
-import { Menu } from '@/components/menu'
 import { PersonBadge } from '@/components/personBadge'
 import { useAuth } from '@/hooks/useAuth'
 import styles from '@/styles/pages/admin.module.scss'
@@ -23,14 +23,15 @@ export const Admin: React.FunctionComponent<AdminProps> = ({ className, onClick 
   const userInfo = useMemo<UserInfo>(() => {
     const subObj = decodedToken?.sub as any
 
-    return { name: subObj.name ?? '', email: subObj.email ?? '', accountType: 'student' }
+    return { name: subObj.name ?? '', email: subObj.email ?? '', accountType: 'admin' }
   }, [decodedToken])
   return (
-    <div className={c(styles.studentPanel)}>
+    <div className={c(styles.adminPanel)}>
       <header>
         <Logo />
+
         <div className={styles.right}>
-          <Menu className={styles.menu} />
+          <AdminMenu className={styles.menu} />
           <PersonBadge name={userInfo.name} other={userInfo.email} mode="profile" />
         </div>
       </header>

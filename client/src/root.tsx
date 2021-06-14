@@ -20,12 +20,11 @@ export const Root: React.FunctionComponent = () => {
             <Route path="/debug">
               <Debug />
             </Route>
-
+            <PrivateRoute exact path="/admin">
+              <Admin />
+            </PrivateRoute>
             <PrivateRoute path="/">
               <StudentPanel />
-            </PrivateRoute>
-            <PrivateRoute path="/admin">
-              <Admin />
             </PrivateRoute>
           </Switch>
         </Router>
