@@ -137,7 +137,7 @@ export class StudentContentService {
   async getReportFamousStudents(searchPostTitle: string): APIResponse<ReportFamousStudents[]> {
     const [report, ok] = await this.repository.getReportFamousStudents(searchPostTitle)
     if (!ok) {
-      return [[], new Error('failed to get famouse students report')]
+      return [[], new Error('failed to get famous students report')]
     }
     return [report, null]
   }

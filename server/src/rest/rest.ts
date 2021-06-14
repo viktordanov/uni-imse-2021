@@ -407,7 +407,7 @@ function getFeedPosts(restServer: RestWebServer, apiRouter: express.Router): voi
       return res.status(400).json({ error: err.message })
     }
 
-    const now2WeeksAgo = Date.now() - 1000 * 60 * 60 * 24 * 7 * 2
+    const now1MonthAgo = Date.now() - 1000 * 60 * 60 * 24 * 7 * 4 * 6
 
     const allPostsFromLast2Weeks: PostPayload[] = []
     for (const followedStudent of followed) {
@@ -420,7 +420,7 @@ function getFeedPosts(restServer: RestWebServer, apiRouter: express.Router): voi
         if (errPosts !== null) {
           return res.status(400).json({ error: errPosts.message })
         }
-        const filteredPosts = posts.filter(post => post.dateCreated.getTime() >= now2WeeksAgo)
+        const filteredPosts = posts.filter(post => post.dateCreated.getTime() >= now1MonthAgo)
         allPostsFromLast2Weeks.push(
           ...filteredPosts.map<PostPayload>(p => ({
             ...p,

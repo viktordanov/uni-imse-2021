@@ -250,7 +250,9 @@ export class RepositorySQL implements Repository {
   }
 
   getReportFamousStudents(searchPostTitle: string): Promise<[ReportFamousStudents[], boolean]> {
-    return this.sqlConnection.executeQueryType<ReportFamousStudents>(queries.getReportFamousStudents, [searchPostTitle])
+    return this.sqlConnection.executeQueryType<ReportFamousStudents>(queries.getReportFamousStudents, [
+      `%${searchPostTitle}%`
+    ])
   }
 
   addRandomPost(p: Post): Promise<boolean> {

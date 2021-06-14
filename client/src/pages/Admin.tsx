@@ -9,8 +9,8 @@ import { useRequest } from '@/hooks/useRequest'
 import styles from '@/styles/pages/admin.module.scss'
 import { ReportFamousStudents, ReportStudentActivity } from '@/types'
 import c from 'classnames'
-import React, { useMemo } from 'react'
-import { Codepen } from 'react-feather'
+import React, { useCallback, useMemo, useState } from 'react'
+import { ChevronDown, ChevronUp, Codepen } from 'react-feather'
 
 type UserInfo = {
   name: string
@@ -26,14 +26,54 @@ export interface AdminProps {
 export const Admin: React.FunctionComponent<AdminProps> = ({ className, onClick }: AdminProps) => {
   const { decodedToken } = useAuth()
   const [hasMigrated] = useRequest<boolean>(true, APIEndpoints.hasMigrated)
-  const [reportFamousStudents] = useRequest<ReportFamousStudents[]>([], APIEndpoints.report1 + '/6')
-  const [reportStudentActivity] = useRequest<ReportStudentActivity[]>([], APIEndpoints.report2 + '/sit')
+  const [reportStudentActivity] = useRequest<ReportStudentActivity[]>([], APIEndpoints.report1 + '/6')
+  const [reportFamousStudents] = useRequest<ReportFamousStudents[]>([], APIEndpoints.report2 + '/sit')
+
+  const [activitySortMode, setActivitySortMode] = useState<'student name-asc' | 'student name-desc'>('student name-asc')
+  const [famousSortMode, setFamousSortMode] =
+    useState<'likes-asc' | 'likes-desc' | 'followers-asc' | 'followers-desc'>('likes-desc')
 
   const userInfo = useMemo<UserInfo>(() => {
     const subObj = decodedToken?.sub as any
 
     return { name: subObj.name ?? '', email: subObj.email ?? '', accountType: 'admin' }
   }, [decodedToken])
+
+  const cycleActivitySort = useCallback(() => {
+    if (activitySortMode === 'student name-asc') setActivitySortMode('student name-desc')
+    else if (activitySortMode === 'student name-desc') setActivitySortMode('student name-asc')
+  }, [activitySortMode])
+
+  const cycleFamousSort = useCallback(() => {
+    if (famousSortMode === 'followers-asc') setFamousSortMode('likes-desc')
+    else if (famousSortMode === 'likes-desc') setFamousSortMode('likes-asc')
+    else if (famousSortMode === 'likes-asc') setFamousSortMode('followers-desc')
+    else if (famousSortMode === 'followers-desc') setFamousSortMode('followers-asc')
+  }, [famousSortMode])
+
+  const sortedActivityReport = useMemo(() => {
+    const asc = activitySortMode.split('-')[1] === 'asc'
+    return reportStudentActivity.sort((a, b) => {
+      if (asc) {
+        return a.studentName.localeCompare(b.studentName)
+      }
+      return b.studentName.localeCompare(a.studentName)
+    })
+  }, [activitySortMode, reportStudentActivity])
+
+  const sortedFamousReport = useMemo(() => {
+    const asc = famousSortMode.split('-')[1] === 'asc'
+    const followers = famousSortMode.split('-')[0] === 'followers'
+    return reportFamousStudents.sort((a, b) => {
+      if (asc) {
+        if (followers) return a.studentFollowers - b.studentFollowers
+        return a.likes - b.likes
+      } else {
+        if (followers) return b.studentFollowers - a.studentFollowers
+        return b.likes - a.likes
+      }
+    })
+  }, [famousSortMode, reportFamousStudents])
   return (
     <div className={c(styles.adminPanel)}>
       <header>
@@ -52,6 +92,12 @@ export const Admin: React.FunctionComponent<AdminProps> = ({ className, onClick 
           {!hasMigrated && <IconButton Icon={Codepen}>Migrate to MongoDB</IconButton>}
         </Placeholder>
         <label className={styles.label}>Famous students report</label>
+        <IconButton
+          onClick={cycleActivitySort}
+          Icon={activitySortMode.split('-')[1] === 'asc' ? ChevronUp : ChevronDown}
+        >
+          {'By ' + activitySortMode.split('-')[0]}
+        </IconButton>
         <table className={styles.table}>
           <thead>
             <tr>
@@ -62,7 +108,7 @@ export const Admin: React.FunctionComponent<AdminProps> = ({ className, onClick 
             </tr>
           </thead>
           <tbody>
-            {reportFamousStudents.map((row, index) => (
+            {sortedActivityReport.map((row, index) => (
               <tr key={index}>
                 <td>{row.studentName}</td>
                 <td>{row.sumPages}</td>
@@ -73,22 +119,27 @@ export const Admin: React.FunctionComponent<AdminProps> = ({ className, onClick 
           </tbody>
         </table>
         <label className={styles.label}>Student activity report</label>
+        <IconButton onClick={cycleFamousSort} Icon={famousSortMode.split('-')[1] === 'asc' ? ChevronUp : ChevronDown}>
+          {'By ' + famousSortMode.split('-')[0]}
+        </IconButton>
         <table className={styles.table}>
           <thead>
             <tr>
               <th title="Field #1">Student name</th>
-              <th title="Field #2">Total Page count</th>
-              <th title="Field #3">Total Post count</th>
-              <th title="Field #4">Liked Posts</th>
+              <th title="Field #2">Followers</th>
+              <th title="Field #3">Most famous post title</th>
+              <th title="Field #4">Page</th>
+              <th title="Field #5">Likes</th>
             </tr>
           </thead>
           <tbody>
-            {reportFamousStudents.map((row, index) => (
+            {sortedFamousReport.map((row, index) => (
               <tr key={index}>
                 <td>{row.studentName}</td>
-                <td>{row.sumPages}</td>
-                <td>{row.sumPosts}</td>
-                <td>{row.likedPosts}</td>
+                <td>{row.studentFollowers}</td>
+                <td>{row.title}</td>
+                <td>{row.pageTitle}</td>
+                <td>{row.likes}</td>
               </tr>
             ))}
           </tbody>

@@ -22,4 +22,10 @@ export type Post = {
 
 export type ReportStudentActivity = { sumPages: number; studentName: string; likedPosts: number; sumPosts: number }
 
-export type ReportFamousStudents = { sumPages: number; studentName: string; likedPosts: number; sumPosts: number }
+export type ReportFamousStudents = {
+  pageTitle: string
+  title: string
+  likes: number
+  studentName: string
+  studentFollowers: number
+}
