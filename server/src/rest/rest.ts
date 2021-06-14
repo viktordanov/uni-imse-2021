@@ -1,6 +1,6 @@
 import compression from 'compression'
 import cors from 'cors'
-import express, { json, Request, Response } from 'express'
+import express, { json, NextFunction, Request, Response } from 'express'
 import jwt from 'express-jwt'
 import { check, validationResult } from 'express-validator'
 import { Page, Post } from '../entities/entities'
@@ -54,6 +54,10 @@ export class RestWebServer implements Rest {
   private authService: AuthService
   private studentService: StudentContentService
   private repoImpl: 'sql' | 'mongo'
+
+  hasMigrated(): boolean {
+    return this.repoImpl === 'mongo'
+  }
 
   getServer(): express.Express {
     return this.webServer
@@ -112,6 +116,17 @@ export class RestWebServer implements Rest {
     getReportFamousStudents(this, apiRouter)
 
     this.webServer.use('/api', jwt({ secret: this.config.jwtSecret, algorithms: ['HS256'] }), apiRouter)
+
+    const adminRouter = express.Router()
+    getHasMigrated(this, adminRouter)
+    adminRouter.use(jwt({ secret: this.config.jwtSecret, algorithms: ['HS256'] }))
+    adminRouter.use((req: Request, res: Response, next: NextFunction) => {
+      const email = getEmailFromDecodedToken(req)
+      if (email !== 'admin@annorum.me') return res.status(401).json({ error: 'Unauthorized' })
+      next()
+    })
+    this.webServer.use('/api-admin', adminRouter)
+
     this.webServer.use((err: Error, req: Request, res: Response) => {
       if (err.name === 'UnauthorizedError') {
         res.status(401).json({ status: 'Unauthorized' })
@@ -173,6 +188,14 @@ function authSignupStudent(restServer: RestWebServer): void {
         return res.status(200).json({ token })
       }
     )
+}
+
+/* ADMIN ENDPOINTS */
+
+function getHasMigrated(restServer: RestWebServer, adminRouter: express.Router): void {
+  adminRouter.get('/migrated', async (req: Request, res: Response) => {
+    return res.status(200).json(restServer.hasMigrated())
+  })
 }
 
 /* STUDENT CONTENT ENDPOINTS */

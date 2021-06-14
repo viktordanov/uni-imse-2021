@@ -16,8 +16,8 @@ export class AuthService {
 
   async login(email: string, password: string): APIResponse<string> {
     const [account, ok] = await this.repository.getAccountByEmail(email)
-    if (!ok) {
-      return ['', new Error('Unauthorized')]
+    if (account?.id === undefined) {
+      return ['', new Error('Account does not exist')]
     }
 
     const isValid = bcrypt.compareSync(password, account.passwordHash)
