@@ -121,7 +121,7 @@ export const Admin: React.FunctionComponent<AdminProps> = ({ className, onClick 
         </Placeholder>
         <div className={styles.header}>
           <label className={styles.label}>Famous students report</label>
-          <div className={styles.right}>
+          <div className={styles.rightMenu}>
             <Input value={filterTitles} onChange={e => setFilterTitles(e.currentTarget.value)} />
             <IconButton
               onClick={cycleActivitySort}
@@ -153,7 +153,7 @@ export const Admin: React.FunctionComponent<AdminProps> = ({ className, onClick 
         </table>
         <div className={styles.header}>
           <label className={styles.label}>Student activity report</label>
-          <div className={styles.right}>
+          <div className={styles.rightMenu}>
             <Input value={filterTitles} onChange={e => setFilterTitles(e.currentTarget.value)} />
             <IconButton
               onClick={cycleFamousSort}
