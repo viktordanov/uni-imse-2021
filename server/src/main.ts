@@ -22,7 +22,7 @@ async function main() {
   const authService = new AuthService(repo, JWT_SECRET)
   const studentService = new StudentContentService(repo)
 
-  // SQLFilling.insertData(repo)
+  SQLFilling.insertData(repo)
 
   const webServer = new RestWebServer(restConfig, authService, studentService)
   const err = await authService.adminSignup(

@@ -306,7 +306,7 @@ export class MongoRepository implements Repository {
       let list: Page[] = []
       while (await res.hasNext()) {
         const doc = await res.next()
-        list.push(Object.assign({}, doc.studentPages[0]) as Page)
+        list.push(...(doc.studentPages as Page[]))
       }
       list = list.filter(p => p.title !== undefined)
 
@@ -324,9 +324,10 @@ export class MongoRepository implements Repository {
     ])
     if (res) {
       let list: Post[] = []
+
       while (await res.hasNext()) {
         const doc = await res.next()
-        list.push(Object.assign({}, doc.studentPosts[0]) as Post)
+        list.push(...(doc.studentPosts as Post[]))
       }
       list = list.filter(p => p.title !== undefined)
       return [list, true]
