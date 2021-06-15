@@ -332,8 +332,46 @@ export class MongoRepository implements Repository {
     throw new Error('Method not implemented.')
   }
 
-  getReportStudentActivity(weeks: number): Promise<[ReportStudentActivity[], boolean]> {
-    throw new Error('Method not implemented.')
+  async getReportStudentActivity(weeks: number): Promise<[ReportStudentActivity[], boolean]> {
+    const date = new Date()
+    date.setDate(date.getDate() - 7 * weeks)
+    const res = await this.accounts().aggregate([
+      { $lookup: { from: 'pages', localField: 'pages', foreignField: '_id', as: 'studentPages' } },
+      { $match: {} },
+      { $match: { dateRegistered: { $gte: date } } },
+      {
+        $project: {
+          studentName: '$name',
+          sumPages: { $size: '$pages' },
+          sumPosts: {
+            $reduce: {
+              input: '$studentPages',
+              initialValue: 0,
+              in: {
+                $add: ['$$value', { $size: '$$this.posts' }]
+              }
+            }
+          },
+          likedPosts: {
+            $cond: {
+              if: { $isArray: '$liked_posts' },
+              then: { $size: '$liked_posts' },
+              else: 0
+            }
+          }
+        }
+      }
+    ])
+
+    if (res) {
+      const list: ReportStudentActivity[] = []
+      while (await res.hasNext()) {
+        const doc = await res.next()
+        list.push(Object.assign({}, doc) as ReportStudentActivity)
+      }
+      return [list, true]
+    }
+    return [null, false]
   }
 
   getReportFamousStudents(searchPostTitle: string): Promise<[ReportFamousStudents[], boolean]> {
