@@ -126,6 +126,8 @@ export class MongoRepository implements Repository {
   }
 
   async addStudent(s: Student): Promise<boolean> {
+    const studentCount = await this.accounts().countDocuments()
+    s.id = studentCount
     const res = await this.accounts().insertOne(s)
     return res.insertedCount === 1
   }
@@ -300,11 +302,13 @@ export class MongoRepository implements Repository {
       { $project: { studentPages: 1 } }
     ])
     if (res) {
-      const list: Page[] = []
+      let list: Page[] = []
       while (await res.hasNext()) {
         const doc = await res.next()
         list.push(Object.assign({}, doc.studentPages[0]) as Page)
       }
+      list = list.filter(p => p.title !== undefined)
+
       return [list, true]
     }
     return [null, false]
@@ -318,11 +322,12 @@ export class MongoRepository implements Repository {
       { $project: { studentPosts: 1 } }
     ])
     if (res) {
-      const list: Post[] = []
+      let list: Post[] = []
       while (await res.hasNext()) {
         const doc = await res.next()
         list.push(Object.assign({}, doc.studentPosts[0]) as Post)
       }
+      list = list.filter(p => p.title !== undefined)
       return [list, true]
     }
     return [null, false]

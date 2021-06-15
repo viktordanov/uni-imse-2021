@@ -22,6 +22,9 @@ async function main() {
   const authService = new AuthService(repo, JWT_SECRET)
   const studentService = new StudentContentService(repo)
 
+  // SQLFilling.insertData(repo)
+
+  const webServer = new RestWebServer(restConfig, authService, studentService)
   const err = await authService.adminSignup(
     'Admin Account',
     'admin@annorum.me',
@@ -29,9 +32,6 @@ async function main() {
     'Infinite Loop Rd. 0',
     8901823723432
   )
-  SQLFilling.insertData(repo)
-
-  const webServer = new RestWebServer(restConfig, authService, studentService)
   webServer.serve()
 }
 
