@@ -132,7 +132,9 @@ export const Admin: React.FunctionComponent<AdminProps> = ({ className, onClick 
               type="number"
               min={2}
               max={50}
-              onChange={e => setFilterWeeks(e.currentTarget.valueAsNumber)}
+              onChange={e => {
+                if (e.currentTarget.validity.valid) setFilterWeeks(e.currentTarget.valueAsNumber)
+              }}
             />
             <IconButton
               onClick={cycleActivitySort}
@@ -165,7 +167,13 @@ export const Admin: React.FunctionComponent<AdminProps> = ({ className, onClick 
         <div className={styles.header}>
           <label className={styles.label}>Student activity report</label>
           <div className={styles.rightMenu}>
-            <Input value={filterTitles} onChange={e => setFilterTitles(e.currentTarget.value)} />
+            <Input
+              value={filterTitles}
+              minLength={3}
+              onChange={e => {
+                if (e.currentTarget.validity.valid) setFilterTitles(e.currentTarget.value)
+              }}
+            />
             <IconButton
               onClick={cycleFamousSort}
               Icon={famousSortMode.split('-')[1] === 'asc' ? ChevronUp : ChevronDown}

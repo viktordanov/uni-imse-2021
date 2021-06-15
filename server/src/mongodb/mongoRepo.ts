@@ -89,7 +89,6 @@ export class MongoRepository implements Repository {
     ])
     const doc = await res.next()
     if (!doc) return false
-    console.log(doc)
     const pageId = doc.studentPages[0]._id */
     const pageId = await this.getPageObjectId(studentId, pageTitle)
 
@@ -231,7 +230,6 @@ export class MongoRepository implements Repository {
 
   async addLike(who: number, whosePost: number, pageTitle: string, postTitle: string): Promise<boolean> {
     const postId = await this.getPostObjectId(whosePost, pageTitle, postTitle)
-    console.log(postId)
     if (postId == null) return false
     const res = await this.accounts().findOneAndUpdate({ id: who }, { $addToSet: { liked_posts: postId } })
     return (res.ok ?? 0) === 1
@@ -450,7 +448,6 @@ export class MongoRepository implements Repository {
         const doc = await res.next()
         list.push(Object.assign({}, doc) as ReportFamousStudents)
       }
-      console.log(list)
       return [list, true]
     }
     return [null, false]
@@ -480,15 +477,13 @@ export class MongoRepository implements Repository {
     if (!res) return null
     const doc = await res.next()
     if (!doc) return null
-    // return doc.studentPages[0]._id
-    const postId = doc.studentPages.find((element: Page) => element.title === pageTitle)
-    return postId
+    return doc.studentPages[0]._id
+    // const postId = doc.studentPages.find((element: Page) => element.title === pageTitle)
+    // return postId
   }
 
   async getPostObjectId(studentId: number, pageTitle: string, postTitle: string): Promise<ObjectId> {
-    console.log('getPostObjectId', studentId, pageTitle, postTitle)
     const pageId = await this.getPageObjectId(studentId, pageTitle)
-    console.log('pageId', pageId)
     const res = await this.pages().aggregate([
       { $match: { _id: pageId } },
       { $lookup: { from: 'posts', localField: 'posts', foreignField: '_id', as: 'pagePosts' } },
@@ -498,7 +493,7 @@ export class MongoRepository implements Repository {
     if (!res) return null
     const doc = await res.next()
     if (!doc) return null
-    const postId = doc.pagePosts.find((element: Page) => element.title === postTitle)
-    return postId
+    const postId = doc.pagePosts.find((element: Post) => element.title === postTitle)
+    return postId?._id ?? ''
   }
 }
