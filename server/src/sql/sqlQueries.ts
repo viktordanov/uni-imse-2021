@@ -149,11 +149,12 @@ const getReportStudentActivity = `
 const getReportFamousStudents = `
   select p.Page_Title as pageTitle
     , p.Title as title
-    , (select count(*) from likes l where l.Post_Title = p.Title and l.Post_Page_Title = p.Page_Title) as likes
+    , (select count(*) from likes l1 where l1.Post_Title = p.Title and l1.Post_Page_Title = p.Page_Title) as likes
     , (select count(f.StudentID) from follows f where f.Friend_StudentID = p.StudentID) as studentFollowers
   from Post p
+  inner join likes l on l.Post_StudentID = p.StudentID and l.Post_Page_Title = p.Page_Title and l.Post_Title = p.Title
   where p.Title like ?
-  group by p.Page_Title, p.Title;
+  group by p.Page_Title, p.Title
   order by likes desc
   limit 10;`
 

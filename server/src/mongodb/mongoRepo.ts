@@ -230,10 +230,8 @@ export class MongoRepository implements Repository {
 
   async addLike(who: number, whosePost: number, pageTitle: string, postTitle: string): Promise<boolean> {
     const postId = await this.getPostObjectId(whosePost, pageTitle, postTitle)
-    console.log('addLike postId', postId)
     if (postId == null) return false
     const res = await this.accounts().findOneAndUpdate({ id: who }, { $push: { liked_posts: postId } })
-    console.log(res.ok)
     return (res.ok ?? 0) === 1
   }
 
@@ -398,8 +396,54 @@ export class MongoRepository implements Repository {
     return [null, false]
   }
 
-  getReportFamousStudents(searchPostTitle: string): Promise<[ReportFamousStudents[], boolean]> {
-    throw new Error('Method not implemented.')
+  async getReportFamousStudents(searchPostTitle: string): Promise<[ReportFamousStudents[], boolean]> {
+    const res = await this.accounts().aggregate([
+      { $unwind: { path: '$liked_posts' } },
+      { $unwind: { path: '$liked_posts' } },
+      { $group: { _id: '$liked_posts', likes: { $sum: 1 } } },
+      { $lookup: { from: 'pages', localField: '_id', foreignField: 'posts', as: 'postPage' } },
+      { $lookup: { from: 'accounts', localField: 'postPage._id', foreignField: 'pages', as: 'pageAccount' } },
+      { $lookup: { from: 'posts', localField: '_id', foreignField: '_id', as: 'likedPost' } },
+      {
+        $lookup: {
+          from: 'accounts',
+          localField: 'pageAccount._id',
+          foreignField: 'followed_students',
+          as: 'accountFollow'
+        }
+      },
+      { $unwind: { path: '$accountFollow', preserveNullAndEmptyArrays: true } },
+      { $unwind: { path: '$accountFollow.followed_students', preserveNullAndEmptyArrays: true } },
+      { $unwind: { path: '$accountFollow.followed_students', preserveNullAndEmptyArrays: true } },
+      // { $group: { _id: { studentId: '$pageAccount.followed_students', likes: '$likes' }, follows: { $sum: 1 } } }
+      {
+        $group: {
+          _id: { postId: '$_id' },
+          pageTitle: { $first: '$postPage.title' },
+          title: { $first: '$likedPost.title' },
+          likes: { $first: '$likes' },
+          follows: { $sum: 1 }
+        }
+      },
+      {
+        $project: {
+          pageTitle: { $first: '$pageTitle' },
+          title: { $first: '$title' },
+          likes: '$likes',
+          studentFollowers: '$follows'
+        }
+      }
+    ])
+
+    if (res) {
+      const list: ReportFamousStudents[] = []
+      while (await res.hasNext()) {
+        const doc = await res.next()
+        list.push(Object.assign({}, doc) as ReportFamousStudents)
+      }
+      return [list, true]
+    }
+    return [null, false]
   }
 
   addRandomPost(p: Post): Promise<boolean> {
