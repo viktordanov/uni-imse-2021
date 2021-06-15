@@ -1,0 +1,101 @@
+$pagePaddingVert: $margin-medium;
+$pagePaddingHor: $margin-large;
+
+.adminPanel {
+  width: 100%;
+  height: 100vh;
+  background: $color-white;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.7) 0%, transparent 10.5%),
+    url('~assets/background-top.svg'), url('~assets/background-bottom.svg'),
+    linear-gradient(-45deg, transparentize(saturate($color-accent-dark, 100%), 0.95) 0%, transparent 100%);
+  background-repeat: no-repeat;
+  background-position: top center, top -20vh right 5vw, bottom -20vh left 7vw, bottom right;
+  background-size: 100%, 15%, 25%, 100%;
+  padding: $pagePaddingVert $pagePaddingHor;
+  padding-bottom: 0;
+  overflow-y: scroll;
+
+  $headerHeight: 5.5rem;
+  $headerMarginBottom: $margin-large * 2;
+  header {
+    display: flex;
+    height: $headerHeight;
+    justify-content: space-between;
+    margin-bottom: $headerMarginBottom;
+    .menu {
+      margin-right: 2rem;
+    }
+    .right {
+      display: flex;
+      align-items: center;
+    }
+  }
+
+.placeholder {
+  margin-bottom: $margin-large;
+}
+
+  .header {
+    height: 5rem;
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .label {
+    @include font-label;
+    font-size: 18px;
+    display: block;
+  }
+
+  h1 {
+    &.not {
+      color: $color-error;
+    }
+    margin-bottom: $margin-normal;
+    @include font-body;
+    font-weight: 400;
+    font-size: 20px;
+    color: darken($color-success, 10);
+  }
+
+  .table {
+    width: 100%;
+    margin-bottom: $margin-large * 2;
+    thead {
+      th {
+        @include font-label;
+        font-weight: bold;
+        font-size: 16px;
+        text-align: left;
+        padding: $margin-normal;
+
+        background: transparentize($color: $color-accent-faded, $amount: 0.75);
+        &:nth-child(1) {
+          border-radius: $border-radius-normal 0 0 $border-radius-normal;
+        }
+        &:last-child {
+          border-radius: 0 $border-radius-normal $border-radius-normal 0;
+        }
+      }
+    }
+    tr {
+      &:nth-child(even) {
+        background: transparentize($color: $color-accent-faded, $amount: 0.9);
+      }
+    }
+    td {
+      @include font-label;
+      padding: $margin-normal;
+      font-size: 16px;
+      text-align: left;
+
+      &:nth-child(1) {
+        border-radius: $border-radius-normal 0 0 $border-radius-normal;
+      }
+      &:last-child {
+        border-radius: 0 $border-radius-normal $border-radius-normal 0;
+      }
+    }
+  }
+}

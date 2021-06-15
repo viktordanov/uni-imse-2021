@@ -21,4 +21,10 @@ export type Event = { id: number; name: string; description: string; duration: D
 
 export type ReportStudentActivity = { studentName: string; sumPages: number; sumPosts: number; likedPosts: number }
 
-export type ReportFamousStudents = { pageTitle: string; title: string; likes: number; studentFollowers: number }
+export type ReportFamousStudents = {
+  pageTitle: string
+  title: string
+  likes: number
+  studentName: string
+  studentFollowers: number
+}

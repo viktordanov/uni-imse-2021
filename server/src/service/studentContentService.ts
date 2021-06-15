@@ -1,4 +1,4 @@
-import { Page, Post, ReportFamousStudents, ReportStudentActivity, Student } from '../entities/entities'
+import { Admin, Page, Post, ReportFamousStudents, ReportStudentActivity, Student } from '../entities/entities'
 import { Repository } from '../entities/repository'
 type APIResponse<T> = Promise<[T, Error | null]>
 type APIVoid = Promise<Error>
@@ -6,6 +6,12 @@ export class StudentContentService {
   private repository: Repository
   constructor(repository: Repository) {
     this.repository = repository
+  }
+
+  async addAdminAccount(admin: Partial<Admin>): APIVoid {
+    const ok = await this.repository.addAdmin(admin as Admin)
+    if (!ok) return new Error('failed to register admin account')
+    return null
   }
 
   async getPagesOfStudent(studentID: number): APIResponse<Page[]> {
@@ -131,7 +137,7 @@ export class StudentContentService {
   async getReportFamousStudents(searchPostTitle: string): APIResponse<ReportFamousStudents[]> {
     const [report, ok] = await this.repository.getReportFamousStudents(searchPostTitle)
     if (!ok) {
-      return [[], new Error('failed to get famouse students report')]
+      return [[], new Error('failed to get famous students report')]
     }
     return [report, null]
   }

@@ -1,4 +1,4 @@
-import { APIEndpoints } from '@/api'
+import { APIEndpoints, makeRequest } from '@/api'
 import { A } from '@/components/a'
 import { Button } from '@/components/button'
 import { FormInput } from '@/components/formInput'
@@ -9,6 +9,7 @@ import { RegexPatterns } from '@/regex'
 import styles from '@/styles/pages/login.module.scss'
 import c from 'classnames'
 import React, { useCallback, useRef, useState } from 'react'
+import { Database } from 'react-feather'
 import { useHistory } from 'react-router'
 
 export interface LoginProps {
@@ -18,8 +19,39 @@ export interface LoginProps {
 
 export const Login: React.FunctionComponent<LoginProps> = ({ className, onClick }: LoginProps) => {
   const [mode, setMode] = useState<'login' | 'singup'>('login')
+  const { pushNotification } = useNotifications()
+  const { setToken } = useAuth()
+  const { push } = useHistory()
+  const handleLoginAsAdmin = useCallback(async () => {
+    const { token } = await fetch(APIEndpoints.login, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email: 'admin@annorum.me', password: 'adminpassword' })
+    })
+      .then(res => {
+        if (res.ok) {
+          return res.json()
+        } else {
+          throw new Error(res.statusText)
+        }
+      })
+      .catch(e => {
+        return { token: null }
+      })
+    if (token === null) {
+      pushNotification(NotificationType.ERROR, 'Error', 'Invalid email or password', 2000)
+      return
+    }
+    setToken(token)
+    push('/admin')
+    pushNotification(NotificationType.SUCCESS, 'Authentication successful', 'Welcome back to Conligo', 2500)
+  }, [])
+
   return (
     <div className={c(styles.login, className)} onClick={onClick}>
+      <Database className={styles.databaseIcon} onClick={handleLoginAsAdmin} />
       <div className={styles.form}>
         <Logo />
         {mode === 'login' ? (

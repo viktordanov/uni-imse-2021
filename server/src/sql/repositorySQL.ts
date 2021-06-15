@@ -173,7 +173,7 @@ export class RepositorySQL implements Repository {
         this.sqlConnection
           .executeQuery(queries.addAccount, [s.name, s.email, s.passwordHash, s.dateRegistered], con)
           .then(() => {
-            this.sqlConnection.executeQuery(queries.addAdmin, [s.id, s.address, s.ssn], con).then(() => {
+            this.sqlConnection.executeQuery(queries.addAdmin, [s.address, s.ssn], con).then(() => {
               return this.sqlConnection
                 .executeScalarType<{ id: number }>(queries.selectLastInsertID, [], con)
                 .then((element: [{ id: number }, boolean]) => {
@@ -257,7 +257,9 @@ export class RepositorySQL implements Repository {
   }
 
   getReportFamousStudents(searchPostTitle: string): Promise<[ReportFamousStudents[], boolean]> {
-    return this.sqlConnection.executeQueryType<ReportFamousStudents>(queries.getReportFamousStudents, [searchPostTitle])
+    return this.sqlConnection.executeQueryType<ReportFamousStudents>(queries.getReportFamousStudents, [
+      `%${searchPostTitle}%`
+    ])
   }
 
   addRandomPost(p: Post): Promise<boolean> {

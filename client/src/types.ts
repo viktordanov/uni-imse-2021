@@ -19,3 +19,13 @@ export type Post = {
   content: string
   dateCreated: Date
 }
+
+export type ReportStudentActivity = { sumPages: number; studentName: string; likedPosts: number; sumPosts: number }
+
+export type ReportFamousStudents = {
+  pageTitle: string
+  title: string
+  likes: number
+  studentName: string
+  studentFollowers: number
+}

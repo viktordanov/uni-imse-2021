@@ -11,6 +11,7 @@ import { Students } from './Students'
 import { Pages } from './Pages'
 import { StudentPages } from './StudentPages'
 import { StudentPosts } from './StudentPosts'
+import { Admin } from './Admin'
 
 type UserInfo = {
   name: string
@@ -39,6 +40,7 @@ export const StudentPanel: React.FunctionComponent = () => {
         <Route exact path="/">
           <Home className={styles.subpage} />
         </Route>
+
         <Route exact path="/pages">
           <Pages className={styles.subpage} />
         </Route>

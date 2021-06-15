@@ -1,5 +1,9 @@
-const host = 'https://annorum.me/'
+const host = 'http://localhost:10100/'
 export const APIEndpoints = {
+  hasMigrated: host + 'api-admin/migrated',
+  report1: host + 'api-admin/report1',
+  report2: host + 'api-admin/report2',
+
   login: host + 'auth/login',
   signup: host + 'auth/signup',
   getFollowed: host + 'api/followed',

@@ -38,3 +38,19 @@
 .right {
   float: right;
 }
+
+.databaseIcon {
+  position: absolute;
+  top: $margin-large;
+  right: $margin-large;
+  padding: 16px;
+  border-radius: 64px;
+  stroke: $color-secondary-dark;
+  cursor: pointer;
+  @include background-color-blur(
+    transparentize($color-secondary, 0.65),
+    transparentize($color-secondary, 0.45),
+    $time-short,
+    1rem
+  );
+}

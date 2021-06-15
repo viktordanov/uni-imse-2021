@@ -1,6 +1,6 @@
 import compression from 'compression'
 import cors from 'cors'
-import express, { json, Request, Response } from 'express'
+import express, { json, NextFunction, Request, Response } from 'express'
 import jwt from 'express-jwt'
 import { check, validationResult } from 'express-validator'
 import { Page, Post } from '../entities/entities'
@@ -55,6 +55,10 @@ export class RestWebServer implements Rest {
   private studentService: StudentContentService
   private repoImpl: 'sql' | 'mongo'
 
+  hasMigrated(): boolean {
+    return this.repoImpl === 'mongo'
+  }
+
   getServer(): express.Express {
     return this.webServer
   }
@@ -108,10 +112,22 @@ export class RestWebServer implements Rest {
     unlikePost(this, apiRouter)
     getLikedPosts(this, apiRouter)
     getStudentInfoByEmail(this, apiRouter)
-    getReportStudentActivity(this, apiRouter)
-    getReportFamousStudents(this, apiRouter)
 
     this.webServer.use('/api', jwt({ secret: this.config.jwtSecret, algorithms: ['HS256'] }), apiRouter)
+
+    const adminRouter = express.Router()
+    getHasMigrated(this, adminRouter)
+    getReportStudentActivity(this, adminRouter)
+    getReportFamousStudents(this, adminRouter)
+
+    adminRouter.use(jwt({ secret: this.config.jwtSecret, algorithms: ['HS256'] }))
+    adminRouter.use((req: Request, res: Response, next: NextFunction) => {
+      const email = getEmailFromDecodedToken(req)
+      if (email !== 'admin@annorum.me') return res.status(401).json({ error: 'Unauthorized' })
+      next()
+    })
+    this.webServer.use('/api-admin', adminRouter)
+
     this.webServer.use((err: Error, req: Request, res: Response) => {
       if (err.name === 'UnauthorizedError') {
         res.status(401).json({ status: 'Unauthorized' })
@@ -173,6 +189,14 @@ function authSignupStudent(restServer: RestWebServer): void {
         return res.status(200).json({ token })
       }
     )
+}
+
+/* ADMIN ENDPOINTS */
+
+function getHasMigrated(restServer: RestWebServer, adminRouter: express.Router): void {
+  adminRouter.get('/migrated', async (req: Request, res: Response) => {
+    return res.status(200).json(restServer.hasMigrated())
+  })
 }
 
 /* STUDENT CONTENT ENDPOINTS */
@@ -383,7 +407,7 @@ function getFeedPosts(restServer: RestWebServer, apiRouter: express.Router): voi
       return res.status(400).json({ error: err.message })
     }
 
-    const now2WeeksAgo = Date.now() - 1000 * 60 * 60 * 24 * 7 * 2
+    const now1MonthAgo = Date.now() - 1000 * 60 * 60 * 24 * 7 * 4 * 6
 
     const allPostsFromLast2Weeks: PostPayload[] = []
     for (const followedStudent of followed) {
@@ -396,7 +420,7 @@ function getFeedPosts(restServer: RestWebServer, apiRouter: express.Router): voi
         if (errPosts !== null) {
           return res.status(400).json({ error: errPosts.message })
         }
-        const filteredPosts = posts.filter(post => post.dateCreated.getTime() >= now2WeeksAgo)
+        const filteredPosts = posts.filter(post => post.dateCreated.getTime() >= now1MonthAgo)
         allPostsFromLast2Weeks.push(
           ...filteredPosts.map<PostPayload>(p => ({
             ...p,
@@ -669,9 +693,10 @@ function getStudentInfoByEmail(restServer: RestWebServer, apiRouter: express.Rou
 }
 
 function getReportStudentActivity(restServer: RestWebServer, apiRouter: express.Router): void {
-  apiRouter.get('/report1', async (req: Request, res: Response) => {
+  apiRouter.get('/report1/:weeks', async (req: Request, res: Response) => {
     const weeks = req.params.weeks
-    if (weeks == null || !isNaN(+weeks)) {
+
+    if (weeks == null || isNaN(+weeks)) {
       return res.status(400).json({ error: 'weeks missing or not a number' })
     }
     const weeksNumber = parseInt(weeks)
@@ -685,12 +710,12 @@ function getReportStudentActivity(restServer: RestWebServer, apiRouter: express.
 }
 
 function getReportFamousStudents(restServer: RestWebServer, apiRouter: express.Router): void {
-  apiRouter.get('/report2', async (req: Request, res: Response) => {
-    const searchPostTitle = req.params.searchPostTitle
-    if (searchPostTitle === null || searchPostTitle.length < 3) {
-      return res.status(400).json({ error: 'searchPostTitle missing or too short' })
+  apiRouter.get('/report2/:postTitle', async (req: Request, res: Response) => {
+    const postTitle = req.params.postTitle
+    if (postTitle === null || postTitle.length < 3) {
+      return res.status(400).json({ error: 'postTitle missing or too short' })
     }
-    const [report, errReport] = await restServer.getStudentService().getReportFamousStudents(searchPostTitle)
+    const [report, errReport] = await restServer.getStudentService().getReportFamousStudents(postTitle)
     if (errReport !== null) {
       return res.status(400).json({ error: errReport.message })
     }
