@@ -11,6 +11,8 @@ services:
       PORT: 8080
       MARIADB_USER: imse
       MARIADB_PASSWORD: imse
+      MONGODB_USER: root
+      MONGODB_PASSWORD: password
     expose:
       - 8080
     restart: always
@@ -19,7 +21,7 @@ services:
       - frontend
     depends_on:
       - mariadb
-      # - mongodb
+      - mongodb
   certbot:
     container_name: imse-certbot-production
     image: certbot/certbot
@@ -62,15 +64,15 @@ services:
     restart: always
     networks:
       - backend
-  # mongodb:
-  #   container_name: imse-mongodb
-  #   image: mongo
-  #   restart: always
-  #   environment:
-  #     MONGO_INITDB_ROOT_USERNAME: root
-  #     MONGO_INITDB_ROOT_PASSWORD: password
-  #   networks:
-  #     - backend
+  mongodb:
+    container_name: imse-mongodb
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+    networks:
+      - backend
 
 networks:
   backend:
