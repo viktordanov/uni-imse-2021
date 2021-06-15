@@ -43,12 +43,12 @@ $pagePaddingHor: $margin-large;
     justify-content: space-between;
     align-items: center;
     .rightMenu > * {
-    max-width: 50%;
-    margin-left: $margin-small;
-    float: left;
+      width: 14rem;
+      margin-left: $margin-small;
+      float: left;
+    }
   }
-  }
-  
+
   .label {
     @include font-label;
     font-size: 18px;

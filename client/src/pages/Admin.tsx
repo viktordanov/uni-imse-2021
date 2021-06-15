@@ -28,10 +28,15 @@ export interface AdminProps {
 export const Admin: React.FunctionComponent<AdminProps> = ({ className, onClick }: AdminProps) => {
   const { token, decodedToken } = useAuth()
 
-  const [filterTitles, setFilterTitles] = useState('')
+  const [filterWeeks, setFilterWeeks] = useState(5)
+  const [filterTitles, setFilterTitles] = useState('sit')
 
   const [hasMigrated, refetchHasMigrated] = useRequest<boolean>(true, APIEndpoints.hasMigrated)
-  const [reportStudentActivity, refetchReport1] = useRequest<ReportStudentActivity[]>([], APIEndpoints.report1 + '/6')
+  const [reportStudentActivity, refetchReport1] = useRequestArg<ReportStudentActivity[]>(
+    [],
+    APIEndpoints.report1,
+    filterWeeks
+  )
   const [reportFamousStudents, refetchReport2] = useRequestArg<ReportFamousStudents[]>(
     [],
     APIEndpoints.report2,
@@ -122,7 +127,13 @@ export const Admin: React.FunctionComponent<AdminProps> = ({ className, onClick 
         <div className={styles.header}>
           <label className={styles.label}>Famous students report</label>
           <div className={styles.rightMenu}>
-            <Input value={filterTitles} onChange={e => setFilterTitles(e.currentTarget.value)} />
+            <Input
+              value={filterWeeks}
+              type="number"
+              min={2}
+              max={50}
+              onChange={e => setFilterWeeks(e.currentTarget.valueAsNumber)}
+            />
             <IconButton
               onClick={cycleActivitySort}
               Icon={activitySortMode.split('-')[1] === 'asc' ? ChevronUp : ChevronDown}

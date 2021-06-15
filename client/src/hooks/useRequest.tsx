@@ -37,7 +37,7 @@ export function useRequest<T>(
 export function useRequestArg<T>(
   defaultValue: T | (() => T),
   requestURL: string,
-  arg: string,
+  arg: string | number,
   fetchData: RequestInit = {}
 ): UseRequestPayload<T> {
   const { token } = useAuth()
