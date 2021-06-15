@@ -4,7 +4,11 @@ import { SQLConnection } from '../sql/sqlConnection'
 import { SQLQueries } from '../sql/sqlQueries'
 import { getPage, getPost, getStudents } from './mockData'
 
-function insertData(repository: Repository): void {
+async function insertData(repository: Repository): Promise<void> {
+  const students = await repository.getAllStudents()
+  if (students[1] || students[0].length !== 0) {
+    return
+  }
   getStudents().then(students => {
     // console.log(students)
     getPage().then(pages => {
