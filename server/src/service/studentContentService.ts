@@ -8,6 +8,14 @@ export class StudentContentService {
     this.repository = repository
   }
 
+  getRepository(): Repository {
+    return this.repository
+  }
+
+  setRepository(repo: Repository): void {
+    this.repository = repo
+  }
+
   async addAdminAccount(admin: Partial<Admin>): APIVoid {
     const ok = await this.repository.addAdmin(admin as Admin)
     if (!ok) return new Error('failed to register admin account')

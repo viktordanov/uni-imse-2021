@@ -4,8 +4,11 @@ import express, { json, NextFunction, Request, Response } from 'express'
 import jwt from 'express-jwt'
 import { check, validationResult } from 'express-validator'
 import { Page, Post } from '../entities/entities'
+import { DataMigration } from '../mongodb/dataMigration'
+import { MongoRepository } from '../mongodb/mongoRepo'
 import { AuthService } from '../service/authService'
 import { StudentContentService } from '../service/studentContentService'
+import { RepositorySQL } from '../sql/repositorySQL'
 
 type PagePayload = {
   title: string
@@ -87,7 +90,8 @@ export class RestWebServer implements Rest {
     this.registerRoutes()
   }
 
-  registerRoutes(): void {
+  async registerRoutes(): Promise<void> {
+    await this.testMigrated()
     this.webServer.get('/', (req, res) => {
       res.send('Root endpoint, to be later replaced by static serving')
     })
@@ -117,6 +121,7 @@ export class RestWebServer implements Rest {
 
     const adminRouter = express.Router()
     getHasMigrated(this, adminRouter)
+    migrate(this, adminRouter)
     getReportStudentActivity(this, adminRouter)
     getReportFamousStudents(this, adminRouter)
 
@@ -143,6 +148,30 @@ export class RestWebServer implements Rest {
 
   serverHTTPS(): void {
     throw new Error('To be implemented')
+  }
+
+  async testMigrated(): Promise<void> {
+    if (this.repoImpl === 'mongo' || this.authService.getRepository().getType() === 'mongo') return
+    const mongoImpl = new MongoRepository()
+    await mongoImpl.initialize()
+    const number = await mongoImpl.pages().countDocuments({})
+    if (number !== 0) {
+      this.authService.setRepository(mongoImpl)
+      this.studentService.setRepository(mongoImpl)
+      this.repoImpl = 'mongo'
+    }
+  }
+
+  async migrate(): Promise<void> {
+    if (this.repoImpl === 'mongo' || this.authService.getRepository().getType() === 'mongo') return
+    const mongoImpl = new MongoRepository()
+    await mongoImpl.initialize()
+
+    const sqlRepo: RepositorySQL = this.authService.getRepository() as RepositorySQL
+    await DataMigration.migrateDataToMongo(sqlRepo, mongoImpl)
+    this.authService.setRepository(mongoImpl)
+    this.studentService.setRepository(mongoImpl)
+    this.repoImpl = 'mongo'
   }
 }
 
@@ -195,6 +224,13 @@ function authSignupStudent(restServer: RestWebServer): void {
 
 function getHasMigrated(restServer: RestWebServer, adminRouter: express.Router): void {
   adminRouter.get('/migrated', async (req: Request, res: Response) => {
+    return res.status(200).json(restServer.hasMigrated())
+  })
+}
+
+function migrate(restServer: RestWebServer, adminRouter: express.Router): void {
+  adminRouter.get('/migrateToMongo', async (req: Request, res: Response) => {
+    await restServer.migrate()
     return res.status(200).json(restServer.hasMigrated())
   })
 }

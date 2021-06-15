@@ -19,6 +19,10 @@ export class RepositorySQL implements Repository {
     this.sqlConnection = new SQLConnection()
   }
 
+  getType(): 'mongo' | 'sql' {
+    return 'sql'
+  }
+
   getAccountByEmail(email: string): Promise<[Account, boolean]> {
     return this.sqlConnection.executeScalarType<Account>(queries.getAccountByEmail, [email])
   }

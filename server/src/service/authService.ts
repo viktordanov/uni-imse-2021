@@ -9,6 +9,14 @@ export class AuthService {
   private repository: Repository
   private jwtSecret: string
 
+  getRepository(): Repository {
+    return this.repository
+  }
+
+  setRepository(repo: Repository): void {
+    this.repository = repo
+  }
+
   constructor(repository: Repository, jwtSecret: string) {
     this.repository = repository
     this.jwtSecret = jwtSecret

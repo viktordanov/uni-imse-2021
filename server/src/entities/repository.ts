@@ -63,4 +63,6 @@ export interface Repository {
   addRandomPost(p: Post): Promise<boolean>
   addRandomFollows(): Promise<boolean>
   addRandomLikes(): Promise<boolean>
+
+  getType(): 'mongo' | 'sql'
 }
