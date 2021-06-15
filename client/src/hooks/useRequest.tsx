@@ -13,7 +13,10 @@ export function useRequest<T>(
   const [fetchedData, setFetchedData] = useState<T>(defaultValue)
 
   function refetch() {
-    fetch(requestURL, { ...fetchData, headers: { Authorization: `Bearer ${token}` } })
+    fetch(requestURL, {
+      ...fetchData,
+      headers: { Authorization: `Bearer ${token}` }
+    })
       .then(res => {
         if (res.ok) return res.json()
         throw new Error('failed to fetch ' + res.statusText)
@@ -27,6 +30,36 @@ export function useRequest<T>(
   useEffect(() => {
     refetch()
   }, [token])
+
+  return [fetchedData, refetch]
+}
+
+export function useRequestArg<T>(
+  defaultValue: T | (() => T),
+  requestURL: string,
+  arg: string,
+  fetchData: RequestInit = {}
+): UseRequestPayload<T> {
+  const { token } = useAuth()
+  const [fetchedData, setFetchedData] = useState<T>(defaultValue)
+
+  function refetch() {
+    fetch(requestURL + '/' + arg, {
+      ...fetchData,
+      headers: { Authorization: `Bearer ${token}` }
+    })
+      .then(res => {
+        if (res.ok) return res.json()
+        throw new Error('failed to fetch ' + res.statusText)
+      })
+      .then((data: T) => {
+        setFetchedData(data)
+      })
+      .catch(e => console.warn('Request ' + requestURL + '\n With data: ', fetchData, '\nfailed with error:', e))
+  }
+  useEffect(() => {
+    refetch()
+  }, [token, arg])
 
   return [fetchedData, refetch]
 }
