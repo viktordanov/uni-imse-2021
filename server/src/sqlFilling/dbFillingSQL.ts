@@ -10,9 +10,7 @@ async function insertData(repository: Repository): Promise<void> {
     return
   }
   getStudents().then(students => {
-    // console.log(students)
     getPage().then(pages => {
-      // console.log(pages)
       getPost().then(posts => {
         const promises: Promise<boolean | void>[] = []
         students.forEach(student => {
