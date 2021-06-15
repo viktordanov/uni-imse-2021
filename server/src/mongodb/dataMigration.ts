@@ -10,14 +10,10 @@ export const DataMigration = {
       const pages = await sqlRepo.getAllPagesOf(student.id)
       pages[0].forEach(async page => {
         promises.push(mongoRepo.addPage(student.id, page))
-        const posts = await sqlRepo.getAllPostsOf(student.id, page.title)
-        posts[0].forEach(async post => {
-          promises.push(mongoRepo.addPost(student.id, page.title, post))
-        })
       })
     })
 
-    Promise.all(promises).then(() => {
+    await Promise.all(promises).then(() => {
       students[0].forEach(async student => {
         const following = await sqlRepo.getFollowing(student.id)
         following[0].forEach(async toFollow => {
@@ -30,5 +26,17 @@ export const DataMigration = {
         })
       })
     })
+
+    const pagePromises: Promise<boolean>[] = []
+    students[0].forEach(async student => {
+      const pages = await sqlRepo.getAllPagesOf(student.id)
+      pages[0].forEach(async page => {
+        const posts = await sqlRepo.getAllPostsOf(student.id, page.title)
+        posts[0].forEach(async post => {
+          pagePromises.push(mongoRepo.addPost(student.id, page.title, post))
+        })
+      })
+    })
+    await Promise.all(pagePromises)
   }
 }

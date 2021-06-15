@@ -1,9 +1,10 @@
-import { APIEndpoints } from '@/api'
+import { APIEndpoints, makeRequest } from '@/api'
 import { AdminMenu } from '@/components/adminMenu'
 import { IconButton } from '@/components/iconButton'
 import { Logo } from '@/components/logo'
 import { PersonBadge } from '@/components/personBadge'
 import { Placeholder } from '@/components/placeholder'
+import { NotificationType, useNotifications } from '@/context/notifierContext'
 import { useAuth } from '@/hooks/useAuth'
 import { useRequest } from '@/hooks/useRequest'
 import styles from '@/styles/pages/admin.module.scss'
@@ -24,14 +25,16 @@ export interface AdminProps {
 }
 
 export const Admin: React.FunctionComponent<AdminProps> = ({ className, onClick }: AdminProps) => {
-  const { decodedToken } = useAuth()
-  const [hasMigrated] = useRequest<boolean>(true, APIEndpoints.hasMigrated)
-  const [reportStudentActivity] = useRequest<ReportStudentActivity[]>([], APIEndpoints.report1 + '/6')
-  const [reportFamousStudents] = useRequest<ReportFamousStudents[]>([], APIEndpoints.report2 + '/sit')
+  const { token, decodedToken } = useAuth()
+  const [hasMigrated, refetchHasMigrated] = useRequest<boolean>(true, APIEndpoints.hasMigrated)
+  const [reportStudentActivity, refetchReport1] = useRequest<ReportStudentActivity[]>([], APIEndpoints.report1 + '/6')
+  const [reportFamousStudents, refetchReport2] = useRequest<ReportFamousStudents[]>([], APIEndpoints.report2 + '/sit')
 
   const [activitySortMode, setActivitySortMode] = useState<'student name-asc' | 'student name-desc'>('student name-asc')
   const [famousSortMode, setFamousSortMode] =
     useState<'likes-asc' | 'likes-desc' | 'followers-asc' | 'followers-desc'>('likes-desc')
+
+  const { pushNotification } = useNotifications()
 
   const userInfo = useMemo<UserInfo>(() => {
     const subObj = decodedToken?.sub as any
@@ -74,6 +77,19 @@ export const Admin: React.FunctionComponent<AdminProps> = ({ className, onClick 
       }
     })
   }, [famousSortMode, reportFamousStudents])
+  const handleMigrateToMongo = useCallback(() => {
+    makeRequest(APIEndpoints.migrateToMongo, 'get', {}, token ?? '').then(res => {
+      if (res.ok) {
+        pushNotification(NotificationType.SUCCESS, 'Success', 'Migrated all data to MongoDB', 2000)
+        refetchHasMigrated()
+        refetchReport1()
+        refetchReport2()
+      } else {
+        pushNotification(NotificationType.ERROR, 'Error', 'Could not migrate', 2000)
+      }
+    })
+  }, [token])
+
   return (
     <div className={c(styles.adminPanel)}>
       <header>
@@ -89,7 +105,11 @@ export const Admin: React.FunctionComponent<AdminProps> = ({ className, onClick 
           <h1 className={c({ [styles.not]: !hasMigrated })}>
             Database has {hasMigrated ? 'been' : 'not been'} migrated
           </h1>
-          {!hasMigrated && <IconButton Icon={Codepen}>Migrate to MongoDB</IconButton>}
+          {!hasMigrated && (
+            <IconButton Icon={Codepen} onClick={handleMigrateToMongo}>
+              Migrate to MongoDB
+            </IconButton>
+          )}
         </Placeholder>
         <div className={styles.header}>
           <label className={styles.label}>Famous students report</label>

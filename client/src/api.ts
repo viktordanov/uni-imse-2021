@@ -1,6 +1,7 @@
 const host = 'http://localhost:10100/'
 export const APIEndpoints = {
   hasMigrated: host + 'api-admin/migrated',
+  migrateToMongo: host + 'api-admin/migrateToMongo',
   report1: host + 'api-admin/report1',
   report2: host + 'api-admin/report2',
 
@@ -24,15 +25,12 @@ export const APIEndpoints = {
   deletePage: host + 'api/pages'
 }
 
-export function makeRequest(
-  url: string,
-  method: 'get' | 'delete' | 'put' | 'post',
-  body: unknown,
-  token: string
-): Promise<Response> {
-  return fetch(url, {
-    body: JSON.stringify(body),
+type MethodType = 'get' | 'delete' | 'put' | 'post'
+export function makeRequest(url: string, method: MethodType, body: unknown, token: string): Promise<Response> {
+  const data: { headers: any; method: MethodType; body?: string } = {
     headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
     method
-  })
+  }
+  if (method !== 'get') data.body = JSON.stringify(body)
+  return fetch(url, data)
 }
