@@ -404,6 +404,7 @@ export class MongoRepository implements Repository {
   }
 
   async getReportFamousStudents(searchPostTitle: string): Promise<[ReportFamousStudents[], boolean]> {
+    const search = '.*' + searchPostTitle + '.*'
     const res = await this.accounts().aggregate([
       { $unwind: { path: '$liked_posts' } },
       { $unwind: { path: '$liked_posts' } },
@@ -411,6 +412,7 @@ export class MongoRepository implements Repository {
       { $lookup: { from: 'pages', localField: '_id', foreignField: 'posts', as: 'postPage' } },
       { $lookup: { from: 'accounts', localField: 'postPage._id', foreignField: 'pages', as: 'pageAccount' } },
       { $lookup: { from: 'posts', localField: '_id', foreignField: '_id', as: 'likedPost' } },
+      { $match: { 'likedPost.title': { $regex: search } } },
       {
         $lookup: {
           from: 'accounts',
@@ -450,6 +452,7 @@ export class MongoRepository implements Repository {
         const doc = await res.next()
         list.push(Object.assign({}, doc) as ReportFamousStudents)
       }
+      console.log(list)
       return [list, true]
     }
     return [null, false]
