@@ -157,8 +157,10 @@ export class MongoRepository implements Repository {
       const list: Student[] = []
       while (await res.hasNext()) {
         const doc = await res.next()
+        console.log(doc)
         list.push(Object.assign({}, doc) as Student)
       }
+      console.log(list)
       return [list, true]
     }
 
@@ -439,7 +441,7 @@ export class MongoRepository implements Repository {
           title: { $first: '$title' },
           likes: '$likes',
           studentFollowers: '$follows',
-          studentName: '$studentName'
+          studentName: { $first: '$studentName' }
         }
       }
     ])
