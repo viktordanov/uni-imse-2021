@@ -154,7 +154,7 @@ export class RestWebServer implements Rest {
     if (this.repoImpl === 'mongo' || this.authService.getRepository().getType() === 'mongo') return
     const mongoImpl = new MongoRepository()
     await mongoImpl.initialize()
-    const number = await mongoImpl.pages().countDocuments({})
+    const number = await mongoImpl.accounts().countDocuments({})
     if (number !== 0) {
       this.authService.setRepository(mongoImpl)
       this.studentService.setRepository(mongoImpl)

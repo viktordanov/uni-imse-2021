@@ -126,8 +126,9 @@ export class MongoRepository implements Repository {
   }
 
   async addStudent(s: Student): Promise<boolean> {
-    const studentCount = await this.accounts().countDocuments()
-    s.id = studentCount
+    const maxIDDoc = await this.accounts().find().sort({ id: -1 }).limit(1).next()
+
+    s.id = maxIDDoc === null ? 0 : maxIDDoc.id + 1
     const res = await this.accounts().insertOne(s)
     return res.insertedCount === 1
   }

@@ -3,6 +3,7 @@ import { MongoRepository } from './mongoRepo'
 
 export const DataMigration = {
   async migrateDataToMongo(sqlRepo: RepositorySQL, mongoRepo: MongoRepository): Promise<void> {
+    const admins = await sqlRepo.getAllAdmins()
     const students = await sqlRepo.getAllStudents()
     const promises: Promise<boolean>[] = []
     students[0].forEach(async student => {
@@ -11,6 +12,9 @@ export const DataMigration = {
       pages[0].forEach(async page => {
         promises.push(mongoRepo.addPage(student.id, page))
       })
+    })
+    admins[0].forEach(async admins => {
+      promises.push(mongoRepo.addAdmin(admins))
     })
 
     await Promise.all(promises).then(() => {
