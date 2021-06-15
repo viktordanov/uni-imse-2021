@@ -17,10 +17,7 @@ async function main() {
     staticDir: STATIC_DIR,
     jwtSecret: JWT_SECRET
   }
-  // const repo = new RepositorySQL()
-  const repo = new MongoRepository()
-
-  await repo.initialize()
+  const repo = new RepositorySQL()
 
   const authService = new AuthService(repo, JWT_SECRET)
   const studentService = new StudentContentService(repo)

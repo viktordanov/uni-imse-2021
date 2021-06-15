@@ -27,6 +27,10 @@ export class MongoRepository implements Repository {
     }
   }
 
+  getType(): 'mongo' | 'sql' {
+    return 'mongo'
+  }
+
   db(): Db {
     return this.client.db('imse')
   }

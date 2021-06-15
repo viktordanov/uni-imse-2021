@@ -1,7 +1,7 @@
 import { RepositorySQL } from '../sql/repositorySQL'
 import { MongoRepository } from './mongoRepo'
 
-export class DataMigration {
+export const DataMigration = {
   async migrateDataToMongo(sqlRepo: RepositorySQL, mongoRepo: MongoRepository): Promise<void> {
     const students = await sqlRepo.getAllStudents()
     const promises: Promise<boolean>[] = []
