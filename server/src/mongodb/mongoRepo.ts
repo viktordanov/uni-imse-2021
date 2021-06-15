@@ -152,15 +152,13 @@ export class MongoRepository implements Repository {
   }
 
   async getAllStudents(): Promise<[Student[], boolean]> {
-    const res = await this.accounts().find({ accountType: 'student' })
+    const res = await this.accounts().find({ matNumber: { $exists: true } })
     if (res) {
       const list: Student[] = []
       while (await res.hasNext()) {
         const doc = await res.next()
-        console.log(doc)
         list.push(Object.assign({}, doc) as Student)
       }
-      console.log(list)
       return [list, true]
     }
 
@@ -234,7 +232,7 @@ export class MongoRepository implements Repository {
   async addLike(who: number, whosePost: number, pageTitle: string, postTitle: string): Promise<boolean> {
     const postId = await this.getPostObjectId(whosePost, pageTitle, postTitle)
     if (postId == null) return false
-    const res = await this.accounts().findOneAndUpdate({ id: who }, { $push: { liked_posts: postId } })
+    const res = await this.accounts().findOneAndUpdate({ id: who }, { $addToSet: { liked_posts: postId } })
     return (res.ok ?? 0) === 1
   }
 
