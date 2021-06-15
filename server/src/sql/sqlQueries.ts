@@ -82,6 +82,11 @@ const getLikedPostsOf =
   'from Post p inner join likes l on p.StudentID = l.Post_StudentID and p.Page_Title = l.Post_Page_Title and p.Title = l.Post_Title ' +
   'where l.StudentID = ?;'
 
+const getLikedPagePostsOf =
+  'select p.StudentID as pageOwnerId, p.Page_Title as pageTitle, Title as title, Content as content, Date_created as dateCreated ' +
+  'from Post p inner join likes l on p.StudentID = l.Post_StudentID and p.Page_Title = l.Post_Page_Title and p.Title = l.Post_Title ' +
+  'where l.StudentID = ?;'
+
 const addLike = 'insert into likes (StudentID, Post_StudentID, Post_Page_Title, Post_Title) values (?, ?, ?, ?);'
 
 const removeLike =
@@ -197,5 +202,6 @@ export const SQLQueries = {
   getReportStudentActivity,
   getReportFamousStudents,
   addRandomFollows,
-  addRandomLikes
+  addRandomLikes,
+  getLikedPagePostsOf
 }

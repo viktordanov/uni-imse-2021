@@ -151,6 +151,13 @@ export class RepositorySQL implements Repository {
     return this.sqlConnection.executeQueryType<Post>(queries.getLikedPostsOf, [id])
   }
 
+  getLikedPagePostsOf(id: number): Promise<[({ pageOwnerId: number; pageTitle: string } & Post)[], boolean]> {
+    return this.sqlConnection.executeQueryType<{ pageOwnerId: number; pageTitle: string } & Post>(
+      queries.getLikedPagePostsOf,
+      [id]
+    )
+  }
+
   addLike(who: number, whosePost: number, pageTitle: string, postTitle: string): Promise<boolean> {
     return this.sqlConnection.executeQuery(queries.addLike, [who, whosePost, pageTitle, postTitle])
   }
