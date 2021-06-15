@@ -6,7 +6,7 @@ import { getPage, getPost, getStudents } from './mockData'
 
 async function insertData(repository: Repository): Promise<void> {
   const students = await repository.getAllStudents()
-  if (students[1] || students[0].length !== 0) {
+  if (students[0].length !== 0) {
     return
   }
   getStudents().then(students => {
