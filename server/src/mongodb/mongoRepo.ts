@@ -427,7 +427,8 @@ export class MongoRepository implements Repository {
           pageTitle: { $first: '$postPage.title' },
           title: { $first: '$likedPost.title' },
           likes: { $first: '$likes' },
-          follows: { $sum: 1 }
+          follows: { $sum: 1 },
+          studentName: { $first: '$pageAccount.name' }
         }
       },
       {
@@ -435,7 +436,8 @@ export class MongoRepository implements Repository {
           pageTitle: { $first: '$pageTitle' },
           title: { $first: '$title' },
           likes: '$likes',
-          studentFollowers: '$follows'
+          studentFollowers: '$follows',
+          studentName: '$studentName'
         }
       }
     ])
