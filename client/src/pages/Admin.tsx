@@ -1,12 +1,13 @@
 import { APIEndpoints, makeRequest } from '@/api'
 import { AdminMenu } from '@/components/adminMenu'
 import { IconButton } from '@/components/iconButton'
+import { Input } from '@/components/input'
 import { Logo } from '@/components/logo'
 import { PersonBadge } from '@/components/personBadge'
 import { Placeholder } from '@/components/placeholder'
 import { NotificationType, useNotifications } from '@/context/notifierContext'
 import { useAuth } from '@/hooks/useAuth'
-import { useRequest } from '@/hooks/useRequest'
+import { useRequest, useRequestArg } from '@/hooks/useRequest'
 import styles from '@/styles/pages/admin.module.scss'
 import { ReportFamousStudents, ReportStudentActivity } from '@/types'
 import c from 'classnames'
@@ -26,9 +27,16 @@ export interface AdminProps {
 
 export const Admin: React.FunctionComponent<AdminProps> = ({ className, onClick }: AdminProps) => {
   const { token, decodedToken } = useAuth()
+
+  const [filterTitles, setFilterTitles] = useState('')
+
   const [hasMigrated, refetchHasMigrated] = useRequest<boolean>(true, APIEndpoints.hasMigrated)
   const [reportStudentActivity, refetchReport1] = useRequest<ReportStudentActivity[]>([], APIEndpoints.report1 + '/6')
-  const [reportFamousStudents, refetchReport2] = useRequest<ReportFamousStudents[]>([], APIEndpoints.report2 + '/sit')
+  const [reportFamousStudents, refetchReport2] = useRequestArg<ReportFamousStudents[]>(
+    [],
+    APIEndpoints.report2,
+    filterTitles
+  )
 
   const [activitySortMode, setActivitySortMode] = useState<'student name-asc' | 'student name-desc'>('student name-asc')
   const [famousSortMode, setFamousSortMode] =
@@ -113,12 +121,15 @@ export const Admin: React.FunctionComponent<AdminProps> = ({ className, onClick 
         </Placeholder>
         <div className={styles.header}>
           <label className={styles.label}>Famous students report</label>
-          <IconButton
-            onClick={cycleActivitySort}
-            Icon={activitySortMode.split('-')[1] === 'asc' ? ChevronUp : ChevronDown}
-          >
-            {'By ' + activitySortMode.split('-')[0]}
-          </IconButton>
+          <div className={styles.right}>
+            <Input value={filterTitles} onChange={e => setFilterTitles(e.currentTarget.value)} />
+            <IconButton
+              onClick={cycleActivitySort}
+              Icon={activitySortMode.split('-')[1] === 'asc' ? ChevronUp : ChevronDown}
+            >
+              {'By ' + activitySortMode.split('-')[0]}
+            </IconButton>
+          </div>
         </div>
         <table className={styles.table}>
           <thead>
@@ -142,9 +153,15 @@ export const Admin: React.FunctionComponent<AdminProps> = ({ className, onClick 
         </table>
         <div className={styles.header}>
           <label className={styles.label}>Student activity report</label>
-          <IconButton onClick={cycleFamousSort} Icon={famousSortMode.split('-')[1] === 'asc' ? ChevronUp : ChevronDown}>
-            {'By ' + famousSortMode.split('-')[0]}
-          </IconButton>
+          <div className={styles.right}>
+            <Input value={filterTitles} onChange={e => setFilterTitles(e.currentTarget.value)} />
+            <IconButton
+              onClick={cycleFamousSort}
+              Icon={famousSortMode.split('-')[1] === 'asc' ? ChevronUp : ChevronDown}
+            >
+              {'By ' + famousSortMode.split('-')[0]}
+            </IconButton>
+          </div>
         </div>
         <table className={styles.table}>
           <thead>

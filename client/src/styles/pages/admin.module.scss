@@ -27,13 +27,14 @@ $pagePaddingHor: $margin-large;
     }
     .right {
       display: flex;
+
       align-items: center;
     }
   }
 
-.placeholder {
-  margin-bottom: $margin-large;
-}
+  .placeholder {
+    margin-bottom: $margin-large;
+  }
 
   .header {
     height: 5rem;
@@ -41,6 +42,11 @@ $pagePaddingHor: $margin-large;
     width: 100%;
     justify-content: space-between;
     align-items: center;
+  }
+  .right > * {
+    max-width: 50%;
+    margin-left: $margin-small;
+    float: left;
   }
   .label {
     @include font-label;
