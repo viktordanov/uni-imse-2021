@@ -223,10 +223,17 @@ export class MongoRepository implements Repository {
     return [null, false]
   }
 
+  getLikedPagePostsOf(id: number): Promise<[({ pageOwnerId: number; pageTitle: string } & Post)[], boolean]> {
+    // unused
+    throw new Error('Method not implemented.')
+  }
+
   async addLike(who: number, whosePost: number, pageTitle: string, postTitle: string): Promise<boolean> {
     const postId = await this.getPostObjectId(whosePost, pageTitle, postTitle)
+    console.log('addLike postId', postId)
     if (postId == null) return false
     const res = await this.accounts().findOneAndUpdate({ id: who }, { $push: { liked_posts: postId } })
+    console.log(res.ok)
     return (res.ok ?? 0) === 1
   }
 
@@ -342,13 +349,30 @@ export class MongoRepository implements Repository {
       {
         $project: {
           studentName: '$name',
-          sumPages: { $size: '$pages' },
+          // sumPages: { $size: '$pages' },
+          sumPages: {
+            $cond: {
+              if: { $isArray: '$pages' },
+              then: { $size: '$pages' },
+              else: 0
+            }
+          },
           sumPosts: {
             $reduce: {
               input: '$studentPages',
               initialValue: 0,
               in: {
-                $add: ['$$value', { $size: '$$this.posts' }]
+                // $add: ['$$value', { $size: '$$this.posts' }]
+                $add: [
+                  '$$value',
+                  {
+                    $cond: {
+                      if: { $isArray: '$$this.posts' },
+                      then: { $size: '$$this.posts' },
+                      else: 0
+                    }
+                  }
+                ]
               }
             }
           },
