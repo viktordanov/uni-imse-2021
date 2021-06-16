@@ -496,9 +496,9 @@ export class MongoRepository implements Repository {
     if (!res) return null
     const doc = await res.next()
     if (!doc) return null
-    return doc.studentPages[0]._id
-    // const postId = doc.studentPages.find((element: Page) => element.title === pageTitle)
-    // return postId
+    // return doc.studentPages[0]._id
+    const pageId = doc.studentPages.find((element: Page) => element.title === pageTitle)
+    return pageId?._id ?? ''
   }
 
   async getPostObjectId(studentId: number, pageTitle: string, postTitle: string): Promise<ObjectId> {
