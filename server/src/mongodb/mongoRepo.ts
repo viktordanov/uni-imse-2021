@@ -318,9 +318,11 @@ export class MongoRepository implements Repository {
 
   async getAllPostsOf(studentId: number, pageTitle: string): Promise<[Post[], boolean]> {
     const res = await this.accounts().aggregate([
+      { $match: { id: studentId } },
       { $lookup: { from: 'pages', localField: 'pages', foreignField: '_id', as: 'studentPages' } },
+      { $unwind: '$studentPages' },
+      { $match: { 'studentPages.title': pageTitle } },
       { $lookup: { from: 'posts', localField: 'studentPages.posts', foreignField: '_id', as: 'studentPosts' } },
-      { $match: { id: studentId, 'studentPages.title': pageTitle } },
       { $project: { studentPosts: 1 } }
     ])
     if (res) {
