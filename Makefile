@@ -1,7 +1,6 @@
 production-build:
 	sudo docker-compose -f docker-compose.production.yml build
 	echo 'y' | sudo docker image prune
-	echo 'y' | sudo ./init-letsencrypt.sh
 
 production-serve:
 	sudo docker-compose -f docker-compose.production.yml up

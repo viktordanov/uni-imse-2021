@@ -1,4 +1,4 @@
-const host = 'http://localhost:10100/'
+const host = 'https://annorum.me/'
 export const APIEndpoints = {
   hasMigrated: host + 'api-admin/migrated',
   migrateToMongo: host + 'api-admin/migrateToMongo',
