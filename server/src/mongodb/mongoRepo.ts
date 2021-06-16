@@ -346,12 +346,11 @@ export class MongoRepository implements Repository {
     date.setDate(date.getDate() - 7 * weeks)
     const res = await this.accounts().aggregate([
       { $lookup: { from: 'pages', localField: 'pages', foreignField: '_id', as: 'studentPages' } },
-      { $match: {} },
+      { $match: { matNumber: { $exists: true } } },
       { $match: { dateRegistered: { $gte: date } } },
       {
         $project: {
           studentName: '$name',
-          // sumPages: { $size: '$pages' },
           sumPages: {
             $cond: {
               if: { $isArray: '$pages' },
@@ -364,7 +363,6 @@ export class MongoRepository implements Repository {
               input: '$studentPages',
               initialValue: 0,
               in: {
-                // $add: ['$$value', { $size: '$$this.posts' }]
                 $add: [
                   '$$value',
                   {
@@ -386,7 +384,8 @@ export class MongoRepository implements Repository {
             }
           }
         }
-      }
+      },
+      { $sort: { studentName: 1 } }
     ])
 
     if (res) {
@@ -418,10 +417,28 @@ export class MongoRepository implements Repository {
           as: 'accountFollow'
         }
       },
-      { $unwind: { path: '$accountFollow', preserveNullAndEmptyArrays: true } },
-      { $unwind: { path: '$accountFollow.followed_students', preserveNullAndEmptyArrays: true } },
-      { $unwind: { path: '$accountFollow.followed_students', preserveNullAndEmptyArrays: true } },
+      // { $unwind: { path: '$accountFollow', preserveNullAndEmptyArrays: true } },
       {
+        $project: {
+          _id: { postId: '$_id' },
+          pageTitle: { $first: '$postPage.title' },
+          title: { $first: '$likedPost.title' },
+          likes: '$likes',
+          studentFollowers: {
+            $cond: {
+              if: { $isArray: '$accountFollow' },
+              then: { $size: '$accountFollow' },
+              else: 0
+            }
+          },
+          studentName: { $first: '$pageAccount.name' }
+        }
+      },
+      // { $match: { 'accountFollow': { $exists: true } } },
+      // { $unwind: { path: '$accountFollow.followed_students', preserveNullAndEmptyArrays: true } },
+      // { $unwind: { path: '$accountFollow.followed_students', preserveNullAndEmptyArrays: true } },
+
+      /* {
         $group: {
           _id: { postId: '$_id' },
           pageTitle: { $first: '$postPage.title' },
@@ -430,8 +447,8 @@ export class MongoRepository implements Repository {
           follows: { $sum: 1 },
           studentName: { $first: '$pageAccount.name' }
         }
-      },
-      {
+      }, */
+      /* {
         $project: {
           pageTitle: { $first: '$pageTitle' },
           title: { $first: '$title' },
@@ -439,7 +456,9 @@ export class MongoRepository implements Repository {
           studentFollowers: '$follows',
           studentName: { $first: '$studentName' }
         }
-      }
+      }, */
+      { $match: { pageTitle: { $exists: true } } },
+      { $sort: { likes: -1, studentFollowers: -1, studentName: 1 } }
     ])
 
     if (res) {
@@ -487,8 +506,8 @@ export class MongoRepository implements Repository {
     const res = await this.pages().aggregate([
       { $match: { _id: pageId } },
       { $lookup: { from: 'posts', localField: 'posts', foreignField: '_id', as: 'pagePosts' } },
-      { $project: { pagePosts: 1 } },
-      { $match: { 'pagePosts.title': postTitle } }
+      { $project: { pagePosts: 1 } }
+      // { $match: { 'pagePosts.title': postTitle } }
     ])
     if (!res) return null
     const doc = await res.next()
