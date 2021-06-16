@@ -37,9 +37,11 @@ async function insertData(repository: Repository): Promise<void> {
             await repository.addRandomPost(post)
           }
 
-          for (let i = 0; i < randomNumber(5, 15); i++) {
-            repository.addRandomFollows()
+          for (let i = 0; i < randomNumber(posts.length / 2, posts.length); i++) {
             repository.addRandomLikes()
+          }
+          for (let i = 0; i < randomNumber(students.length / 2, students.length); i++) {
+            repository.addRandomFollows()
           }
         })
       })
