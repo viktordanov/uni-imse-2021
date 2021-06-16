@@ -17,20 +17,26 @@ async function insertData(repository: Repository): Promise<void> {
           promises.push(
             repository.addStudent(student).then(() => {
               const shuffledPages = pages.sort((a, b) => 0.5 - Math.random())
-              for (let i = 0; i < randomNumber(1, 4); i++) {
+              for (let i = 0; i < randomNumber(1, 5); i++) {
                 promises.push(
-                  repository.addPage(student.id, shuffledPages[i]).then(() => {
+                  /* repository.addPage(student.id, shuffledPages[i]).then(() => {
                     const shufflePosts = posts.sort((a, b) => 0.5 - Math.random())
-                    for (let i = 0; i < randomNumber(1, 4); i++) {
+                    for (let i = 0; i < randomNumber(1, 5); i++) {
                       repository.addRandomPost(shufflePosts[i])
                     }
-                  })
+                  }) */
+                  repository.addPage(student.id, shuffledPages[i])
                 )
               }
             })
           )
         })
-        Promise.all(promises).then(() => {
+        Promise.all(promises).then(async () => {
+          // const shufflePosts = posts.sort((a, b) => 0.5 - Math.random())
+          for await (const post of posts) {
+            await repository.addRandomPost(post)
+          }
+
           for (let i = 0; i < randomNumber(5, 15); i++) {
             repository.addRandomFollows()
             repository.addRandomLikes()
