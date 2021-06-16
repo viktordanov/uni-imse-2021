@@ -137,7 +137,7 @@ const getAccountByEmail =
 const getReportStudentActivity = `
   select a.Name as studentName
     , count(p.Title) as sumPages
-    , (select count(p1.Title) from Post p1 where p1.StudentID = s.StudentID and p1.Page_Title = p.Title) as sumPosts 
+    , (select count(p1.Title) from Post p1 where p1.StudentID = s.StudentID) as sumPosts 
     , (select count(l.StudentID) from likes l where l.StudentID = s.StudentID) as likedPosts 
   from Student s 
   inner join Account a on s.StudentID = a.AccountID 
