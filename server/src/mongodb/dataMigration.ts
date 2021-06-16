@@ -5,42 +5,32 @@ export const DataMigration = {
   async migrateDataToMongo(sqlRepo: RepositorySQL, mongoRepo: MongoRepository): Promise<void> {
     const admins = await sqlRepo.getAllAdmins()
     const students = await sqlRepo.getAllStudents()
-    const promises: Promise<boolean>[] = []
-    students[0].forEach(async student => {
-      promises.push(mongoRepo.addStudent(student))
+
+    for await (const admin of admins[0]) {
+      await mongoRepo.addAdmin(admin)
+    }
+
+    for await (const student of students[0]) {
+      await mongoRepo.addStudent(student)
       const pages = await sqlRepo.getAllPagesOf(student.id)
-      pages[0].forEach(async page => {
-        promises.push(mongoRepo.addPage(student.id, page))
-      })
-    })
-    admins[0].forEach(async admins => {
-      promises.push(mongoRepo.addAdmin(admins))
-    })
-
-    await Promise.all(promises).then(() => {
-      students[0].forEach(async student => {
-        const following = await sqlRepo.getFollowing(student.id)
-        following[0].forEach(async toFollow => {
-          await mongoRepo.addFollow(student.id, toFollow.id)
-        })
-
-        const likedPosts = await sqlRepo.getLikedPagePostsOf(student.id)
-        likedPosts[0].forEach(async likedPost => {
-          await mongoRepo.addLike(student.id, likedPost.pageOwnerId, likedPost.pageTitle, likedPost.title)
-        })
-      })
-    })
-
-    const pagePromises: Promise<boolean>[] = []
-    students[0].forEach(async student => {
-      const pages = await sqlRepo.getAllPagesOf(student.id)
-      pages[0].forEach(async page => {
+      for await (const page of pages[0]) {
+        await mongoRepo.addPage(student.id, page)
         const posts = await sqlRepo.getAllPostsOf(student.id, page.title)
-        posts[0].forEach(async post => {
-          pagePromises.push(mongoRepo.addPost(student.id, page.title, post))
-        })
-      })
-    })
-    await Promise.all(pagePromises)
+        for await (const post of posts[0]) {
+          await mongoRepo.addPost(student.id, page.title, post)
+        }
+      }
+    }
+
+    for await (const student of students[0]) {
+      const following = await sqlRepo.getFollowing(student.id)
+      for await (const follow of following[0]) {
+        await mongoRepo.addFollow(student.id, follow.id)
+      }
+      const likedPosts = await sqlRepo.getLikedPagePostsOf(student.id)
+      for await (const likedPost of likedPosts[0]) {
+        await mongoRepo.addLike(student.id, likedPost.pageOwnerId, likedPost.pageTitle, likedPost.title)
+      }
+    }
   }
 }
