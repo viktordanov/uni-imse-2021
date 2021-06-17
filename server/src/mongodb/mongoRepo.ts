@@ -23,7 +23,12 @@ export class MongoRepository implements Repository {
         this.db().createCollection('events'),
         this.db().createCollection('pages'),
         this.db().createCollection('posts')
-      ])
+      ]).then(async () => {
+        await this.accounts().createIndex({ email: 1 })
+        await this.events().createIndex({ created_by: 1 })
+        await this.pages().createIndex({ title: 1 })
+        await this.posts().createIndex({ title: 1, page_id: 1 })
+      })
     }
   }
 
@@ -92,7 +97,14 @@ export class MongoRepository implements Repository {
     const pageId = doc.studentPages[0]._id */
     const pageId = await this.getPageObjectId(studentId, pageTitle)
 
-    const res2 = await this.posts().insertOne(post)
+    const mongoPost: Post & { pageId: ObjectId } = {
+      title: post.title,
+      content: post.content,
+      dateCreated: post.dateCreated,
+      pageId: pageId
+    }
+
+    const res2 = await this.posts().insertOne(mongoPost)
     if (res2.insertedCount !== 1) return false
     const res3 = await this.pages().findOneAndUpdate({ _id: pageId }, { $push: { posts: res2.insertedId } })
     return (res3.ok ?? 0) === 1
