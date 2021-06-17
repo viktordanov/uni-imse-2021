@@ -69,6 +69,8 @@ export const Pages: React.FunctionComponent<PagesProps> = ({ className, onClick 
     makeRequest(APIEndpoints.newPage, 'post', { title: pageTitle, description }, token ?? '').then(res => {
       if (res.ok) {
         closeModal()
+        setPageTitle('')
+        setDescription('')
         pushNotification(NotificationType.SUCCESS, 'New page', 'Successfully added new page', 2000)
         refetchPages()
       } else {

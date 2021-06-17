@@ -94,6 +94,8 @@ export const StudentPosts: React.FunctionComponent<StudentPostsProps> = ({ class
     makeRequest(APIEndpoints.newPost(pageTitle), 'post', { title: postTitle, content }, token ?? '').then(res => {
       if (res.ok) {
         closeModal()
+        setPostTitle('')
+        setContent('')
         pushNotification(NotificationType.SUCCESS, 'Success', 'Successfully added new post', 2000)
         refreshPosts()
       } else {

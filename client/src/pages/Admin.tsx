@@ -37,10 +37,14 @@ export const Admin: React.FunctionComponent<AdminProps> = ({ className, onClick 
     APIEndpoints.report1,
     filterWeeks
   )
+  const filterTitlesParam = useMemo(() => {
+    if (filterTitles.length < 3) return 'sit'
+    return filterTitles
+  }, [filterTitles])
   const [reportFamousStudents, refetchReport2] = useRequestArg<ReportFamousStudents[]>(
     [],
     APIEndpoints.report2,
-    filterTitles
+    filterTitlesParam
   )
 
   const [activitySortMode, setActivitySortMode] = useState<'student name-asc' | 'student name-desc'>('student name-asc')
@@ -171,7 +175,7 @@ export const Admin: React.FunctionComponent<AdminProps> = ({ className, onClick 
               value={filterTitles}
               minLength={3}
               onChange={e => {
-                if (e.currentTarget.validity.valid) setFilterTitles(e.currentTarget.value)
+                setFilterTitles(e.currentTarget.value)
               }}
             />
             <IconButton
