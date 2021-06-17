@@ -158,7 +158,7 @@ const getReportFamousStudents = `
   inner join Account a on a.AccountID = s.StudentID
   where p.Title like ?
   group by a.Name, p.Page_Title, p.Title
-  order by likes desc
+  order by likes desc, studentFollowers desc, a.Name
   limit 10;`
 
 export const SQLQueries = {
